@@ -1,40 +1,52 @@
-from flask import Flask # quart maybe?
+from flask import Flask
 from flask_cors import CORS
-from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
-
-
-
-
-
-# export
-bcrypt = Bcrypt()
-
+from flask_jwt_extended import get_jwt, get_jwt_identity,\
+    create_access_token, set_access_cookies
+from datetime import datetime, timezone, timedelta
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mydatabase.db" # change to postgresql
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
     
     if test_config == None:
         # config from default .env and .flaskenv files
         app.config.from_prefixed_env()
     app.config.from_object(test_config)
     
-    from app.models import db
+    from .extensions import db
+    from .extensions import bcrypt
+    from .extensions import migrate
+    from .extensions import jwt_manager
+    
     db.init_app(app)
-    db.create_all()
-    migrate = Migrate(app, db)
+    # db.create_all()
     
-    JWTManager(app)
-    
+    # TODO: Move to extensions.py, do not initialise any instance here. Move bcrypt also.
     bcrypt.init_app(app)
+    migrate.init_app(app, db)
+    jwt_manager.init_app(app)
     
     # import blueprints here
-    from auth.routes import auth
+    from .auth.routes import auth
     app.register_blueprint(auth)
     
+    @app.after_request
+    def refresh_expiring_jwts(response):
+        try:
+            exp_timestamp = get_jwt()["exp"]
+            now = datetime.now(timezone.utc)
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+            if target_timestamp > exp_timestamp:
+                access_token = create_access_token(identity=get_jwt_identity())
+                set_access_cookies(response, access_token)
+            return response
+        except (RuntimeError, KeyError):
+            # Case where there is not a valid JWT. Just return the original response
+            return response
+        
     return app
 
