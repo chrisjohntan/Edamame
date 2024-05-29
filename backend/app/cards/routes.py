@@ -19,11 +19,6 @@ def create_card():
 def single_card():
     pass
 
-@cards.route("/cards", methods=["GET"])
-@jwt_required
-def cards():
-    pass
-
 @cards.route("/delete_card", methods=["DELETE"])
 @jwt_required
 def delete_cards():
