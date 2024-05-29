@@ -4,12 +4,17 @@ from flask import Blueprint, request, jsonify, abort
 from flask_bcrypt import generate_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token,\
     jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies
-    
 from ..models import User
 import validators
 from http import HTTPStatus
+from sqlalchemy import or_
 
 auth = Blueprint("auth", __name__)
+
+@auth.route("/test", methods=["GET"])
+def test():
+    print("call")
+    return jsonify({"msg": "Testing"})
 
 # create new user
 @auth.route('/register', methods=["POST"])
@@ -17,14 +22,17 @@ def create_new_user():
     username = request.json["username"]
     email = request.json["email"]
     password = request.json["password"]
+    print(username,email,password)
     
     # TODO: Validate user input (username, password, email)
     # TODO: Replace all abort() with json
     
     
-    # Check if user already exists
-    user_exists = db.session.execute(db.select(User).filter_by(username=username))
+    # Check if username or email already exists
+    user_exists = db.session.execute(db.select(User).where(or_(User.username==username, User.email==email))).first()
+    print(user_exists)
     if (user_exists):
+        print("alr exist")
         abort(404)
     
     user = User(
