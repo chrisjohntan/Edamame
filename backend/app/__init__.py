@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mydatabase.db" # change to postgresql
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:you14green@localhost:5432/orbital-edamame" # change to postgresql
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
@@ -21,9 +21,12 @@ def create_app(test_config=None):
     from .extensions import bcrypt
     from .extensions import migrate
     from .extensions import jwt_manager
+    # import all models
+    from .models import User, Card
     
     db.init_app(app)
-    # db.create_all()
+    with app.app_context():
+        db.create_all()
     
     # TODO: Move to extensions.py, do not initialise any instance here. Move bcrypt also.
     bcrypt.init_app(app)
