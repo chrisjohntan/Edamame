@@ -4,12 +4,13 @@ from flask_jwt_extended import get_jwt, get_jwt_identity,\
     create_access_token, set_access_cookies
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
+import os
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
     load_dotenv()
-    app.config["SQLALCHEMY_DATABASE_URI"] =  # change to postgresql
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI") # change to postgresql
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
