@@ -11,7 +11,7 @@ function Testing() {
     console.log("hello")
     const fetchData = async ()=>{
       try {
-        const response = await axios.get("/test");
+        const response = await axios.get("/test", {withCredentials: false});
         setMessage(response.data.msg);
       } catch (error) {
           console.error('Error fetching data', error);
@@ -20,7 +20,6 @@ function Testing() {
     fetchData();
   }, [])
   
-
   return (
     <Container>
       <h1>{message}</h1>
