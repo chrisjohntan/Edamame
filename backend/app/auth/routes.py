@@ -3,7 +3,7 @@ from ..extensions import bcrypt, db
 from flask import Blueprint, request, jsonify, abort
 from flask_bcrypt import generate_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token,\
-    jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies
+    jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies, get_current_user
 from ..models import User
 import validators
 from http import HTTPStatus
@@ -37,7 +37,7 @@ def create_new_user():
     
     user = User(
         username=username, 
-        password=bcrypt.generate_password_hash(password),
+        password=bcrypt.generate_password_hash(password).decode("utf-8"),
         email=email
     )
     
@@ -54,21 +54,22 @@ def create_new_user():
 # log in user
 @auth.route("/login", methods=["POST"])
 def login():
+    print(request)
     username = request.json["username"]
     password = request.json["password"]
-    
-    user: User | None = db.session.execute(
+
+    # TODO: Something wrong with this
+    user = db.session.execute(
         db.select(User).filter_by(username=username)
-        ).first()
+        ).scalar()
     
-    # User does not exist
     if user == None or not bcrypt.check_password_hash(user.password, password) :
         return jsonify({
             "error": "Username or password incorrect"
             }), HTTPStatus.BAD_REQUEST
         
     response = jsonify({"msg": "login successful"})
-    access_token = create_access_token(identity=username)
+    access_token = create_access_token(identity=user.username)
     set_access_cookies(response, access_token)
     
     return response
@@ -80,3 +81,11 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
+# check if token is valid, return user details
+@auth.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    current_user: User = get_current_user()
+    if current_user == None:
+        return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
+    return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
