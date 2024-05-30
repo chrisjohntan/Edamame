@@ -1,14 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import Root from './routes/Root.tsx'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './components/ErrorPage.tsx'
 import Register from './routes/Register.tsx'
+import Login from './routes/Login.tsx'
+import Dashboard from './routes/Dashboard.tsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
-import Login from './routes/Login.tsx'
+import ProtectedRoute from './routes/ProtectedRoute.tsx';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,11 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login/>
+  },
+  {
+    path: "/dashboard",
+    element: <ProtectedRoute/>,
+    children: [{path: "", element: <Dashboard/>}] 
   }
 ])
 
