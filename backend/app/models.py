@@ -17,7 +17,6 @@ class Card(db.Model):
     body: Mapped[str] = mapped_column(Text, nullable=True)
     header_flipped: Mapped[str] = mapped_column(Text, nullable=False)
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
-    # deck_id: Mapped[int] = 
     
 
 class Deck(db.Model):
