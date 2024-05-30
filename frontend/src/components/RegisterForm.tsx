@@ -17,12 +17,10 @@ function RegisterForm() {
     const response = axios.post("/register", payload)
   }
   const clearPW = () => {
-    // console.log(errors);
     if (errors.password || errors.confirmPassword) {
-      resetField("password"); 
+      resetField("password");
       resetField("confirmPassword")
     }
-    // return true;
   }
 
   console.log(watch("password"));
