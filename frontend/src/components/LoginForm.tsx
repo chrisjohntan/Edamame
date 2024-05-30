@@ -10,17 +10,18 @@ function LoginForm() {
     password: string
   }
 
-  const {register, handleSubmit, resetField, formState: {errors}} = useForm<LoginFormInput>()
+  const {register, handleSubmit, reset, resetField, formState: {errors}} = useForm<LoginFormInput>()
   const submitForm: SubmitHandler<LoginFormInput> = (data: LoginFormInput) => {
     console.log(data)
-    const reponse = axios.post("/login", data, {withCredentials: true});
+    const reponse = axios.post("/login", {username: data.username, password: data.password}, {withCredentials:true});
+    // const response = fetch("/login", {})
+    reset();
   }
   return (
     <div className="d-flex">
       <div className="form me-auto ms-auto align-center pt-5">
         <h1>Log In</h1><br/>
         <form>
-          <Form>
             <Form.Group>
               <Form.Label>Username</Form.Label>
               <Form.Control type="text"
@@ -38,7 +39,6 @@ function LoginForm() {
             <Form.Group>
               <button type="button" className="btn btn-success" onClick={handleSubmit(submitForm)}>Login</button>
             </Form.Group>
-          </Form>
         </form>
       </div>
     </div>
