@@ -2,18 +2,21 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt, get_jwt_identity,\
     create_access_token, set_access_cookies
+from sqlalchemy.exc import MultipleResultsFound
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 import os
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
+    CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
     load_dotenv()
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI") # change to postgresql
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_SECRET_KEY"] = "123"
     
     if test_config == None:
         # config from default .env and .flaskenv files
@@ -40,7 +43,7 @@ def create_app(test_config=None):
     from .auth.routes import auth
     from .cards.routes import cards
     app.register_blueprint(auth)
-    app.register_blueprint(cards)
+    # app.register_blueprint(cards)
     
     @app.after_request
     def refresh_expiring_jwts(response):
@@ -55,6 +58,20 @@ def create_app(test_config=None):
         except (RuntimeError, KeyError):
             # Case where there is not a valid JWT. Just return the original response
             return response
-        
+    
+    @jwt_manager.user_identity_loader
+    def user_identity_lookup(user: User):
+        return user
+    
+    @jwt_manager.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        # return User.query.filter_by(id=identity).one_or_none()
+        try:
+            return db.session.execute(db.select(User).where(User.username==identity)).scalar_one_or_none()
+        except MultipleResultsFound as e:
+            print("gg man database is cooked")
+            raise(e)
+
     return app
 
