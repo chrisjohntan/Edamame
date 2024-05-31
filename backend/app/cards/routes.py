@@ -36,12 +36,12 @@ def create_card():
     }), HTTPStatus.CREATED
 
 
-@cards.route("/card", methods=["GET"])
-@jwt_required
-def single_card():
-    pass
+# @cards.route("/card", methods=["GET"])
+# @jwt_required
+# def single_card():
+#     pass
 
-@cards.route("/delete_card", methods=["DELETE"])
-@jwt_required
-def delete_cards():
-    pass
+# @cards.route("/delete_card", methods=["DELETE"])
+# @jwt_required
+# def delete_cards():
+#     pass
