@@ -10,7 +10,8 @@ class User(db.Model) :
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(Text, nullable=False)
     email: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
-    cards: Mapped[List["Card"]] = relationship(back_populates="user")
+    # TODO: Not sure what's wrong
+    # cards: Mapped[List["Card"]] = relationship(back_populates="users")
 
     def __repr__(self) -> str:
         return "User: {self.username}"
@@ -22,8 +23,8 @@ class Card(db.Model):
     body: Mapped[str] = mapped_column(Text, nullable=True)
     header_flipped: Mapped[str] = mapped_column(Text, nullable=False)
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped[List["User"]] = relationship(back_populates="cards")
+    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    # users: Mapped[List["User"]] = relationship(back_populates="cards")
     
     def __repr__(self) -> str:
         return "Card: {self.header}"
