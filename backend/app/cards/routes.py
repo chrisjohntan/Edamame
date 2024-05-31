@@ -11,7 +11,7 @@ from ..models import Card
 cards = Blueprint("cards", __name__)
 
 @cards.route("/create_card", methods=["POST"])
-@jwt_required
+@jwt_required()
 def create_card():
     header = request.json["header"]
     body = request.json["body"]
@@ -37,11 +37,11 @@ def create_card():
 
 
 # @cards.route("/card", methods=["GET"])
-# @jwt_required
+# @jwt_required()
 # def single_card():
 #     pass
 
 # @cards.route("/delete_card", methods=["DELETE"])
-# @jwt_required
+# @jwt_required()
 # def delete_cards():
 #     pass
