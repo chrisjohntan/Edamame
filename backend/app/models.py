@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column , relationship
 from sqlalchemy import String, Integer, Text, ForeignKey
 from .extensions import db
+from typing import List
 
 class User(db.Model) :
     __tablename__ = "users"
@@ -9,6 +10,7 @@ class User(db.Model) :
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(Text, nullable=False)
     email: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    cards: Mapped[List["Card"]] = relationship(back_populates="user")
 
 class Card(db.Model):
     __tablename__ = "cards"
@@ -17,6 +19,8 @@ class Card(db.Model):
     body: Mapped[str] = mapped_column(Text, nullable=True)
     header_flipped: Mapped[str] = mapped_column(Text, nullable=False)
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped[List["User"]] = relationship(back_populates="cards")
     
 
 class Deck(db.Model):
