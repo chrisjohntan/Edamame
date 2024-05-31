@@ -1,26 +1,45 @@
-import { useState, useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { getCurrentUser } from "../auth";
-import type { User } from "../types";
+// import { useState, useEffect } from "react";
+// import { Navigate, Outlet } from "react-router-dom";
+// import { getCurrentUser } from "../auth";
+// import type { User } from "../types";
+
+// function ProtectedRoute() {
+//   const [user, setUser] = useState<User>();
+//   const [loading, setLoading] = useState(true);
+  
+//   useEffect(() => {
+//     const getUser = async () => {
+//       const user = await getCurrentUser();
+//       setUser(user);
+//       setLoading(false);
+//     }
+//     getUser();
+//   }, []);
+
+//   if (loading) {
+//     return <div>Loading (placeholder)</div>
+//   }
+  
+//   return user ? <Outlet context={user}/> : <Navigate to="/login" />; 
+// }
+
+// export default ProtectedRoute;
+
+
+import { useLocation, Navigate, Outlet } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 function ProtectedRoute() {
-  const [user, setUser] = useState<User>();
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const getUser = async () => {
-      const user = await getCurrentUser();
-      setUser(user);
-      setLoading(false);
-    }
-    getUser();
-  }, []);
+  const { auth } = useAuth();
+  const location = useLocation();
 
-  if (loading) {
-    return <div>Loading (placeholder)</div>
-  }
-  
-  return user ? <Outlet context={user}/> : <Navigate to="/login" />; 
+  return (
+    auth.user.username != ""
+      ? <Outlet context={auth} />
+      : <Navigate to={"/login"} state={ {from: location} } replace/>
+      /* navigate to login if not authenticated,
+      but pass along the original destination */
+  );
 }
 
 export default ProtectedRoute;
