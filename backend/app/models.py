@@ -12,6 +12,9 @@ class User(db.Model) :
     email: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     cards: Mapped[List["Card"]] = relationship(back_populates="user")
 
+    def __repr__(self) -> str:
+        return "User: {self.username}"
+    
 class Card(db.Model):
     __tablename__ = "cards"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -22,6 +25,8 @@ class Card(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped[List["User"]] = relationship(back_populates="cards")
     
+    def __repr__(self) -> str:
+        return "Card: {self.header}"
 
 class Deck(db.Model):
     __tablename__ = "decks"
