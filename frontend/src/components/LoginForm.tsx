@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Form } from "react-bootstrap"
 import {default as axios} from "../axiosConfig"
+import { Form } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { redirect } from "react-router-dom";
 import { logIn } from "../auth";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthProvider";
+import { useContext, useRef } from "react";
+import useAuth from "../hooks/useAuth";
 
 function LoginForm() {
   const navigate = useNavigate()
@@ -13,6 +15,12 @@ function LoginForm() {
     username: string;
     password: string
   }
+
+  const { setAuth } = useAuth();
+  const userRef = useRef();
+  const errRef = useRef();
+
+
 
   const {register, handleSubmit, reset, resetField, formState: {errors}} = useForm<LoginFormInput>()
   const submitForm: SubmitHandler<LoginFormInput> = (data: LoginFormInput) => {
