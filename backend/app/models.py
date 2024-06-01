@@ -23,6 +23,8 @@ class Card(db.Model):
     body: Mapped[str] = mapped_column(Text, nullable=True)
     header_flipped: Mapped[str] = mapped_column(Text, nullable=False)
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
+    # TODO: Temp solution, fix later
+    user_id: Mapped[int] = 0
     # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # users: Mapped[List["User"]] = relationship(back_populates="cards")
     
