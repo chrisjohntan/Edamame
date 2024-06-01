@@ -2,7 +2,7 @@ from ..models import Card
 from ..extensions import db
 from flask import Blueprint, request, jsonify, abort
 from http import HTTPStatus
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import httpx
 from ..models import Card
 
@@ -13,8 +13,8 @@ cards = Blueprint("cards", __name__)
 @cards.route("/create_card", methods=["POST"])
 @jwt_required()
 def create_card():
-    current_user = get_jwt_identity()
-
+    current_user = get_current_user()
+    
     header = request.json["header"]
     body = request.json["body"]
     header_flipped = request.json["header_flipped"]
@@ -25,7 +25,7 @@ def create_card():
         body=body,
         header_flipped=header_flipped,
         body_flipped=body_flipped,
-        user_id = current_user
+        user_id = current_user.id
     )
 
     db.session.add(card)
@@ -34,7 +34,7 @@ def create_card():
     return jsonify({
         "message": "Card created",
         "card": {
-            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user
+            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id
         }
     }), HTTPStatus.CREATED
 
@@ -42,8 +42,8 @@ def create_card():
 @cards.route("/get_cards", methods=["GET"])
 @jwt_required()
 def get_cards():
-    current_user = get_jwt_identity()
-    user_cards = Card.query.filter_by(user_id=current_user)
+    current_user = get_current_user()
+    user_cards = Card.query.filter_by(user_id=current_user.id)
     
     data = []
 
