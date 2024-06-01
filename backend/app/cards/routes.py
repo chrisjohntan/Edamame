@@ -43,7 +43,6 @@ def create_card():
 @jwt_required()
 def get_cards():
     current_user = get_jwt_identity()
-
     user_cards = Card.query.filter_by(user_id=current_user)
     
     data = []
