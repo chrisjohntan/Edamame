@@ -66,7 +66,7 @@ def edit_card(id):
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
     
     if not card:
-        return jsonify({"message": "Item not found"}),HTTPStatus.NOT_FOUND
+        return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
 
     header = request.get_json().get('header', '')
     body = request.get_json().get('body', '')
@@ -87,7 +87,16 @@ def edit_card(id):
         }
     }), HTTPStatus.OK
 
-# @cards.route("/delete_card", methods=["DELETE"])
-# @jwt_required()
-# def delete_cards():
-#     pass
+@cards.route("/delete_card/<int:id>", methods=["DELETE"])
+@jwt_required()
+def delete_cards(id):
+    current_user = get_current_user()
+    card = Card.query.filter_by(user_id=current_user.id, id=id).first()
+    
+    if not card:
+        return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+
+    db.session.delete(card)
+    db.session.commit()
+
+    return jsonify({}), HTTPStatus.NO_CONTENT
