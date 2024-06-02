@@ -9,10 +9,10 @@ import axios from "../axiosConfig";
 const useLogout = () => {
   const { setAuth } = useAuth();
 
-  const logout = async () => {
+  const logout =  () => {
     setAuth({user: {username: ""}});
     try {
-      const response = await axios('/logout', {
+      const response = axios.post('/logout', {
         withCredentials: true
       });
     } catch (err) {
