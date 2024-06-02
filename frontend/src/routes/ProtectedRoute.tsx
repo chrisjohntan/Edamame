@@ -41,9 +41,14 @@ function ProtectedRoute() {
     const verifyToken = async () => {
       try {
         const response = await axios.get("/protected", {withCredentials: true});
+        console.log(response.data)
         // if OK, then set auth
-        setAuth({user: {username: response.data.username}})
+        // TODO: Probably need to standardise the format
+        console.log(response.data.logged_in_as.username)
+        setAuth({user: {username: response.data.logged_in_as.username}})
+        console.log(auth)
       } catch (err) {
+        console.log("error verifying token:")
         console.error(err);
       } finally {
         setLoading(false);
@@ -57,15 +62,22 @@ function ProtectedRoute() {
       // already verified, no need call api
       setLoading(false);
     }
-  }, [])
+  }, [auth, setAuth])
+
   useEffect(() => {
     console.log(`isLoading: ${isLoading}`)
     console.log(`auth info: ${JSON.stringify(auth)}`)
+    console.log(`username: ${auth.user.username}` )
   }, [isLoading])
+
+  // do not delete this, if not it will always redirect to login
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     auth.user.username != ""
-      ? <Outlet context={auth} />
+      ? <Outlet />
       : <Navigate to={"/login"} state={ {from: location} } replace/>
       /* navigate to login if not authenticated,
       but pass along the original destination */
