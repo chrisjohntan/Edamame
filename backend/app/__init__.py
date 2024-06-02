@@ -43,7 +43,7 @@ def create_app(test_config=None):
     from .auth.routes import auth
     from .cards.routes import cards
     app.register_blueprint(auth)
-    # app.register_blueprint(cards)
+    app.register_blueprint(cards)
     
     @app.after_request
     def refresh_expiring_jwts(response):
