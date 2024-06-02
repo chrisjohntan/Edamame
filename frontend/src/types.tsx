@@ -5,3 +5,11 @@ export type User = {
 export type Auth = {
   user: User
 }
+
+export type Card = {
+  header: string;
+  body: string;
+  headerFlipped: string;
+  bodyFlipped: string;
+}
+
