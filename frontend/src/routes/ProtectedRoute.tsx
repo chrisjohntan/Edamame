@@ -25,13 +25,43 @@
 
 // export default ProtectedRoute;
 
-
+import axios from "../axiosConfig";
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { useEffect, useState } from "react";
 
 function ProtectedRoute() {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const location = useLocation();
+  const [isLoading, setLoading] = useState(true);
+
+  // if auth is not yet set, check if the token is valid
+  
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const response = await axios.get("/protected", {withCredentials: true});
+        // if OK, then set auth
+        setAuth({user: {username: response.data.username}})
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (auth.user.username == "") {
+      // unverified
+      verifyToken();
+    } else {
+      // already verified, no need call api
+      setLoading(false);
+    }
+  }, [])
+  useEffect(() => {
+    console.log(`isLoading: ${isLoading}`)
+    console.log(`auth info: ${JSON.stringify(auth)}`)
+  }, [isLoading])
 
   return (
     auth.user.username != ""
