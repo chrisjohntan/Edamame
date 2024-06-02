@@ -9,8 +9,8 @@ export type Auth = {
 export type Card = {
   header: string;
   body: string;
-  headerFlipped: string;
-  bodyFlipped: string;
+  header_flipped: string;
+  body_flipped: string;
 }
 
 export const EMPTY_AUTH = {
