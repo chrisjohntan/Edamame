@@ -3,34 +3,41 @@ import { Form } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { redirect } from "react-router-dom";
 import { logIn } from "../auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 import { useContext, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 
 function LoginForm() {
-  const navigate = useNavigate()
   // TODO: change to accept either a username or email
   type LoginFormInput = {
     username: string;
-    password: string
+    password: string;
   }
 
-  const { setAuth } = useAuth();
-  const userRef = useRef();
-  const errRef = useRef();
+  const { auth, setAuth } = useAuth();
 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dashboard"
+
+  // if user is already authenticated then send to dashboard
+  // (user ownself go to /login)
+  if (auth.user.username != "") {
+    navigate("/dashboard");
+  }
+
+  // const userRef = useRef();
+  // const errRef = useRef();
 
 
   const {register, handleSubmit, reset, resetField, formState: {errors}} = useForm<LoginFormInput>()
   const submitForm: SubmitHandler<LoginFormInput> = (data: LoginFormInput) => {
     console.log(data)
-    // const reponse = axios.post("/login", {username: data.username, password: data.password}, {withCredentials:true});
-    // const response = fetch("/login", {})
     reset();
     logIn(data);
-    // return redirect("/dashboard")
-    navigate("/dashboard")
+    setAuth({user: {username: data.username}})
+    navigate(from, { replace: true });
     
   }
   return (
