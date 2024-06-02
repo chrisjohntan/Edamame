@@ -17,15 +17,20 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
     <AuthProvider>
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<Root />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/login" element={<Login />} />
+
+        {/* All protected routes should be nested here */}
         <Route element={<ProtectedRoute/>}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
+
+        {/* Error page route */}
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </AuthProvider>
-    <Route path="*"><ErrorPage/></Route>
     </BrowserRouter>
   </React.StrictMode>
 )
