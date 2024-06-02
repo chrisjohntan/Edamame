@@ -13,3 +13,8 @@ export type Card = {
   bodyFlipped: string;
 }
 
+export const EMPTY_AUTH = {
+  user: {
+    username: ""
+  }
+} as const
