@@ -29,7 +29,8 @@ function RegisterForm() {
   // TODO: finish validation
   return (
     <div className="d-flex ">
-      <div className="form me-auto ms-auto align-center pt-5 " style={{width:"30%"}}>
+      <div className="form me-auto ms-auto align-center pt-5 " >
+      {/* style={{width:"30%"}} */}
         <h1>Sign up form</h1><br/>
         <form>
           <Form.Group>
@@ -65,7 +66,13 @@ function RegisterForm() {
             {errors.confirmPassword && <p className="small text-danger">Password does not match</p>}
           </Form.Group><br/>
           <Form.Group>
-            <button type="button" className="btn btn-success" onClick={()=>{handleSubmit(submitForm)();clearPW()}}>Submit</button>
+            <button type="button" className="btn btn-success ml-auto" onClick={()=>{handleSubmit(submitForm)();clearPW()}}>Submit</button>
+            <p>
+              <small>
+                Already have an account?
+              </small>
+                <a href="/login">Sign in</a>
+            </p>
           </Form.Group>
         </form>
       </div>

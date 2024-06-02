@@ -36,5 +36,6 @@ export const logIn = async (data: {username: string; password: string}) => {
     // navigate('/dashboard');
   } catch (error) {
     console.error("Error during login", error);
+    throw(error);
   }
 }
