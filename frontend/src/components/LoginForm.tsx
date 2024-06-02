@@ -5,7 +5,7 @@ import { redirect } from "react-router-dom";
 import { logIn } from "../auth";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import useAuth from "../hooks/useAuth";
 
 function LoginForm() {
@@ -16,29 +16,35 @@ function LoginForm() {
   }
 
   const { auth, setAuth } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/dashboard"
 
+  console.log(auth);
+
   // if user is already authenticated then send to dashboard
   // (user ownself go to /login)
-  if (auth.user.username != "") {
-    navigate("/dashboard");
-  }
-
-  // const userRef = useRef();
-  // const errRef = useRef();
-
+  useEffect(() => {
+    console.log(auth)
+    if (auth.user.username != "") {
+      navigate("/dashboard");
+    }
+  },[auth, navigate])
 
   const {register, handleSubmit, reset, resetField, formState: {errors}} = useForm<LoginFormInput>()
-  const submitForm: SubmitHandler<LoginFormInput> = (data: LoginFormInput) => {
+  const submitForm: SubmitHandler<LoginFormInput> = async (data: LoginFormInput) => {
     console.log(data)
-    reset();
-    logIn(data);
-    setAuth({user: {username: data.username}})
-    navigate(from, { replace: true });
-    
+    try {
+      const response = await axios.post("/login", data);
+      setAuth({user: {username: data.username}})
+      navigate(from, { replace: true });
+    } catch(err) {
+      console.error(err)
+    } finally {
+      reset()
+    }
   }
   return (
     <div className="d-flex">
@@ -59,8 +65,8 @@ function LoginForm() {
                 {...register("password", {required: true})}
               />
             </Form.Group><br/>
-            <Form.Group>
-              <button type="button" className="btn btn-success" onClick={handleSubmit(submitForm)}>Login</button>
+            <Form.Group className="d-grid gap-2">
+              <button type="button" className="btn btn-success width-5" onClick={handleSubmit(submitForm)}>Login</button>
             </Form.Group>
         </form>
       </div>
