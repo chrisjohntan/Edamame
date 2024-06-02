@@ -59,8 +59,7 @@ def get_cards():
 
     return jsonify({'data': data}),HTTPStatus.OK
 
-@cards.put('/<int:id>')
-@cards.patch('/<int:id>')
+@cards.route('/edit_card/<int:id>', methods=["PUT", "PATCH"])
 @jwt_required()
 def edit_card(id):
     current_user = get_current_user()
@@ -80,6 +79,13 @@ def edit_card(id):
     card.body_flipped = body_flipped
 
     db.session.commit()
+
+    return jsonify({
+        "message": "Card edited",
+        "card": {
+            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id
+        }
+    }), HTTPStatus.OK
 
 # @cards.route("/delete_card", methods=["DELETE"])
 # @jwt_required()
