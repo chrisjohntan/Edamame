@@ -68,10 +68,10 @@ def edit_card(id):
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
 
-    header = request.get_json().get('header', '')
-    body = request.get_json().get('body', '')
-    header_flipped = request.get_json().get('header_flipped', '')
-    body_flipped = request.get_json().get('body_flipped', '')
+    header = request.get_json().get('header', card.header)
+    body = request.get_json().get('body', card.body)
+    header_flipped = request.get_json().get('header_flipped', card.header_flipped)
+    body_flipped = request.get_json().get('body_flipped', card.body_flipped)
 
     card.header = header
     card.body = body
