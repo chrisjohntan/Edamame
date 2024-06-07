@@ -31,7 +31,7 @@ function RegisterForm() {
     <div className="d-flex ">
       <div className="form me-auto ms-auto align-center pt-5 " >
       {/* style={{width:"30%"}} */}
-        <h1>Sign up form</h1><br/>
+        <h1>Create account</h1><br/>
         <form>
           <Form.Group>
             <Form.Label>Username</Form.Label>
