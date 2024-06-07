@@ -75,7 +75,7 @@ function CardGroupDemo() {
           </Form.Group><br/>
         </div>
         <Form.Group className="col">
-          <button type="button" className="btn btn-success width-5" onClick={handleSubmit(createCard)}>Submit</button>
+          <button type="button" className="btn btn-success width-5" onClick={handleSubmit(createCard)}>Create Card</button>
         </Form.Group>
       </form>
     </div>
