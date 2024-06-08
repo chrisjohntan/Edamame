@@ -1,24 +1,46 @@
+import { useState } from 'react';
+import { Container, Anchor, Group, Burger, Box, Button } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
+import classes from './styles/HomeNavbar.module.css';
+import edamameLogo from "../assets/edamame.png"
 
-function HomeNavbar() {
+
+export function HomeNavbar() {
+  const [opened, { toggle }] = useDisclosure(false);
+  const [active, setActive] = useState(0);
+  const navigate = useNavigate();
+
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary flex" data-bs-theme="dark">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="#">Edamame</a>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-          <ul className="navbar-nav me-2 mb-2 mb-lg-0">
-            <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="/login">Login</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link active" href="/signup">Sign Up</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <header className={classes.header}>
+      <Container className={classes.inner}>
+        {/* <MantineLogo size={34} /> */}
+        {/* <img src={edamameLogo}/> */}
+        <h1>Edamame</h1>
+        <Box className={classes.links} visibleFrom="sm">
+          {/* <Group justify="flex-end">{secondaryItems}</Group> */}
+          {/* <Group gap={0} justify="flex-end" className={classes.mainLinks}> */}
+            {/* {mainItems} */}
+          {/* </Group> */}
+        </Box>
+
+        <Group visibleFrom="sm">
+            <Button variant="default" onClick={()=>navigate("/login")}>Log in</Button>
+            <Button onClick={()=>navigate("/signup")}>Sign up</Button>
+        </Group>
+        {/* <Group justify="center" grow pb="xl" px="md">
+            <Button variant="default">Log in</Button>
+            <Button>Sign up</Button>
+        </Group> */}
+        <Burger
+          opened={opened}
+          onClick={toggle}
+          className={classes.burger}
+          size="sm"
+          hiddenFrom="sm"
+        />
+      </Container>
+    </header>
   );
 }
 
