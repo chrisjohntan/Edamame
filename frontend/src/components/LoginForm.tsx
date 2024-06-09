@@ -1,22 +1,32 @@
-import {default as axios} from "../axiosConfig"
-import { Form } from "react-bootstrap";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { redirect } from "react-router-dom";
-import { logIn } from "../auth";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import AuthContext from "../context/AuthProvider";
-import { useContext, useEffect, useRef, useState } from "react";
+import axios from "../axiosConfig"
 import useAuth from "../hooks/useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useForm } from '@mantine/form';
+import { useDisclosure } from "@mantine/hooks";
+import {
+  TextInput,
+  PasswordInput,
+  Checkbox,
+  Anchor,
+  Paper,
+  Title,
+  Text,
+  Container,
+  Group,
+  Button,
+} from '@mantine/core';
+import classes from './styles/LoginForm.module.css';
 
 function LoginForm() {
   // TODO: change to accept either a username or email
   type LoginFormInput = {
-    username: string;
+    email: string;
     password: string;
   }
 
   const { auth, setAuth } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, { toggle }] = useDisclosure()
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,47 +41,67 @@ function LoginForm() {
     if (auth.user.username != "") {
       navigate("/dashboard");
     }
-  },[auth, navigate])
+  }, [auth, navigate])
 
-  const {register, handleSubmit, reset, resetField, formState: {errors}} = useForm<LoginFormInput>()
-  const submitForm: SubmitHandler<LoginFormInput> = async (data: LoginFormInput) => {
+  const form = useForm({
+    mode: "controlled",
+    initialValues: {
+      email: "",
+      password: ""
+    },
+
+    validate: {
+      email: value => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+    }
+  })
+
+  // TODO: form validation errors (from backend)
+  const handleSubmit: (data: LoginFormInput) => void = async (data: LoginFormInput) => {
     console.log(data)
+    toggle();
     try {
       const response = await axios.post("/login", data);
-      setAuth({user: {username: data.username}})
+      setAuth({ user: { username: response.data.logged_in_as.username } });
       navigate(from, { replace: true });
-    } catch(err) {
-      console.error(err)
+    } catch (err) {
+      console.error(err);
     } finally {
-      reset()
+      toggle();
     }
   }
   return (
-    <div className="d-flex">
-      <div className="form me-auto ms-auto align-center pt-5">
-        <h1>Log In</h1><br/>
-        <form>
-            <Form.Group>
-              <Form.Label>Username</Form.Label>
-              <Form.Control type="text"
-                placeholder="Username"
-                {...register("username", {required: true})}
-              />
-            </Form.Group><br/>
-            <Form.Group>
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password"
-                placeholder="Password"
-                {...register("password", {required: true})}
-              />
-            </Form.Group><br/>
-            <Form.Group className="d-grid gap-2">
-              <button type="button" className="btn btn-success width-5" onClick={handleSubmit(submitForm)}>Login</button>
-            </Form.Group>
-        </form>
-      </div>
-    </div>
+    <Container size={420} my={40}>
+      <Title ta="center" className={classes.title}>
+        Welcome back!
+      </Title>
+      <Text c="dimmed" size="sm" ta="center" mt={5}>
+        Do not have an account yet?{' '}
+        <Anchor size="sm" component="button" onClick={() => navigate("/signup")}>
+          Create account
+        </Anchor>
+      </Text>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+          <TextInput label="Email" placeholder="you@edamame.com" autoComplete="off" key={form.key('email')}
+            {...form.getInputProps('email')} required withAsterisk />
+          <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
+            {...form.getInputProps("password")} required withAsterisk />
+          <Group justify="space-between" mt="lg">
+            <Checkbox label="Remember me" />
+            <Anchor component="button" size="sm">
+              Forgot password?
+            </Anchor>
+          </Group>
+          <Button fullWidth mt="xl" type="submit" loading={loading}>
+            Sign in
+          </Button>
+        </Paper>
+      </form>
+    </Container>
   )
+
 }
+
+
 
 export default LoginForm;
