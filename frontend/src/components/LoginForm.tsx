@@ -21,7 +21,7 @@ import classes from './styles/LoginForm.module.css';
 function LoginForm() {
   // TODO: change to accept either a username or email
   type LoginFormInput = {
-    email: string;
+    username: string;
     password: string;
   }
 
@@ -46,12 +46,12 @@ function LoginForm() {
   const form = useForm({
     mode: "controlled",
     initialValues: {
-      email: "",
+      username: "",
       password: ""
     },
 
     validate: {
-      email: value => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      // email: value => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
     }
   })
 
@@ -61,7 +61,8 @@ function LoginForm() {
     toggle();
     try {
       const response = await axios.post("/login", data);
-      setAuth({ user: { username: response.data.logged_in_as.username } });
+      console.log(response)
+      setAuth({ user: { username: data.username } });
       navigate(from, { replace: true });
     } catch (err) {
       console.error(err);
@@ -82,8 +83,8 @@ function LoginForm() {
       </Text>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <TextInput label="Email" placeholder="you@edamame.com" autoComplete="off" key={form.key('email')}
-            {...form.getInputProps('email')} required withAsterisk />
+          <TextInput label="Username" placeholder="you@edamame.com" autoComplete="off" key={form.key('username')}
+            {...form.getInputProps('username')} required withAsterisk />
           <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
             {...form.getInputProps("password")} required withAsterisk />
           <Group justify="space-between" mt="lg">
