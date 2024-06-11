@@ -47,12 +47,13 @@ function RegisterForm() {
     }
   });
 
+  // TODO: validation
   const handleSubmit: (data: RegFormInput) => void = async (data) => {
     console.log(data);
     toggle();
     const payload = { username: data.username, email: data.email, password: data.password };
     try {
-      const response = axios.post("/register", payload);
+      const response = await axios.post("/register", payload);
 
       navigate("/login", {replace: true});
     } catch (err) {
