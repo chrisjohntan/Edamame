@@ -2,6 +2,8 @@ import { AppShell, Group } from "@mantine/core";
 import classes from './styles/Sidebar.module.css';
 import { IconCards, IconLogout, IconSwitchHorizontal } from '@tabler/icons-react';
 import { useState } from "react";
+import useLogout from "../hooks/useLogout";
+import { useNavigate } from "react-router-dom";
 
 
 function ProtectedSidebar() {
@@ -10,6 +12,12 @@ function ProtectedSidebar() {
   ];
 
   const [active, setActive] = useState('Decks');
+  const logout = useLogout();
+  const navigate = useNavigate();
+  const signOut = () => {
+    logout();
+    navigate("/");
+  }
 
   const links = data.map((item) => (
     <a
@@ -41,7 +49,7 @@ function ProtectedSidebar() {
             <span>Change account</span>
           </a>
 
-          <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+          <a href="#" className={classes.link} onClick={signOut}>
             <IconLogout className={classes.linkIcon} stroke={1.5} />
             <span>Logout</span>
           </a>
