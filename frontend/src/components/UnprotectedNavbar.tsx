@@ -6,7 +6,7 @@ import classes from './styles/HomeNavbar.module.css';
 import edamameLogo from "../assets/edamame.png"
 
 
-export function HomeNavbar() {
+export function UnprotectedNavbar() {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(0);
   const navigate = useNavigate();
@@ -15,8 +15,10 @@ export function HomeNavbar() {
     <header className={classes.header}>
       <Container className={classes.inner}>
         {/* <MantineLogo size={34} /> */}
-        {/* <img src={edamameLogo}/> */}
-        <h1>Edamame</h1>
+        <Group>
+          <img src={edamameLogo} style={{width: "3rem", height: "3rem"}}/>
+          <h1>Edamame</h1>
+        </Group>
         <Box className={classes.links} visibleFrom="sm">
           {/* <Group justify="flex-end">{secondaryItems}</Group> */}
           {/* <Group gap={0} justify="flex-end" className={classes.mainLinks}> */}
@@ -44,4 +46,4 @@ export function HomeNavbar() {
   );
 }
 
-export default HomeNavbar;
+export default UnprotectedNavbar;
