@@ -1,9 +1,10 @@
-import {Button, Form} from "react-bootstrap"
+import { AppShell } from "@mantine/core";
+import UnprotectedNavbar from "./UnprotectedNavbar";
 
 function Home() {
-  return <div className="">
-
-  </div>
+  return (
+    <UnprotectedNavbar/>
+  )
 }
 
 export default Home;

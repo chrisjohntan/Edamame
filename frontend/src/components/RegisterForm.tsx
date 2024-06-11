@@ -1,82 +1,95 @@
-import { Form } from "react-bootstrap";
-import { SubmitHandler, useForm } from "react-hook-form";
-import {default as axios} from "../axiosConfig"
+import { default as axios } from "../axiosConfig"
+import { useDisclosure } from "@mantine/hooks";
+import { useForm } from "@mantine/form";
+import { useNavigate } from "react-router-dom";
+import {
+  TextInput,
+  PasswordInput,
+  Anchor,
+  Paper,
+  Title,
+  Text,
+  Container,
+  Button,
+} from '@mantine/core';
+import classes from './styles/LoginForm.module.css'
+
+type RegFormInput = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 
 function RegisterForm() {
-  type RegFormInput = {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }
-  const {register, watch, handleSubmit, reset, resetField, formState:{errors}} = useForm<RegFormInput>();
-  const submitForm: SubmitHandler<RegFormInput> = (data) => {
+  const navigate = useNavigate();
+  const [loading, { toggle }] = useDisclosure();
+  const form = useForm({
+    mode: "controlled",
+    initialValues: {
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+
+    validate: {
+      email: value => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      username: value => 
+        (value.length < 4 
+          ? 'Minimum length is 4 characters'
+          : /^[a-z0-9]+$/i.test(value)
+            ? null
+            : 'Invalid username'),
+      confirmPassword: (value, values) =>
+        value !== values.password ? 'Passwords do not match' : null,
+    }
+  });
+
+  // TODO: validation
+  const handleSubmit: (data: RegFormInput) => void = async (data) => {
     console.log(data);
-    reset();
-    const payload = {username: data.username, email:data.email, password:data.password};
-    const response = axios.post("/register", payload)
-  }
-  const clearPW = () => {
-    if (errors.password || errors.confirmPassword) {
-      resetField("password");
-      resetField("confirmPassword")
+    toggle();
+    const payload = { username: data.username, email: data.email, password: data.password };
+    try {
+      const response = await axios.post("/register", payload);
+
+      navigate("/login", {replace: true});
+    } catch (err) {
+      console.error(err);
+    } finally {
+      toggle()
     }
   }
 
-  console.log(watch("password"));
-  console.log(watch("confirmPassword"));
-
-  // TODO: finish validation
   return (
-    <div className="d-flex ">
-      <div className="form me-auto ms-auto align-center pt-5 " >
-      {/* style={{width:"30%"}} */}
-        <h1>Create account</h1><br/>
-        <form>
-          <Form.Group>
-            <Form.Label>Username</Form.Label>
-            <Form.Control type="text" 
-              placeholder="Username" 
-              {...register("username", {required:true, minLength:3, maxLength:25, pattern:/^[a-zA-Z0-9]*$/})}
-            />
-            {errors.username && <p className="small text-danger">Invalid username</p>}
-          </Form.Group><br/>
-          <Form.Group>
-            <Form.Label>Email</Form.Label>
-            <Form.Control type="email"
-              placeholder="abc@xyz.com"
-              {...register("email", {required:true})}
-            />
-            {errors.email && <p className="small text-danger">Invalid email</p>}
-          </Form.Group><br/>
-          <Form.Group>
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password"
-              placeholder="Password"
-              {...register("password", {required:true, minLength:8})}
-            />
-            {errors.password && <p className="small text-danger">Password must contain at least 8 characters</p>}
-          </Form.Group><br/>
-          <Form.Group>
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control type="password"
-              placeholder="Re-enter password"
-              {...register("confirmPassword", {required:true, validate:(val:string) => val == watch("password")})}
-            />
-            {errors.confirmPassword && <p className="small text-danger">Password does not match</p>}
-          </Form.Group><br/>
-          <Form.Group>
-            <button type="button" className="btn btn-success ml-auto" onClick={()=>{handleSubmit(submitForm)();clearPW()}}>Submit</button>
-            <p>
-              <small>
-                Already have an account?
-              </small>
-                <a href="/login">Sign in</a>
-            </p>
-          </Form.Group>
-        </form>
-      </div>
-    </div>
+    <Container size={420} my={40}>
+      <Title ta="center" className={classes.title}>
+        Welcome to Edamame!
+      </Title>
+      <Text c="dimmed" size="sm" ta="center" mt={5}>
+        Already have an account?{' '}
+        <Anchor size="sm" component="button" onClick={() => navigate("/login")}>
+          Sign in
+        </Anchor>
+      </Text>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+          <TextInput label="Email" placeholder="you@edamame.com" autoComplete="off" key={form.key('email')}
+            {...form.getInputProps('email')} required withAsterisk />
+          <TextInput label="Username" placeholder="Your username" mt="md" description="Alphanumeric characters only" autoComplete="off" key={form.key('username')}
+            {...form.getInputProps('username')} required withAsterisk />
+          <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
+            {...form.getInputProps("password")} required withAsterisk />
+          <PasswordInput label="Confirm Password" placeholder="Confirm password" mt="md" key={form.key("confirmPassword")}
+            {...form.getInputProps("confirmPassword")} required withAsterisk />
+          <Button fullWidth mt="xl" type="submit" loading={loading}>
+            Create account
+          </Button>
+        </Paper>
+      </form>
+    </Container>
   )
 
 }
