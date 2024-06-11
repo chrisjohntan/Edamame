@@ -6,9 +6,11 @@ import Login from './routes/Login.tsx'
 import Dashboard from './routes/Dashboard.tsx';
 import ProtectedRoute from './routes/ProtectedRoute.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
-import { MantineProvider, createTheme, rem } from '@mantine/core';
+import { AppShell, MantineProvider, createTheme, rem } from '@mantine/core';
 
 import '@mantine/core/styles.css';
+import ProtectedHeader from './components/ProtectedHeader.tsx';
+import CustomAppShell from './routes/CustomAppShell.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -28,9 +30,15 @@ function App() {
 
         {/* All protected routes should be nested here */}
         {/* Wrap in AppShell */}
-        <Route element={<ProtectedRoute/>}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
+        {/* <AppShell> */}
+          <Route element={<ProtectedRoute/>}>
+            <Route element={<CustomAppShell />}>
+            {/* <ProtectedHeader /> */}
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+          </Route>
+
+        {/* </AppShell> */}
 
         {/* Error page route */}
         <Route path="*" element={<ErrorPage />} />
