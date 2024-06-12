@@ -43,4 +43,4 @@ class Deck(db.Model):
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
+    # card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
