@@ -4,12 +4,14 @@ from flask import Blueprint, request, jsonify, abort
 from http import HTTPStatus
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import httpx
-from ..models import Card
+from ..models import Card, Deck
 
 
 
 cards = Blueprint("cards", __name__)
+decks = Blueprint("decks", __name__)
 
+# To be depreciated
 @cards.route("/create_card", methods=["POST"])
 @jwt_required()
 def create_card():
@@ -35,6 +37,36 @@ def create_card():
         "message": "Card created",
         "card": {
             "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id
+        }
+    }), HTTPStatus.CREATED
+
+
+@cards.route("/create_card_<int:deck_id>", methods=["POST"])
+@jwt_required()
+def create_card(deck_id):
+    current_user = get_current_user()
+    
+    header = request.json["header"]
+    body = request.json["body"]
+    header_flipped = request.json["header_flipped"]
+    body_flipped = request.json["body_flipped"]
+
+    card = Card(
+        header=header,
+        body=body,
+        header_flipped=header_flipped,
+        body_flipped=body_flipped,
+        user_id = current_user.id,
+        deck_id = deck_id
+    )
+
+    db.session.add(card)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Card created",
+        "card": {
+            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id, "deck_id": deck_id
         }
     }), HTTPStatus.CREATED
 
@@ -100,3 +132,26 @@ def delete_cards(id):
     db.session.commit()
 
     return jsonify({}), HTTPStatus.NO_CONTENT
+
+
+@cards.route("/create_deck", methods=["POST"])
+@jwt_required()
+def create_deck():
+    current_user = get_current_user()
+    
+    deck_name = request.json["deck_name"]
+
+    deck = Deck(
+        deck_name=deck_name,
+        user_id = current_user.id
+    )
+
+    db.session.add(deck)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Deck created",
+        "deck": {
+            "deck_name": deck_name, "user_id": current_user.id
+        }
+    }), HTTPStatus.CREATED
