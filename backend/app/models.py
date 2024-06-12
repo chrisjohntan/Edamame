@@ -13,6 +13,7 @@ class User(db.Model) :
 
     # TODO: in legacy, try to change later
     user_cards: Mapped[List["Card"]] = relationship('Card', backref="users")
+    user_decks: Mapped[List["Deck"]] = relationship('Deck', backref="users")
     # user_cards: Mapped[List["Card"]] = relationship(back_populates="users")
 
     def __repr__(self) -> str:
@@ -28,6 +29,7 @@ class Card(db.Model):
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"))
     # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # users: Mapped[List["User"]] = relationship(back_populates="cards")
     
@@ -37,3 +39,8 @@ class Card(db.Model):
 class Deck(db.Model):
     __tablename__ = "decks"
     id: Mapped[int] = mapped_column(primary_key=True)
+    deck_name: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+
+    # TODO: in legacy, try to change later
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
