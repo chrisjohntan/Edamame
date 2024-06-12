@@ -11,37 +11,37 @@ from ..models import Card, Deck
 cards = Blueprint("cards", __name__)
 decks = Blueprint("decks", __name__)
 
-# To be depreciated
-@cards.route("/create_card", methods=["POST"])
-@jwt_required()
-def create_card():
-    current_user = get_current_user()
+# # To be depreciated
+# @cards.route("/create_card", methods=["POST"])
+# @jwt_required()
+# def create_card():
+#     current_user = get_current_user()
     
-    header = request.json["header"]
-    body = request.json["body"]
-    header_flipped = request.json["header_flipped"]
-    body_flipped = request.json["body_flipped"]
+#     header = request.json["header"]
+#     body = request.json["body"]
+#     header_flipped = request.json["header_flipped"]
+#     body_flipped = request.json["body_flipped"]
 
-    card = Card(
-        header=header,
-        body=body,
-        header_flipped=header_flipped,
-        body_flipped=body_flipped,
-        user_id = current_user.id
-    )
+#     card = Card(
+#         header=header,
+#         body=body,
+#         header_flipped=header_flipped,
+#         body_flipped=body_flipped,
+#         user_id = current_user.id
+#     )
 
-    db.session.add(card)
-    db.session.commit()
+#     db.session.add(card)
+#     db.session.commit()
 
-    return jsonify({
-        "message": "Card created",
-        "card": {
-            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id
-        }
-    }), HTTPStatus.CREATED
+#     return jsonify({
+#         "message": "Card created",
+#         "card": {
+#             "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id
+#         }
+#     }), HTTPStatus.CREATED
 
 
-@cards.route("/create_card_<int:deck_id>", methods=["POST"])
+@cards.route("/create_card/<int:deck_id>", methods=["POST"])
 @jwt_required()
 def create_card(deck_id):
     current_user = get_current_user()
