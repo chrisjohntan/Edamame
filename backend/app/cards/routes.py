@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, abort
 from http import HTTPStatus
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import httpx
-from ..models import Card, Deck
+from ..models import Card, Deck, User
 
 
 
@@ -191,3 +191,12 @@ def edit_card(deck_id):
 #     db.session.commit()
 
 #     return jsonify({}), HTTPStatus.NO_CONTENT
+
+@decks.route("/get_decks", methods=["GET"])
+@jwt_required()
+def get_decks():
+    current_user: User = get_current_user()
+    decks = current_user.user_decks
+    
+    # map list of Decks into a list of dicts with deck attrs
+    return jsonify(map(User.to_dict, decks))
