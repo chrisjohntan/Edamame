@@ -20,6 +20,13 @@ class User(db.Model) :
     def __repr__(self) -> str:
         return "User: {self.username}"
     
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email
+        }
+    
 class Card(db.Model):
     __tablename__ = "cards"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -50,4 +57,11 @@ class Deck(db.Model):
     # card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
     user: Mapped["User"] = relationship("User", back_populates="user_decks")
     cards: Mapped[List["Card"]] = relationship("Card", back_populates="deck")
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "deck_name": self.deck_name,
+            "user_id": self.user_id
+        }
     
