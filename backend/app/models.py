@@ -14,7 +14,7 @@ class User(db.Model) :
     # user_cards: Mapped[List["Card"]] = relationship('Card', backref="users")
     # user_decks: Mapped[List["Deck"]] = relationship('Deck', backref="users")
     user_cards: Mapped[List["Card"]] = relationship('Card', back_populates="user")
-    user_decks: Mapped[List["Deck"]] = relationship('Deck', back_populates="user")
+    user_decks: Mapped[List["Deck"]] = relationship('Deck', back_populates="user", cascade="all, delete")
     # user_cards: Mapped[List["Card"]] = relationship(back_populates="users")
 
     def __repr__(self) -> str:
@@ -36,8 +36,8 @@ class Card(db.Model):
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
 
     # TODO: in legacy, try to change later
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
     # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # users: Mapped[List["User"]] = relationship(back_populates="cards")
     user: Mapped["User"] = relationship("User", back_populates="user_cards")
@@ -53,10 +53,10 @@ class Deck(db.Model):
     deck_name: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
 
     # TODO: in legacy, try to change later
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     # card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
     user: Mapped["User"] = relationship("User", back_populates="user_decks")
-    cards: Mapped[List["Card"]] = relationship("Card", back_populates="deck")
+    cards: Mapped[List["Card"]] = relationship("Card", back_populates="deck", cascade="all, delete")
     
     def to_dict(self) -> dict:
         return {
