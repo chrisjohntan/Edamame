@@ -11,7 +11,7 @@ from ..models import Card, Deck, User
 cards = Blueprint("cards", __name__)
 decks = Blueprint("decks", __name__)
 
-# # To be depreciated
+# Depreciated
 # @cards.route("/create_card", methods=["POST"])
 # @jwt_required()
 # def create_card():
@@ -56,8 +56,8 @@ def create_card(deck_id):
         body=body,
         header_flipped=header_flipped,
         body_flipped=body_flipped,
-        user_id = current_user.id,
-        deck_id = deck_id
+        user_id=current_user.id,
+        deck_id=deck_id
     )
 
     db.session.add(card)
@@ -144,7 +144,7 @@ def create_deck():
 
     deck = Deck(
         deck_name=deck_name,
-        user_id = current_user.id
+        user_id=current_user.id
     )
 
     db.session.add(deck)
