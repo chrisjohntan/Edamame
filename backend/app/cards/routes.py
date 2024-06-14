@@ -183,19 +183,19 @@ def edit_deck(deck_id):
 @jwt_required()
 def get_decks():
     current_user: User = get_current_user()
-    # decks = current_user.user_decks
-    user_decks = Deck.query.filter_by(user_id=current_user.id)
+    decks = current_user.user_decks
+    # user_decks = Deck.query.filter_by(user_id=current_user.id)
 
-    data = []
+    # data = []
 
-    for deck in user_decks:
-        data.append({
-        "id": deck.id,
-        "deck_name": deck.deck_name
-        })
-    return data
+    # for deck in user_decks:
+    #     data.append({
+    #     "id": deck.id,
+    #     "deck_name": deck.deck_name
+    #     })
+    # return data
     # map list of Decks into a list of dicts with deck attrs
-    # return jsonify(map(Deck.to_dict, decks))
+    return jsonify(list(map(Deck.to_dict, decks))), HTTPStatus.OK
 
 
 
