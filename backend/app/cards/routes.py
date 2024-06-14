@@ -87,7 +87,7 @@ def get_cards():
         "header_flipped": card.header_flipped, 
         "body_flipped": card.body_flipped, 
         "user_id": card.user_id,
-        # "deck_id": card.deck_id
+        "deck_id": card.deck_id
         })
 
     return jsonify({'data': data}),HTTPStatus.OK
@@ -122,7 +122,7 @@ def edit_card(id):
 
 @cards.route("/delete_card/<int:id>", methods=["DELETE"])
 @jwt_required()
-def delete_cards(id):
+def delete_card(id):
     current_user = get_current_user()
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
     
@@ -159,7 +159,7 @@ def create_deck():
 
 # @cards.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
 # @jwt_required()
-# def edit_card(deck_id):
+# def edit_deck(deck_id):
 #     current_user = get_current_user()
 #     deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
     
@@ -183,20 +183,30 @@ def create_deck():
 @jwt_required()
 def get_decks():
     current_user: User = get_current_user()
-    decks = current_user.user_decks
-    
+    # decks = current_user.user_decks
+    user_decks = Deck.query.filter_by(user_id=current_user.id)
+
+    data = []
+
+    for deck in user_decks:
+        data.append({
+        "id": deck.id,
+        "deck_name": deck.deck_name
+        })
+    return data
     # map list of Decks into a list of dicts with deck attrs
-    return jsonify(map(User.to_dict, decks))
+    # return jsonify(map(Deck.to_dict, decks))
 
 
-@decks.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
+
+@cards.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
 @jwt_required()
-def delete_cards(deck_id):
+def delete_deck(deck_id):
     current_user = get_current_user()
-    deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
+    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     if not deck:
-        return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     db.session.delete(deck)
     db.session.commit()
