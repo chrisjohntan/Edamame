@@ -86,7 +86,8 @@ def get_cards():
         "body": card.body, 
         "header_flipped": card.header_flipped, 
         "body_flipped": card.body_flipped, 
-        "user_id": card.user_id
+        "user_id": card.user_id,
+        # "deck_id": card.deck_id
         })
 
     return jsonify({'data': data}),HTTPStatus.OK
@@ -134,7 +135,7 @@ def delete_cards(id):
     return jsonify({}), HTTPStatus.NO_CONTENT
 
 
-@decks.route("/create_deck", methods=["POST"])
+@cards.route("/create_deck", methods=["POST"])
 @jwt_required()
 def create_deck():
     current_user = get_current_user()
@@ -156,29 +157,29 @@ def create_deck():
         }
     }), HTTPStatus.CREATED
 
-@decks.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
-@jwt_required()
-def edit_card(deck_id):
-    current_user = get_current_user()
-    deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
+# @cards.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
+# @jwt_required()
+# def edit_card(deck_id):
+#     current_user = get_current_user()
+#     deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
     
-    if not deck:
-        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
+#     if not deck:
+#         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
-    deck_name = request.get_json().get('deck_name', deck.header)
+#     deck_name = request.get_json().get('deck_name', deck.header)
 
-    deck.deck_name = deck_name
+#     deck.deck_name = deck_name
 
-    db.session.commit()
+#     db.session.commit()
 
-    return jsonify({
-        "message": "Deck edited",
-        "card": {
-            "deck_name": deck_name, "user_id": current_user.id
-        }
-    }), HTTPStatus.OK
+#     return jsonify({
+#         "message": "Deck edited",
+#         "card": {
+#             "deck_name": deck_name, "user_id": current_user.id
+#         }
+#     }), HTTPStatus.OK
 
-@decks.route("/get_decks", methods=["GET"])
+@cards.route("/get_decks", methods=["GET"])
 @jwt_required()
 def get_decks():
     current_user: User = get_current_user()
