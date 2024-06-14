@@ -178,20 +178,6 @@ def edit_card(deck_id):
         }
     }), HTTPStatus.OK
 
-# @cards.route("/delete_card/<int:id>", methods=["DELETE"])
-# @jwt_required()
-# def delete_cards(id):
-#     current_user = get_current_user()
-#     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    
-#     if not card:
-#         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
-
-#     db.session.delete(card)
-#     db.session.commit()
-
-#     return jsonify({}), HTTPStatus.NO_CONTENT
-
 @decks.route("/get_decks", methods=["GET"])
 @jwt_required()
 def get_decks():
@@ -200,3 +186,18 @@ def get_decks():
     
     # map list of Decks into a list of dicts with deck attrs
     return jsonify(map(User.to_dict, decks))
+
+
+@decks.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
+@jwt_required()
+def delete_cards(deck_id):
+    current_user = get_current_user()
+    deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
+    
+    if not deck:
+        return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+
+    db.session.delete(deck)
+    db.session.commit()
+
+    return jsonify({}), HTTPStatus.NO_CONTENT
