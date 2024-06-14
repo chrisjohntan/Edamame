@@ -157,27 +157,27 @@ def create_deck():
         }
     }), HTTPStatus.CREATED
 
-# @cards.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
-# @jwt_required()
-# def edit_deck(deck_id):
-#     current_user = get_current_user()
-#     deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
+@cards.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def edit_deck(deck_id):
+    current_user = get_current_user()
+    deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
     
-#     if not deck:
-#         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
+    if not deck:
+        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
-#     deck_name = request.get_json().get('deck_name', deck.header)
+    deck_name = request.get_json().get('deck_name', deck.header)
 
-#     deck.deck_name = deck_name
+    deck.deck_name = deck_name
 
-#     db.session.commit()
+    db.session.commit()
 
-#     return jsonify({
-#         "message": "Deck edited",
-#         "card": {
-#             "deck_name": deck_name, "user_id": current_user.id
-#         }
-#     }), HTTPStatus.OK
+    return jsonify({
+        "message": "Deck edited",
+        "card": {
+            "deck_name": deck_name, "user_id": current_user.id
+        }
+    }), HTTPStatus.OK
 
 @cards.route("/get_decks", methods=["GET"])
 @jwt_required()
