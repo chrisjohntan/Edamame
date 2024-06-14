@@ -195,7 +195,7 @@ def get_decks():
     #     })
     # return data
     # map list of Decks into a list of dicts with deck attrs
-    return jsonify(list(map(Deck.to_dict, decks))), HTTPStatus.OK
+    return jsonify([deck.to_dict() for deck in decks]), HTTPStatus.OK
 
 
 
