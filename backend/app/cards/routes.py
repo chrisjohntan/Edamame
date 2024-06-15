@@ -139,7 +139,7 @@ def delete_card(id):
 def move_card(id, deck_id):
     current_user = get_current_user()
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
+    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
@@ -216,8 +216,6 @@ def get_decks():
     # return data
     # map list of Decks into a list of dicts with deck attrs
     return jsonify([deck.to_dict() for deck in decks]), HTTPStatus.OK
-
-
 
 @decks.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
 @jwt_required()
