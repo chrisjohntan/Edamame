@@ -134,6 +134,27 @@ def delete_card(id):
 
     return jsonify({}), HTTPStatus.NO_CONTENT
 
+@cards.route('/move_card/<int:id>/<int:deck_id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def move_card(id, deck_id):
+    current_user = get_current_user()
+    card = Card.query.filter_by(user_id=current_user.id, id=id).first()
+    deck = Deck.query.filter_by(user_id=current_user.id, deck_id=deck_id).first()
+    
+    if not card:
+        return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+    if not deck:
+        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
+
+    card.deck_id = deck.id
+    db.session.commit()
+    return jsonify({
+        "message": "Card moved",
+        "deck": {
+            "deck_id": deck.id
+        }
+    }), HTTPStatus.OK
+
 @decks.route("/create_deck", methods=["POST"])
 @jwt_required()
 def create_deck():
