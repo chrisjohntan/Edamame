@@ -9,8 +9,8 @@ import os
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
     load_dotenv()
+    CORS(app, supports_credentials=True, resources={r"/*": {"origins": os.environ.get("CORS_ORIGIN")}})
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI") # change to postgresql
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
