@@ -135,7 +135,7 @@ def delete_card(id):
     return jsonify({}), HTTPStatus.NO_CONTENT
 
 
-@cards.route("/create_deck", methods=["POST"])
+@decks.route("/create_deck", methods=["POST"])
 @jwt_required()
 def create_deck():
     current_user = get_current_user()
@@ -157,7 +157,7 @@ def create_deck():
         }
     }), HTTPStatus.CREATED
 
-@cards.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
+@decks.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
 @jwt_required()
 def edit_deck(deck_id):
     current_user = get_current_user()
@@ -179,7 +179,7 @@ def edit_deck(deck_id):
         }
     }), HTTPStatus.OK
 
-@cards.route("/get_decks", methods=["GET"])
+@decks.route("/get_decks", methods=["GET"])
 @jwt_required()
 def get_decks():
     current_user: User = get_current_user()
@@ -199,7 +199,7 @@ def get_decks():
 
 
 
-@cards.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
+@decks.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
 @jwt_required()
 def delete_deck(deck_id):
     current_user = get_current_user()
