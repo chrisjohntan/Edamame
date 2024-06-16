@@ -41,9 +41,10 @@ def create_app(test_config=None):
     
     # import blueprints here
     from .auth.routes import auth
-    from .cards.routes import cards
+    from .cards.routes import cards, decks
     app.register_blueprint(auth)
     app.register_blueprint(cards)
+    app.register_blueprint(decks)
     
     @app.after_request
     def refresh_expiring_jwts(response):

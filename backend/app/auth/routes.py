@@ -29,11 +29,21 @@ def create_new_user():
     
     
     # Check if username or email already exists
-    user_exists = db.session.execute(db.select(User).where(or_(User.username==username, User.email==email))).first()
-    print(user_exists)
-    if (user_exists):
-        print("alr exist")
-        abort(404)
+    username_exists = db.session.execute(db.select(User).where(User.username==username)).first()
+    print(username_exists)
+    if (username_exists):
+        print("username already exist")
+        return jsonify({
+            "error": "Username already exists",
+        }), HTTPStatus.CONFLICT
+        
+    email_exists = db.session.execute(db.select(User).where(User.email==email)).first()
+    print(email_exists)
+    if (email_exists):
+        print("email already exist")
+        return jsonify({
+            "error": "Email already exists",
+        }), HTTPStatus.CONFLICT
     
     user = User(
         username=username, 
