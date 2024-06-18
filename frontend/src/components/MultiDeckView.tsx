@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Deck } from "../types";
 import SearchBar from "./SearchBar";
+import DeckTable from "./DeckTable";
 
 function MultiDeckView() {
 
@@ -17,6 +18,7 @@ function MultiDeckView() {
       <SearchBar
         searchFilter={searchFilter} 
         onSearchFilterChange={setSearchFilter}/>
+      <DeckTable searchFilter={searchFilter} view="table"/>
     </>
   )
 }
