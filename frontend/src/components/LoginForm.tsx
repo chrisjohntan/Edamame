@@ -1,9 +1,8 @@
 import axios from "../axiosConfig"
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from '@mantine/form';
-import { useDisclosure } from "@mantine/hooks";
 import {
   TextInput,
   PasswordInput,
@@ -26,7 +25,7 @@ function LoginForm() {
   }
 
   const { auth, setAuth } = useAuth();
-  const [loading, { toggle }] = useDisclosure()
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,17 +56,17 @@ function LoginForm() {
 
   // TODO: form validation errors (from backend)
   const handleSubmit: (data: LoginFormInput) => void = async (data: LoginFormInput) => {
-    console.log(data)
-    toggle();
+    console.log(data);
+    setLoading(true);
     try {
       const response = await axios.post("/login", data);
-      console.log(response)
+      // console.log(response)
       setAuth({ user: { username: data.username } });
       navigate(from, { replace: true });
     } catch (err) {
       console.error(err);
     } finally {
-      toggle();
+      setLoading(false);
     }
   }
   return (
