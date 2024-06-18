@@ -20,5 +20,7 @@ export type Card = {
 }
 
 export type Deck = {
-  
+  id: number;
+  deckName: string;
+  size: number;
 }
