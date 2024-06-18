@@ -6,6 +6,12 @@ export type Auth = {
   user: User
 }
 
+export const EMPTY_AUTH = {
+  user: {
+    username: ""
+  }
+} as const
+
 export type Card = {
   header: string;
   body: string;
@@ -13,8 +19,8 @@ export type Card = {
   body_flipped: string;
 }
 
-export const EMPTY_AUTH = {
-  user: {
-    username: ""
-  }
-} as const
+export type Deck = {
+  id: number;
+  deckName: string;
+  size: number;
+}
