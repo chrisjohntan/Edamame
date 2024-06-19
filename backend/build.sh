@@ -5,6 +5,3 @@ set -o errexit
 
 pip install -r requirements.txt
 
-flask db downgrade
-flask db downgrade
-flask db downgrade
