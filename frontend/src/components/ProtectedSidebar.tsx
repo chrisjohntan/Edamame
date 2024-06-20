@@ -1,6 +1,6 @@
 import { AppShell, Group } from "@mantine/core";
 import classes from './styles/Sidebar.module.css';
-import { IconCards, IconLogout, IconSwitchHorizontal } from '@tabler/icons-react';
+import { IconCards, IconLogout, IconSettings, IconSwitchHorizontal, IconUser } from '@tabler/icons-react';
 import { useState } from "react";
 import useLogout from "../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,9 @@ import { useNavigate } from "react-router-dom";
 
 function ProtectedSidebar() {
   const data = [
-    { link: '', label: 'Decks', icon: IconCards },
+    { link: '/dashboard', label: 'Decks', icon: IconCards },
+    { link: '/profile', label: 'Account', icon: IconUser },
+    { link: '/settings', label: 'Settings', icon: IconSettings}
   ];
 
   const [active, setActive] = useState('Decks');
@@ -28,6 +30,7 @@ function ProtectedSidebar() {
       onClick={(event) => {
         event.preventDefault();
         setActive(item.label);
+        navigate(item.link);
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
