@@ -16,3 +16,8 @@
     height: rem(21px);
     border-radius: rem(21px);
 }
+
+.empty {
+    width:50%;
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+}
