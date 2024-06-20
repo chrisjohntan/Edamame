@@ -45,13 +45,12 @@ decks = Blueprint("decks", __name__)
 @jwt_required()
 def create_card(deck_id):
     current_user = get_current_user()
+    now = datetime.now()
     
     header = request.json["header"]
     body = request.json["body"]
     header_flipped = request.json["header_flipped"]
     body_flipped = request.json["body_flipped"]
-    
-    now = datetime.now()
 
     card = Card(
         header=header,
@@ -68,6 +67,7 @@ def create_card(deck_id):
         reviews_done=0
     )
 
+    # TODO: update deck last_modified
     db.session.add(card)
     db.session.commit()
 
@@ -104,6 +104,7 @@ def get_cards():
 @jwt_required()
 def edit_card(id):
     current_user = get_current_user()
+    now = datetime.now()
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
     
     if not card:
@@ -118,6 +119,8 @@ def edit_card(id):
     card.body = body
     card.header_flipped = header_flipped
     card.body_flipped = body_flipped
+    card.last_modified = now
+    # TODO: update deck last_modified
 
     db.session.commit()
 
