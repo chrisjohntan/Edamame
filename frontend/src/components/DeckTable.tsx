@@ -1,5 +1,5 @@
-import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay } from "@mantine/core";
-import { IconChevronUp, IconChevronDown, IconSelector } from "@tabler/icons-react";
+import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex } from "@mantine/core";
+import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
 import type { Deck } from "../types";
@@ -17,7 +17,7 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
   return (
     <Table.Th className={classes.control} onClick={onSort}>
       <UnstyledButton onClick={onSort} className={classes.control} >
-        <Group justify="space-between">
+        <Group justify="flex-start">
           <Text fw={500} fz="sm">
             {children}
           </Text>
@@ -103,7 +103,6 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
   }, [])
 
   useEffect(() => {
-    setDescending(!descending)
     setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
     console.log("sorting")
   }, [props.searchFilter, data])
@@ -121,13 +120,23 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
         <Table.Td>{deck.deckName}</Table.Td>
         <Table.Td>{deck.size}</Table.Td>
         {/* <Table.Td>{deck.}</Table.Td> */}
+        <Table.Td>
+          <Group gap={0} justify="flex-end" wrap="nowrap">
+            <ActionIcon variant="subtle" color="gray">
+              <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+            </ActionIcon>
+            <ActionIcon variant="subtle" color="red">
+              <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+            </ActionIcon>
+          </Group>
+        </Table.Td>
       </Table.Tr>
     ));
 
     return (
-      <ScrollArea type="hover">
-        <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-        <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed">
+      <Table.ScrollContainer minWidth={700}>
+        <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
+        <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
           <Table.Thead>
             <Table.Tr>
               <Th
@@ -146,6 +155,7 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
               >
                 Size
               </Th>
+              <Table.Th className={classes.empty}/>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -163,7 +173,7 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
             )}
           </Table.Tbody>
         </Table>
-      </ScrollArea>
+      </Table.ScrollContainer>
     )
   }
 }
