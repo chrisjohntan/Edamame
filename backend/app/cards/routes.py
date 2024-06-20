@@ -62,6 +62,7 @@ def create_card(deck_id):
         time_for_review=datetime.now(),
         time_interval=0,
         last_reviewed=datetime.now(),
+        last_modified=datetime.now(),
         reviews_done=0
     )
 
@@ -172,6 +173,7 @@ def create_deck():
         user_id=current_user.id,
         time_created=datetime.now(),
         last_reviewed=datetime.now(),
+        last_modified=datetime.now(),
         reviews_done=0
     )
 
