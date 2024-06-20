@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Text, ForeignKey, DateTime
+from sqlalchemy import String, Integer, Text, ForeignKey, DateTime, Interval
 from .extensions import db
 from typing import List
 
@@ -34,7 +34,11 @@ class Card(db.Model):
     body: Mapped[str] = mapped_column(Text, nullable=True)
     header_flipped: Mapped[str] = mapped_column(Text, nullable=False)
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
-
+    time_created: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    time_for_review: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    time_interval: Mapped[Interval] = mapped_column(Interval, nullable=False)
+    last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
@@ -44,7 +48,6 @@ class Card(db.Model):
     user: Mapped["User"] = relationship("User", back_populates="user_cards")
     deck: Mapped["Deck"] = relationship("Deck", back_populates="cards")
     
-    
     def __repr__(self) -> str:
         return "Card: {self.header}"
 
@@ -52,7 +55,9 @@ class Deck(db.Model):
     __tablename__ = "decks"
     id: Mapped[int] = mapped_column(primary_key=True)
     deck_name: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
-
+    time_created: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
