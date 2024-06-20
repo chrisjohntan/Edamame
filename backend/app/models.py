@@ -38,6 +38,7 @@ class Card(db.Model):
     time_for_review: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     time_interval: Mapped[Interval] = mapped_column(Interval, nullable=False)
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     # TODO: in legacy, try to change later
@@ -57,6 +58,7 @@ class Deck(db.Model):
     deck_name: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     time_created: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     # TODO: in legacy, try to change later
