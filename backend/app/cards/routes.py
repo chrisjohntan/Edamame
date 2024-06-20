@@ -169,7 +169,10 @@ def create_deck():
 
     deck = Deck(
         deck_name=deck_name,
-        user_id=current_user.id
+        user_id=current_user.id,
+        time_created=datetime.now(),
+        last_reviewed=datetime.now(),
+        reviews_done=0
     )
 
     db.session.add(deck)
