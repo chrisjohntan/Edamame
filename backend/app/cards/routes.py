@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import httpx
 from ..models import Card, Deck, User
 from datetime import datetime
+from sqlalchemy import and_
 
 
 cards = Blueprint("cards", __name__)
@@ -79,15 +80,23 @@ def create_card(deck_id):
     }), HTTPStatus.CREATED
 
 
-@cards.route("/get_cards", methods=["GET"])
+@cards.route("/get_cards/<int:deck_id>", methods=["GET"])
 @jwt_required()
-def get_cards():
-    current_user = get_current_user()
-    user_cards = Card.query.filter_by(user_id=current_user.id)
+def get_cards(deck_id):
+    current_user: User = get_current_user()
+    
+    # First check if the deck does belong to the user (or if it exists)
+    deck_exists: Deck | None = db.session.execute(
+        db.select(Deck).where(and_(Deck.id == deck_id, Deck.user_id == current_user.id))
+        ).scalar()
+    if not deck_exists:
+        return jsonify({
+            "error": "Deck not found"
+        }), HTTPStatus.NOT_FOUND
     
     data = []
 
-    for card in user_cards:
+    for card in deck_exists.cards:
         data.append({
         "id": card.id,
         "header": card.header, 
