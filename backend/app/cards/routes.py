@@ -5,7 +5,7 @@ from http import HTTPStatus
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import httpx
 from ..models import Card, Deck, User
-
+import datetime
 
 
 cards = Blueprint("cards", __name__)
@@ -57,7 +57,12 @@ def create_card(deck_id):
         header_flipped=header_flipped,
         body_flipped=body_flipped,
         user_id=current_user.id,
-        deck_id=deck_id
+        deck_id=deck_id,
+        time_created=datetime.now(),
+        time_for_review=datetime.now(),
+        time_interval=0,
+        last_reviewed=datetime.now(),
+        reviews_done=0
     )
 
     db.session.add(card)
