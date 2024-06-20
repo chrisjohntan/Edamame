@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Text, ForeignKey
+from sqlalchemy import String, Integer, Text, ForeignKey, DateTime
 from .extensions import db
 from typing import List
 
@@ -35,6 +35,7 @@ class Card(db.Model):
     header_flipped: Mapped[str] = mapped_column(Text, nullable=False)
     body_flipped: Mapped[str] = mapped_column(Text, nullable=True)
 
+
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
@@ -51,6 +52,7 @@ class Deck(db.Model):
     __tablename__ = "decks"
     id: Mapped[int] = mapped_column(primary_key=True)
     deck_name: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
