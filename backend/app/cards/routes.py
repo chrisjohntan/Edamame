@@ -69,6 +69,9 @@ def create_card(deck_id):
     )
 
     # TODO: update deck last_modified
+    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    deck.last_modified=now
+
     db.session.add(card)
     db.session.commit()
 
