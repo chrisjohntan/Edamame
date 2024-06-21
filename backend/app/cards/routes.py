@@ -10,7 +10,6 @@ from sqlalchemy import and_
 
 
 cards = Blueprint("cards", __name__)
-decks = Blueprint("decks", __name__)
 
 # Depreciated
 # @cards.route("/create_card", methods=["POST"])
@@ -184,86 +183,3 @@ def move_card(id, deck_id):
             "deck_id": new_deck.id
         }
     }), HTTPStatus.OK
-
-@decks.route("/create_deck", methods=["POST"])
-@jwt_required()
-def create_deck():
-    current_user = get_current_user()
-    now = datetime.now()
-    
-    deck_name = request.json["deck_name"]
-
-    deck = Deck(
-        deck_name=deck_name,
-        user_id=current_user.id,
-        time_created=now,
-        last_reviewed=now,  # placeholder
-        last_modified=now,
-        reviews_done=0
-    )
-
-    db.session.add(deck)
-    db.session.commit()
-
-    return jsonify({
-        "message": "Deck created",
-        "deck": {
-            "deck_name": deck_name, "user_id": current_user.id
-        }
-    }), HTTPStatus.CREATED
-
-@decks.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
-@jwt_required()
-def edit_deck(deck_id):
-    current_user = get_current_user()
-    now = datetime.now()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
-    
-    if not deck:
-        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
-
-    deck_name = request.get_json().get('deck_name', deck.deck_name)
-
-    deck.deck_name = deck_name
-    deck.last_modified = now
-    
-    db.session.commit()
-
-    return jsonify({
-        "message": "Deck edited",
-        "card": {
-            "deck_name": deck_name, "user_id": current_user.id
-        }
-    }), HTTPStatus.OK
-
-@decks.route("/get_decks", methods=["GET"])
-@jwt_required()
-def get_decks():
-    current_user: User = get_current_user()
-    decks = current_user.user_decks
-    # user_decks = Deck.query.filter_by(user_id=current_user.id)
-
-    # data = []
-
-    # for deck in user_decks:
-    #     data.append({
-    #     "id": deck.id,
-    #     "deck_name": deck.deck_name
-    #     })
-    # return data
-    # map list of Decks into a list of dicts with deck attrs
-    return jsonify([deck.to_dict() for deck in decks]), HTTPStatus.OK
-
-@decks.route("/delete_deck/<int:deck_id>", methods=["DELETE"])
-@jwt_required()
-def delete_deck(deck_id):
-    current_user = get_current_user()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
-    
-    if not deck:
-        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
-
-    db.session.delete(deck)
-    db.session.commit()
-
-    return jsonify({}), HTTPStatus.NO_CONTENT
