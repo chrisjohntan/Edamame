@@ -164,20 +164,24 @@ def delete_card(id):
 @jwt_required()
 def move_card(id, deck_id):
     current_user = get_current_user()
+    now = datetime.now()
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    new_deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    prev_deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
-    if not deck:
+    if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
-    card.deck_id = deck.id
+    card.deck_id = new_deck.id
+    prev_deck.last_modified = now
+    new_deck.last_modified = now
     db.session.commit()
     return jsonify({
         "message": "Card moved",
         "deck": {
-            "deck_id": deck.id
+            "deck_id": new_deck.id
         }
     }), HTTPStatus.OK
 
