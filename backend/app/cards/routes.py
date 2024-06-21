@@ -179,15 +179,16 @@ def move_card(id, deck_id):
 @jwt_required()
 def create_deck():
     current_user = get_current_user()
+    now = datetime.now()
     
     deck_name = request.json["deck_name"]
 
     deck = Deck(
         deck_name=deck_name,
         user_id=current_user.id,
-        time_created=datetime.now(),
-        last_reviewed=datetime.now(),  # placeholder
-        last_modified=datetime.now(),
+        time_created=now,
+        last_reviewed=now,  # placeholder
+        last_modified=now,
         reviews_done=0
     )
 
