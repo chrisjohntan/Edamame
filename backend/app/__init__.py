@@ -41,7 +41,8 @@ def create_app(test_config=None):
     
     # import blueprints here
     from .auth.routes import auth
-    from .cards.routes import cards, decks
+    from .cards.routes import cards
+    from .decks.routes import decks
     app.register_blueprint(auth)
     app.register_blueprint(cards)
     app.register_blueprint(decks)
