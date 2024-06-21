@@ -68,7 +68,6 @@ def create_card(deck_id):
         reviews_done=0
     )
 
-    # TODO: update deck last_modified
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     deck.last_modified=now
 
@@ -132,7 +131,8 @@ def edit_card(id):
     card.header_flipped = header_flipped
     card.body_flipped = body_flipped
     card.last_modified = now
-    # TODO: update deck last_modified
+    deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    deck.last_modified=now
 
     db.session.commit()
 
