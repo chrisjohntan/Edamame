@@ -216,6 +216,7 @@ def create_deck():
 @jwt_required()
 def edit_deck(deck_id):
     current_user = get_current_user()
+    now = datetime.now()
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     if not deck:
@@ -224,7 +225,8 @@ def edit_deck(deck_id):
     deck_name = request.get_json().get('deck_name', deck.deck_name)
 
     deck.deck_name = deck_name
-
+    deck.last_modified = now
+    
     db.session.commit()
 
     return jsonify({
