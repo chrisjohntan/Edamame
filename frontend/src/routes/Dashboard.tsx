@@ -1,13 +1,15 @@
 import { signOut } from "../auth";
+import CardGroupDemo from "../components/CardGroupDemo";
+import MultiDeckView from "../components/MultiDeckView";
+import ProtectedHeader from "../components/ProtectedHeader";
 
 
 function Dashboard() {
   return (
     <>
-    <div>hi</div>
-    {/* TODO: redirect needs work. this whole component actually */}
-    <button onClick={signOut}>Sign out</button>
-    
+    {/* <ProtectedHeader></ProtectedHeader> */}
+    {/* <CardGroupDemo></CardGroupDemo> */}
+    <MultiDeckView/>
     </>
   )
 }

@@ -71,6 +71,7 @@ class Deck(db.Model):
         return {
             "id": self.id,
             "deck_name": self.deck_name,
-            "user_id": self.user_id
+            "user_id": self.user_id,
+            "size": len(self.cards)
         }
     

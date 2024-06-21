@@ -23,6 +23,8 @@ function Testing() {
   return (
     <Container>
       <h1>{message}</h1>
+      <h2>Welcome to Edamame</h2>
+      <h4>Bottom text</h4>
     </Container>
   )
 }
