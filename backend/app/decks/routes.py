@@ -15,6 +15,13 @@ def create_deck():
     now = datetime.now()
     
     deck_name = request.json["deck_name"]
+    name_exists = db.session.execute(
+        db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
+        ).scalar()
+    if name_exists:
+        return jsonify({
+            "message": "A deck with that name already exists"
+        }), HTTPStatus.CONFLICT
 
     deck = Deck(
         deck_name=deck_name,
@@ -40,18 +47,24 @@ def get_decks():
     decks = current_user.user_decks
     return jsonify([deck.to_dict() for deck in decks]), HTTPStatus.OK
     
-@decks.route('/edit_deck/<int:deck_id>', methods=["PUT", "PATCH"])
+@decks.route('/edit_deck/<int:deck_id>', methods=["PUT"])
 @jwt_required()
 def edit_deck(deck_id):
-    current_user = get_current_user()
+    current_user: User = get_current_user()
     now = datetime.now()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     if not deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     deck_name = request.get_json().get('deck_name', deck.deck_name)
-    name_exists = db.session.execute(db.select(Deck).where(Deck.deck_name == deck_name))
+    name_exists = db.session.execute(
+        db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
+        ).scalar()
+    if name_exists:
+        return jsonify({
+            "message": "A deck with that name already exists"
+        }), HTTPStatus.CONFLICT
 
     deck.deck_name = deck_name
     deck.last_modified = now
