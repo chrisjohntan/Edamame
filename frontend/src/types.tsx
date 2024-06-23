@@ -13,14 +13,22 @@ export const EMPTY_AUTH = {
 } as const
 
 export type Card = {
+  id: number;
   header: string;
   body: string;
   header_flipped: string;
   body_flipped: string;
+  time_created: Date;
+  time_for_review: Date;
+  time_interval: Date;
+  last_reviewed: Date;
+  last_modified: Date;
+  reviews_done: number;
 }
 
 export type Deck = {
   id: number;
-  deckName: string;
+  deck_name: string;
   size: number;
+
 }
