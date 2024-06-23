@@ -4,6 +4,8 @@ import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
 import type { Deck } from "../types";
 import axios from "../axiosConfig"
+import DeleteDeck from "./DeleteDeck";
+import RenameDeck from "./RenameDeck";
 
 interface ThProps {
   children: React.ReactNode;
@@ -35,7 +37,7 @@ function filterData(data: Deck[], filter: string) {
     return [];
   }
   const query = filter.toLowerCase().trim();
-  return data.filter(item => item?.deckName.includes(query));
+  return data.filter(item => item?.deck_name.includes(query));
 }
 
 function sortData(
@@ -69,7 +71,13 @@ function sortData(
 
 
 
-function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
+function DeckTable(props: {
+  searchFilter: string, 
+  view: "grid"|"table", 
+  loading: boolean, 
+  data: Deck[],
+  setData: (d:Deck[])=>void
+}) {
   const [view, setView] = useState<"grid"|"table">("table");
   const toggleView = () => {
     if (view === "grid") {
@@ -80,54 +88,34 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
   }
   const [sortBy, setSortBy] = useState<keyof Omit<Deck,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
-  const [data, setData] = useState<Deck[]>([]);
-  const [sortedData, setSortedData] = useState<Deck[]>(data);
-  const [loading, setLoading] = useState(false);
+  const [sortedData, setSortedData] = useState<Deck[]>(props.data);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("/get_decks")
-        // Parse response
-        const parsedResponse = await response.data.map((resObj:any): Deck => ({id: resObj.id, deckName: resObj.deck_name, size: resObj.size}))
-        setData(parsedResponse)
-        console.log(data)
-      } catch (err) {
-        console.error(err);
-      } finally{
-        setLoading(false);
-      }
-    }
-    getData()
-  }, [])
-
-  useEffect(() => {
-    setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
+    // setSortedData(props.data)
+    setSortedData(sortData(props.data, {sortBy, descending: descending, search: props.searchFilter}))
     console.log("sorting")
-  }, [props.searchFilter, data])
+  }, [props.searchFilter, props.loading, props.data])
   
   function handleSort(field: keyof Omit<Deck, "id">) {
     const desc = field === sortBy ? !descending : false
     setSortBy(field);
     setDescending(desc);
-    setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
+    setSortedData(sortData(sortedData, {sortBy, descending: descending, search: props.searchFilter}))
   }
 
   if (view === "table") {
     const rows = sortedData?.map((deck) => (
       <Table.Tr key={deck.id}>
-        <Table.Td>{deck.deckName}</Table.Td>
+        <Table.Td>{deck.deck_name}</Table.Td>
         <Table.Td>{deck.size}</Table.Td>
         {/* <Table.Td>{deck.}</Table.Td> */}
         <Table.Td>
           <Group gap={0} justify="flex-end" wrap="nowrap">
-            <ActionIcon variant="subtle" color="gray">
+            {/* <ActionIcon variant="subtle" color="gray">
               <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-            </ActionIcon>
-            <ActionIcon variant="subtle" color="red">
-              <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-            </ActionIcon>
+            </ActionIcon> */}
+            <RenameDeck deck={deck} data={props.data} setData={props.setData}/>
+            <DeleteDeck data={sortedData} setData={setSortedData} deckId={deck.id}/>
           </Group>
         </Table.Td>
       </Table.Tr>
@@ -135,15 +123,15 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
 
     return (
       <Table.ScrollContainer minWidth={700}>
-        <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
+        <LoadingOverlay visible={props.loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
         <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
           <Table.Thead>
             <Table.Tr>
               <Th
-                sorted={sortBy === 'deckName'}
+                sorted={sortBy === 'deck_name'}
                 descending={descending}
                 // TODO: nah this is fucked here
-                onSort={() => handleSort('deckName')}
+                onSort={() => handleSort('deck_name')}
                 // style={{padding:0, margin:0}}
               >
                 Deck Name
