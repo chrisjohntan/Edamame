@@ -2,7 +2,7 @@ import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, Load
 import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
-import type { Deck } from "../types";
+import type { Card, Deck } from "../types";
 import axios from "../axiosConfig"
 
 interface ThProps {
@@ -30,17 +30,18 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
   );
 }
 
-function filterData(data: Deck[], filter: string) {
+// TODO: change filter params
+function filterData(data: Card[], filter: string) {
   if (data.length == 0) {
     return [];
   }
   const query = filter.toLowerCase().trim();
-  return data.filter(item => item?.deckName.includes(query));
+  return data.filter(item => item?.header.includes(query));
 }
 
 function sortData(
-  data: Deck[],
-  payload: { sortBy: keyof Omit<Deck, "id"> | null; descending: boolean; search: string }
+  data: Card[],
+  payload: { sortBy: keyof Omit<Card, "id"> | null; descending: boolean; search: string }
 ) {
   const { sortBy } = payload;
 
@@ -50,18 +51,22 @@ function sortData(
 
   return filterData(
     [...data].sort((a, b) => {
-      if (sortBy === "size") {
-        if (payload.descending) {
-          return b[sortBy] - a[sortBy];
-        }
-        return a[sortBy] - b[sortBy];
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return payload.descending ? bVal - aVal : aVal - bVal;
       }
 
-      if (payload.descending) {
-        return b[sortBy].localeCompare(a[sortBy]);
+      if (aVal instanceof Date && bVal instanceof Date) {
+        return payload.descending ? bVal.getTime() - aVal.getTime() : aVal.getTime() - bVal.getTime();
       }
-      return a[sortBy].localeCompare(b[sortBy]);
-      
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return payload.descending ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+      }
+
+      return 0;
     }),
     payload.search
   );
@@ -69,7 +74,7 @@ function sortData(
 
 
 
-function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
+function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Card[]}) {
   const [view, setView] = useState<"grid"|"table">("table");
   const toggleView = () => {
     if (view === "grid") {
@@ -78,10 +83,10 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
       setView("grid");
     }
   }
-  const [sortBy, setSortBy] = useState<keyof Omit<Deck,"id"> | null>(null)
+  const [sortBy, setSortBy] = useState<keyof Omit<Card,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
-  const [data, setData] = useState<Deck[]>([]);
-  const [sortedData, setSortedData] = useState<Deck[]>(data);
+  const [data, setData] = useState<Card[]>([]);
+  const [sortedData, setSortedData] = useState<Card[]>(data);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -90,7 +95,7 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
         setLoading(true);
         const response = await axios.get("/get_decks")
         // Parse response
-        const parsedResponse = await response.data.map((resObj:any): Deck => ({id: resObj.id, deckName: resObj.deck_name, size: resObj.size}))
+        const parsedResponse = await response.data.map((resObj:any): Deck => ({id: resObj.id, deck_name: resObj.deck_name, size: resObj.size}))
         setData(parsedResponse)
         console.log(data)
       } catch (err) {
@@ -107,7 +112,7 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
     console.log("sorting")
   }, [props.searchFilter, data])
   
-  function handleSort(field: keyof Omit<Deck, "id">) {
+  function handleSort(field: keyof Omit<Card, "id">) {
     const desc = field === sortBy ? !descending : false
     setSortBy(field);
     setDescending(desc);
@@ -117,8 +122,8 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
   if (view === "table") {
     const rows = sortedData?.map((deck) => (
       <Table.Tr key={deck.id}>
-        <Table.Td>{deck.deckName}</Table.Td>
-        <Table.Td>{deck.size}</Table.Td>
+        <Table.Td>{deck.header}</Table.Td>
+        <Table.Td>{deck.body}</Table.Td>
         {/* <Table.Td>{deck.}</Table.Td> */}
         <Table.Td>
           <Group gap={0} justify="flex-end" wrap="nowrap">
@@ -140,20 +145,39 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
           <Table.Thead>
             <Table.Tr>
               <Th
-                sorted={sortBy === 'deckName'}
+                sorted={sortBy === 'header'}
                 descending={descending}
-                // TODO: nah this is fucked here
-                onSort={() => handleSort('deckName')}
-                // style={{padding:0, margin:0}}
+                onSort={() => handleSort('header')}
               >
-                Deck Name
+                Header
               </Th>
               <Th
-                sorted={sortBy === 'size'}
+                sorted={sortBy === 'body'}
                 descending={descending}
-                onSort={() => handleSort('size')}
+                onSort={() => handleSort('body')}
               >
                 Size
+              </Th>
+              <Th
+                sorted={sortBy === 'last_reviewed'}
+                descending={descending}
+                onSort={() => handleSort('last_reviewed')}
+              >
+                Last Reviewed
+              </Th>
+              <Th
+                sorted={sortBy === 'last_modified'}
+                descending={descending}
+                onSort={() => handleSort('last_modified')}
+              >
+                Last Modified
+              </Th>
+              <Th
+                sorted={sortBy === 'reviews_done'}
+                descending={descending}
+                onSort={() => handleSort('reviews_done')}
+              >
+                Reviews Done
               </Th>
               <Table.Th className={classes.empty}/>
             </Table.Tr>
@@ -178,4 +202,4 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
   }
 }
 
-export default DeckTable;
+export default CardTable;
