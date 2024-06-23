@@ -6,14 +6,21 @@ import Login from './routes/Login.tsx'
 import Dashboard from './routes/Dashboard.tsx';
 import ProtectedRoute from './routes/ProtectedRoute.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
-import { AppShell, MantineProvider, createTheme, rem } from '@mantine/core';
+import { AppShell, Button, MantineProvider, createTheme, rem } from '@mantine/core';
 
 import '@mantine/core/styles.css';
 import ProtectedHeader from './components/ProtectedHeader.tsx';
 import CustomAppShell from './routes/CustomAppShell.tsx';
+import { IconError404 } from '@tabler/icons-react';
+import classes from "./App.module.css"
 
 const theme = createTheme({
   // change theme settings here
+  components: {
+    Button: Button.extend({
+      classNames: classes,
+    }),
+  },
 })
 
 
@@ -41,7 +48,7 @@ function App() {
         {/* </AppShell> */}
 
         {/* Error page route */}
-        <Route path="*" element={<ErrorPage />} />
+        <Route path="*" element={<IconError404/>} />
       </Routes>
     </AuthProvider>
     </BrowserRouter>
