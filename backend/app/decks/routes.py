@@ -30,9 +30,7 @@ def create_deck():
 
     return jsonify({
         "message": "Deck created",
-        "deck": {
-            "deck_name": deck_name, "user_id": current_user.id
-        }
+        "deck": deck.to_dict()
     }), HTTPStatus.CREATED
     
 @decks.route("/get_decks", methods=["GET"])
@@ -53,6 +51,7 @@ def edit_deck(deck_id):
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     deck_name = request.get_json().get('deck_name', deck.deck_name)
+    name_exists = db.session.execute(db.select(Deck).where(Deck.deck_name == deck_name))
 
     deck.deck_name = deck_name
     deck.last_modified = now
