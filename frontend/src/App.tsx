@@ -13,6 +13,7 @@ import ProtectedHeader from './components/ProtectedHeader.tsx';
 import CustomAppShell from './routes/CustomAppShell.tsx';
 import { IconError404 } from '@tabler/icons-react';
 import classes from "./App.module.css"
+import MultiCardView from './components/MultiCardView.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -36,17 +37,13 @@ function App() {
         <Route path="/login" element={<Login />} />
 
         {/* All protected routes should be nested here */}
-        {/* Wrap in AppShell */}
-        {/* <AppShell> */}
           <Route element={<ProtectedRoute/>}>
             <Route element={<CustomAppShell />}>
-            {/* <ProtectedHeader /> */}
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/cards/:deckId" element={<MultiCardView/>}/>
             </Route>
           </Route>
-
-        {/* </AppShell> */}
-
+          
         {/* Error page route */}
         <Route path="*" element={<IconError404/>} />
       </Routes>
