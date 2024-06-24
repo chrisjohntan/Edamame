@@ -75,9 +75,7 @@ def create_card(deck_id):
 
     return jsonify({
         "message": "Card created",
-        "card": {
-            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id, "deck_id": deck_id
-        }
+        "card": card.to_dict()
     }), HTTPStatus.CREATED
 
 
@@ -98,15 +96,7 @@ def get_cards(deck_id):
     data = []
 
     for card in deck_exists.cards:
-        data.append({
-        "id": card.id,
-        "header": card.header, 
-        "body": card.body, 
-        "header_flipped": card.header_flipped, 
-        "body_flipped": card.body_flipped, 
-        "user_id": card.user_id,
-        "deck_id": card.deck_id
-        })
+        data.append(card.to_dict())
 
     return jsonify({'data': data}),HTTPStatus.OK
 
@@ -115,8 +105,8 @@ def get_cards(deck_id):
 def edit_card(id):
     current_user = get_current_user()
     now = datetime.now()
-    card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    card: Card = Card.query.filter_by(user_id=current_user.id, id=id).first()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
@@ -137,9 +127,7 @@ def edit_card(id):
 
     return jsonify({
         "message": "Card edited",
-        "card": {
-            "header": header, "body": body, "header_flipped": header_flipped, "body_flipped": body_flipped, "user_id": current_user.id
-        }
+        "card": card.to_dict()
     }), HTTPStatus.OK
 
 @cards.route("/delete_card/<int:id>", methods=["DELETE"])
