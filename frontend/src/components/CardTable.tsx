@@ -17,7 +17,7 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
   return (
     <Table.Th className={classes.control} onClick={onSort}>
       <UnstyledButton onClick={onSort} className={classes.control} >
-        <Group justify="flex-start">
+        <Group justify="flex-start" wrap="nowrap">
           <Text fw={500} fz="sm">
             {children}
           </Text>
@@ -28,6 +28,16 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
       </UnstyledButton>
     </Table.Th>
   );
+}
+
+function TdText({children}: {children: React.ReactNode}) {
+  return ( 
+    <Table.Td>
+      <Text truncate="end" fz="sm">
+        {children}
+      </Text>
+    </Table.Td>
+  )
 }
 
 // TODO: change filter params
@@ -74,7 +84,11 @@ function sortData(
 
 
 
-function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Card[]}) {
+function CardTable(props: {
+  searchFilter: string, 
+  view: "grid"|"table", 
+  data: Card[]
+}) {
   const [view, setView] = useState<"grid"|"table">("table");
   const toggleView = () => {
     if (view === "grid") {
@@ -88,24 +102,6 @@ function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Car
   const [data, setData] = useState<Card[]>([]);
   const [sortedData, setSortedData] = useState<Card[]>(data);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("/get_decks")
-        // Parse response
-        const parsedResponse = await response.data.map((resObj:any): Deck => ({id: resObj.id, deck_name: resObj.deck_name, size: resObj.size}))
-        setData(parsedResponse)
-        console.log(data)
-      } catch (err) {
-        console.error(err);
-      } finally{
-        setLoading(false);
-      }
-    }
-    getData()
-  }, [])
 
   useEffect(() => {
     setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
@@ -122,8 +118,8 @@ function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Car
   if (view === "table") {
     const rows = sortedData?.map((deck) => (
       <Table.Tr key={deck.id}>
-        <Table.Td>{deck.header}</Table.Td>
-        <Table.Td>{deck.body}</Table.Td>
+        <TdText>{deck.header}</TdText>
+        <TdText>{deck.body}</TdText>
         {/* <Table.Td>{deck.}</Table.Td> */}
         <Table.Td>
           <Group gap={0} justify="flex-end" wrap="nowrap">
@@ -139,7 +135,7 @@ function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Car
     ));
 
     return (
-      <Table.ScrollContainer minWidth={700}>
+      <ScrollArea>
         <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
         <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
           <Table.Thead>
@@ -156,7 +152,7 @@ function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Car
                 descending={descending}
                 onSort={() => handleSort('body')}
               >
-                Size
+                Body
               </Th>
               <Th
                 sorted={sortBy === 'last_reviewed'}
@@ -187,7 +183,7 @@ function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Car
               rows
             ) : (
               <Table.Tr>
-                <Table.Td colSpan={2}>
+                <Table.Td colSpan={6}>
                   {/* might have to -1 from the colspan */}
                   <Text fw={500} ta="center">
                     Nothing found
@@ -197,7 +193,7 @@ function CardTable(props: {searchFilter: string, view: "grid"|"table", data: Car
             )}
           </Table.Tbody>
         </Table>
-      </Table.ScrollContainer>
+      </ScrollArea>
     )
   }
 }
