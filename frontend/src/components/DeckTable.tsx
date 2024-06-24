@@ -6,6 +6,9 @@ import type { Deck } from "../types";
 import axios from "../axiosConfig"
 import DeleteDeck from "./DeleteDeck";
 import RenameDeck from "./RenameDeck";
+import { useNavigate } from "react-router-dom";
+
+
 
 interface ThProps {
   children: React.ReactNode;
@@ -30,6 +33,16 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
       </UnstyledButton>
     </Table.Th>
   );
+}
+
+function TdText({children}: {children: React.ReactNode}) {
+  return ( 
+    <Table.Td>
+      <Text truncate="end" fz="sm">
+        {children}
+      </Text>
+    </Table.Td>
+  )
 }
 
 function filterData(data: Deck[], filter: string) {
@@ -89,6 +102,7 @@ function DeckTable(props: {
   const [sortBy, setSortBy] = useState<keyof Omit<Deck,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
   const [sortedData, setSortedData] = useState<Deck[]>(props.data);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // setSortedData(props.data)
@@ -105,11 +119,13 @@ function DeckTable(props: {
 
   if (view === "table") {
     const rows = sortedData?.map((deck) => (
-      <Table.Tr key={deck.id}>
-        <Table.Td>{deck.deck_name}</Table.Td>
+      <Table.Tr key={deck.id} className={classes.row} onClick={()=>navigate(`/cards/${deck.id}`)}>
+        
+        <TdText>{deck.deck_name}</TdText>
         <Table.Td>{deck.size}</Table.Td>
-        {/* <Table.Td>{deck.}</Table.Td> */}
-        <Table.Td>
+          {/* <Table.Td>{deck.}</Table.Td> */}
+        
+        <Table.Td onClick={e => e.stopPropagation()}>
           <Group gap={0} justify="flex-end" wrap="nowrap">
             {/* <ActionIcon variant="subtle" color="gray">
               <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
