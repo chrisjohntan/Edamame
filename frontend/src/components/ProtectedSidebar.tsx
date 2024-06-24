@@ -52,7 +52,11 @@ function ProtectedSidebar() {
             <span>Change account</span>
           </a>
 
-          <a href="#" className={classes.link} onClick={signOut}>
+          <a href="/logout" className={classes.link} 
+            onClick={(event) => {
+              event.preventDefault();
+              signOut()
+            }}>
             <IconLogout className={classes.linkIcon} stroke={1.5} />
             <span>Logout</span>
           </a>
