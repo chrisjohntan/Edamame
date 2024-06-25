@@ -57,6 +57,8 @@ class Card(db.Model, Base):
         exclude = {"user", "deck", "__tablename__"}
         card = {}
         for col in self.__table__.columns:
+            if col.name in exclude:
+                continue
             val = getattr(self, col.name)
             if isinstance(val, datetime):
                 card[col.name] = val.isoformat()
