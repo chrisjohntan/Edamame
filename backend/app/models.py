@@ -2,6 +2,7 @@ from sqlalchemy.orm import Mapped, mapped_column , relationship
 from sqlalchemy import String, Integer, Text, ForeignKey, DateTime, Interval
 from .extensions import db, Base
 from typing import List
+from datetime import datetime, timedelta
 
 class User(db.Model, Base) :
     __tablename__ = "users"
@@ -54,10 +55,20 @@ class Card(db.Model, Base):
         
     def to_dict(self) -> dict:
         exclude = {"user", "deck", "__tablename__"}
-        return {
-            col.name: getattr(self, col.name) for col in self.__table__.columns\
-                if col.name not in exclude
-        }
+        card = {}
+        for col in self.__table__.columns:
+            val = getattr(self, col.name)
+            if isinstance(val, datetime):
+                card[col.name] = val.isoformat()
+            elif isinstance(val, timedelta):
+                card[col.name] = val.seconds
+            else:
+                card[col.name] = val
+        # return {
+        #     col.name: getattr(self, col.name) for col in self.__table__.columns\
+        #         if col.name not in exclude
+        # }
+        return card
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
