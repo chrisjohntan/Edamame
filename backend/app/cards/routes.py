@@ -7,7 +7,7 @@ import httpx
 from ..models import Card, Deck, User
 from datetime import datetime
 from sqlalchemy import and_
-from translation import translator
+from translation import deepl_translate
 
 cards = Blueprint("cards", __name__)
 
@@ -55,7 +55,10 @@ def create_card(deck_id):
     card_type = request.get_json().get("card_type", "manual")
     
     if card_type == "auto":
-        body_flipped = translator.translate_text(header, target_lang="EN-GB")
+        try:
+            body_flipped = deepl_translate(header)
+        except ValueError:
+            print("Something went wrong")
 
     card = Card(
         header=header,
