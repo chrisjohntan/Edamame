@@ -17,4 +17,4 @@ def deepl_translate(string):
     else:
         result = translator.translate_text(string, target_lang="EN-GB")
         print(f"Character usage: {usage.character}")
-        return result
+        return str(result)
