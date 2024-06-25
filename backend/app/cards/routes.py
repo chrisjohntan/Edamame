@@ -7,7 +7,7 @@ import httpx
 from ..models import Card, Deck, User
 from datetime import datetime
 from sqlalchemy import and_
-from translation import deepl_translate
+from .translation import deepl_translate
 
 cards = Blueprint("cards", __name__)
 
