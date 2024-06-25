@@ -38,7 +38,7 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
 function TdText({children}: {children: React.ReactNode}) {
   return ( 
     <Table.Td>
-      <Text truncate="end" fz="sm">
+      <Text truncate="end" inherit>
         {children}
       </Text>
     </Table.Td>
