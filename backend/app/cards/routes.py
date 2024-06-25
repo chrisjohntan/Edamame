@@ -49,9 +49,9 @@ def create_card(deck_id):
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     header = request.json["header"]
-    body = request.json["body"]
-    header_flipped = request.json["header_flipped"]
-    body_flipped = request.json["body_flipped"]
+    body = request.get_json().get("body", "")
+    header_flipped = request.get_json().get("header_flipped", header)
+    body_flipped = request.get_json().get("body", body)
     card_type = request.get_json().get("card_type", "manual")
     
     if card_type == "auto":
