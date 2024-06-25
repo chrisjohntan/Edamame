@@ -1,4 +1,4 @@
-import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex } from "@mantine/core";
+import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard } from "@mantine/core";
 import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
@@ -46,7 +46,29 @@ function filterData(data: Card[], filter: string) {
     return [];
   }
   const query = filter.toLowerCase().trim();
-  return data.filter(item => item?.header.includes(query));
+  const fieldExclude = [
+    
+  ]
+  // 
+  // return data.filter(item => item?.header.includes(query));
+
+  return data.filter((item) =>
+    keys(data[0]).filter(key => typeof data[0][key] === "string")
+      .some((key) => (item[key] as string).toLowerCase().includes(query))
+  );
+}
+
+// display the Card data in mantine card
+const DisplayCard = ({ cardData } : {cardData: Card}) => {
+
+  return (
+    <MantineCard shadow="sm" padding="lg" radius="md" withBorder>
+      
+      <MantineCard.Section>
+
+      </MantineCard.Section>
+    </MantineCard>
+  )
 }
 
 function sortData(
