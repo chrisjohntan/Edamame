@@ -131,7 +131,7 @@ function DeckTable(props: {
               <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
             </ActionIcon> */}
             <RenameDeck deck={deck} data={props.data} setData={props.setData}/>
-            <DeleteDeck data={sortedData} setData={setSortedData} deckId={deck.id}/>
+            <DeleteDeck data={sortedData} setData={setSortedData} deck={deck}/>
           </Group>
         </Table.Td>
       </Table.Tr>
