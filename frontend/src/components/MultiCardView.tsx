@@ -6,6 +6,7 @@ import { Card } from "../types";
 import axios from "../axiosConfig"
 import { AxiosResponse, isAxiosError } from "axios";
 import CardTable from "./CardTable";
+import { dataToCard } from "./utils";
 
 
 function MultiCardView() {
@@ -15,7 +16,7 @@ function MultiCardView() {
   const [data, setData] = useState<Card[]>([])
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState<string|null>("")
-  const [view, setView] = useState<"grid"|"table">("table")
+  const [view, setView] = useState<"grid"|"table">("grid")
 
   useEffect(() => {
     const getData = async () => {
@@ -23,7 +24,8 @@ function MultiCardView() {
         const response = await axios.get("/get_decks")
         // Parse response
         // const parsedResponse = response.data.map((resObj:any): Card => ({id: resObj.id, header: resObj.header, size: resObj.size}))
-        setData(response.data)
+        const parsedResponse: Card[] = response.data.map((obj: any) => dataToCard(obj))
+        setData(parsedResponse)
         console.log(data)
       } catch (err) {
         if (isAxiosError(err)) {
@@ -41,17 +43,30 @@ function MultiCardView() {
     setData([...data, newCard])
   }
 
+  const toggleView = () => {
+    if (view === "grid") {
+      setView("table");
+    } else {
+      setView("grid");
+    }
+  }
+
   if (error) {
     return <div>{error}</div>
   } else {
     return (
       <>
-        <Group>
+        <Group mb="md">
           <SearchBar
             searchFilter={searchFilter}
             onSearchFilterChange={setSearchFilter}/>
-          <CardTable data={data} searchFilter={searchFilter} view={view} />
         </Group>
+        <CardTable 
+          data={data} 
+          setData={setData}
+          searchFilter={searchFilter} 
+          view={view} 
+          loading={pageLoading} />
       </>
     )
   }
