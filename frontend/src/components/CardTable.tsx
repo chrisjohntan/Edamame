@@ -1,5 +1,5 @@
-import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard } from "@mantine/core";
-import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash } from "@tabler/icons-react";
+import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard, Menu, Grid, SimpleGrid } from "@mantine/core";
+import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash, IconDotsVertical } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
 import type { Card, Deck } from "../types";
@@ -67,6 +67,25 @@ const DisplayCard = ({ cardData } : {cardData: Card}) => {
       <MantineCard.Section>
 
       </MantineCard.Section>
+      <Group>
+        <Text>{cardData.header}</Text>
+        <Menu>
+          <Menu.Target>
+            <ActionIcon radius="100%">
+              <IconDotsVertical/>
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Label>Actions</Menu.Label>
+            <Menu.Item leftSection={<IconPencil style={{ width: rem(14), height: rem(14) }} />}>
+              Edit card
+            </Menu.Item>
+            <Menu.Item leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}>
+              Delete
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
     </MantineCard>
   )
 }
@@ -109,16 +128,10 @@ function sortData(
 function CardTable(props: {
   searchFilter: string, 
   view: "grid"|"table", 
-  data: Card[]
+  data: Card[],
+  setData: (c:Card[])=>void,
+  loading: boolean
 }) {
-  const [view, setView] = useState<"grid"|"table">("table");
-  const toggleView = () => {
-    if (view === "grid") {
-      setView("table");
-    } else {
-      setView("grid");
-    }
-  }
   const [sortBy, setSortBy] = useState<keyof Omit<Card,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
   const [data, setData] = useState<Card[]>([]);
@@ -137,7 +150,7 @@ function CardTable(props: {
     setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
   }
 
-  if (view === "table") {
+  if (props.view === "table") {
     const rows = sortedData?.map((deck) => (
       <Table.Tr key={deck.id}>
         <TdText>{deck.header}</TdText>
@@ -216,6 +229,23 @@ function CardTable(props: {
           </Table.Tbody>
         </Table>
       </ScrollArea>
+    )
+  } 
+
+  if (props.view == "grid") {
+    const rows = sortedData?.map(card => (
+      <DisplayCard cardData={card}/>
+    ))
+
+    return (
+      rows.length <= 0 ? (
+      <Text fw={500} ta="center">
+        Nothing found
+      </Text> 
+      ) : 
+      <SimpleGrid >
+        {rows}
+      </SimpleGrid>
     )
   }
 }
