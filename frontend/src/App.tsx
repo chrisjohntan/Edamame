@@ -14,6 +14,7 @@ import CustomAppShell from './routes/CustomAppShell.tsx';
 import { IconError404 } from '@tabler/icons-react';
 import classes from "./App.module.css"
 import MultiCardView from './components/MultiCardView.tsx';
+import { ForgotPassword } from './components/ForgetPasswordForm.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -35,6 +36,7 @@ function App() {
         <Route path="/" element={<Root />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/recover-account" element={<ForgotPassword />}/>
 
         {/* All protected routes should be nested here */}
           <Route element={<ProtectedRoute/>}>
