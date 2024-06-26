@@ -87,7 +87,7 @@ function LoginForm() {
           <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
             {...form.getInputProps("password")} required withAsterisk />
           <Group justify="space-between" mt="lg">
-            <Checkbox label="Remember me" />
+            {/* <Checkbox label="Remember me" /> */}
             <Anchor component="button" size="sm">
               Forgot password?
             </Anchor>
