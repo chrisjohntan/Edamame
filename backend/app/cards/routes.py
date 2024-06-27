@@ -178,3 +178,23 @@ def move_card(id, deck_id):
             "deck_id": new_deck.id
         }
     }), HTTPStatus.OK
+
+
+@cards.route("/next_card/<int:deck_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def next_card(deck_id):
+    current_user = get_current_user()
+    now = datetime.now()
+    cards = Card.query.filter_by(user_id=current_user.id, deck_id=deck_id)
+
+    if not cards:
+        print("No card in deck.")
+        return jsonify({
+            "message": "No cards in deck",
+        }), HTTPStatus.NOT_FOUND
+
+    card = cards.filter_by(card.time_for_review <= now).order_by(card.time_for_review.asc()).first()
+    return jsonify({
+        "message": "Next Card",
+        "card": card.to_dict()
+    }), HTTPStatus.OK
