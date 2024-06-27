@@ -29,7 +29,7 @@ function LoginForm() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/dashboard"
+  const from = location.state?.from?.pathname || "/decks"
 
   console.log(auth);
 
@@ -38,7 +38,7 @@ function LoginForm() {
   useEffect(() => {
     console.log(auth)
     if (auth.user.username != "") {
-      navigate("/dashboard");
+      navigate("/decks");
     }
   }, [auth, navigate])
 
