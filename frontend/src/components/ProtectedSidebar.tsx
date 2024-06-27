@@ -1,21 +1,23 @@
-import { AppShell, Group } from "@mantine/core";
+import { AppShell, Code, Group, NavLink } from "@mantine/core";
 import classes from './styles/Sidebar.module.css';
-import { IconCards, IconLogout, IconSettings, IconSwitchHorizontal, IconUser } from '@tabler/icons-react';
+import { IconCards, IconChartArea, IconChartBar, IconLogout, IconSettings, IconSwitchHorizontal, IconUser } from '@tabler/icons-react';
 import { useState } from "react";
 import useLogout from "../hooks/useLogout";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import edamameLogo from "../assets/edamame.svg"
 
 
 function ProtectedSidebar() {
   const data = [
-    { link: '/dashboard', label: 'Decks', icon: IconCards },
-    { link: '/profile', label: 'Account', icon: IconUser },
-    { link: '/settings', label: 'Settings', icon: IconSettings}
+    { link: '/decks', label: 'Decks', icon: IconCards },
+    { link: '/stats', label: 'Stats', icon: IconChartBar },
+    // { link: '/settings', label: 'Settings', icon: IconSettings}
   ];
 
   const [active, setActive] = useState('Decks');
   const logout = useLogout();
   const navigate = useNavigate();
+  const location = useLocation();
   const signOut = () => {
     logout();
     navigate("/");
@@ -40,16 +42,20 @@ function ProtectedSidebar() {
 
 
   return (
-    <AppShell.Navbar p="md">
+    <AppShell.Navbar px="md">
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
+          <Group className={classes.header}>
+            <img src={edamameLogo} style={{width: "1rem", height: "1rem"}}/>
+            <h2>Edamame</h2>
+          </Group>
           {links}
         </div>
 
         <div className={classes.footer}>
           <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
-            <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
-            <span>Change account</span>
+            <IconSettings className={classes.linkIcon} stroke={1.5} />
+            <span>Settings</span>
           </a>
 
           <a href="/logout" className={classes.link} 
