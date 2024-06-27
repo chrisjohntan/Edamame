@@ -217,6 +217,48 @@ def next_card(deck_id):
         "card": card.to_dict()
     }), HTTPStatus.OK
 
+@cards.route("/review_card/<int:id>/<int:response>", methods=["PUT", "PATCH"])
+@jwt_required()
+def review_card(id, response):
+    current_user = get_current_user()
+    now = datetime.now()
+
+    card: Card = Card.query.filter_by(user_id=current_user.id, id=id).first()
+    
+    if not card:
+        return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+    
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+
+    if response not in [1,2,3,4]:
+        return jsonify({
+            "message": "Invalid Response",
+        }), HTTPStatus.NOT_FOUND
+
+    # TODO: change to SRS
+    # placeholder in seconds
+    if response == 1:
+        interval = 60
+    if response == 2:
+        interval = 120
+    if response == 3:
+        interval = 180
+    if response == 4:
+        interval = 240
+    
+    card.time_for_review = now + timedelta(seconds=interval)
+    card.time_interval = timedelta(seconds=interval)
+    card.last_reviewed = now
+    card.last_modified += 1
+    card.reviews_done += 1
+
+    deck.last_reviewed = now
+    deck.reviews_done += 1
+
+    return jsonify({
+        "message": f"Review done, card available next at {card.time_for_review}",
+    }), HTTPStatus.OK
+
 @cards.route('/get_review_counts')
 @jwt_required()
 def get_daily_counts():
