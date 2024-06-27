@@ -1,4 +1,4 @@
-import { Card } from "../types";
+import { Card, Deck } from "../types";
 
 export function dataToCard(card: any): Card {
   return {
@@ -11,3 +11,11 @@ export function dataToCard(card: any): Card {
   }
 }
 
+export function dataToDeck(deck: any): Deck {
+  return {
+    ...deck,
+    time_created: new Date(deck.time_created),
+    last_reviewed: new Date(deck.last_reviewed),
+    last_modified: new Date(deck.last_modified)
+  }
+}
