@@ -230,6 +230,11 @@ def review_card(id, response):
     
     deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
+    if response not in [1,2,3,4]:
+        return jsonify({
+            "message": "Invalid Response",
+        }), HTTPStatus.NOT_FOUND
+
     # TODO: change to SRS
     # placeholder in seconds
     if response == 1:
