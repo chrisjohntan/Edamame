@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Text, ForeignKey, DateTime, Interval
+from sqlalchemy import String, Integer, Text, ForeignKey, DateTime, Interval, Date
 from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
@@ -90,9 +90,30 @@ class Deck(db.Model, Base):
     
     def to_dict(self) -> dict:
         exclude = {"user", "cards", "__tablename__"}
-        d = {
-            col.name: getattr(self, col.name) for col in self.__table__.columns\
-                if col.name not in exclude
-        }
+        d = {}
+        for col in self.__table__.columns:
+            if col.name in exclude:
+                continue
+            val = getattr(self, col.name)
+            if isinstance(val, datetime):
+                d[col.name] = val.isoformat()
+            elif isinstance(val, timedelta):
+                d[col.name] = val.seconds
+            else:
+                d[col.name] = val
         d["size"] = len(self.cards)
         return d
+    
+class ReviewCount(db.Model, Base):
+    __tablename__ = "review_count"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    date: Mapped[Date] = mapped_column(Date, nullable=False)
+    review_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    
+    def to_dict(self):
+        return {
+            "date": self.date.isoformat(),
+            "review_count": self.review_count,
+            "user_id": self.user_id
+        }
