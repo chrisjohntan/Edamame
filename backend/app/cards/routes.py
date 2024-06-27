@@ -196,9 +196,7 @@ def next_card(deck_id):
 
     cards = Card.query.filter_by(user_id=current_user.id, deck_id=deck_id)
     
-    # TODO: check if length of query is 0
-    if not cards:
-        print("No card in deck.")
+    if not cards.first():
         return jsonify({
             "message": "No cards in deck",
         }), HTTPStatus.NOT_FOUND
