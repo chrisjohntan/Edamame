@@ -65,18 +65,22 @@ function sortData(
 
   return filterData(
     [...data].sort((a, b) => {
-      if (sortBy === "size") {
-        if (payload.descending) {
-          return b[sortBy] - a[sortBy];
-        }
-        return a[sortBy] - b[sortBy];
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return payload.descending ? bVal - aVal : aVal - bVal;
       }
 
-      if (payload.descending) {
-        return b[sortBy].localeCompare(a[sortBy]);
+      if (aVal instanceof Date && bVal instanceof Date) {
+        return payload.descending ? bVal.getTime() - aVal.getTime() : aVal.getTime() - bVal.getTime();
       }
-      return a[sortBy].localeCompare(b[sortBy]);
-      
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return payload.descending ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+      }
+
+      return 0;
     }),
     payload.search
   );
@@ -127,9 +131,6 @@ function DeckTable(props: {
         
         <Table.Td onClick={e => e.stopPropagation()}>
           <Group gap={0} justify="flex-end" wrap="nowrap">
-            {/* <ActionIcon variant="subtle" color="gray">
-              <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-            </ActionIcon> */}
             <RenameDeck deck={deck} data={props.data} setData={props.setData}/>
             <DeleteDeck data={sortedData} setData={setSortedData} deck={deck}/>
           </Group>
