@@ -68,8 +68,8 @@ def create_card(deck_id):
         user_id=current_user.id,
         deck_id=deck_id,
         time_created=now,
-        time_for_review=now,
-        time_interval=now-now,  # placeholder
+        time_for_review=now+timedelta(0, 60),  # placeholder
+        time_interval=timedelta(0, 60),  # placeholder
         last_reviewed=now,  # placeholder
         last_modified=now,
         reviews_done=0
