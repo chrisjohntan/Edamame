@@ -8,14 +8,15 @@ function CustomAppShell() {
   const [opened, { toggle }] = useDisclosure();
 
   return (
-    <AppShell header={{ height: 60 }}
+    <AppShell 
+      // header={{ height: 60 }}
       navbar={{
         width: rem(200),
         breakpoint: 'sm',
         collapsed: { mobile: !opened }
       }}
       padding="md">
-      <ProtectedHeader />
+      {/* <ProtectedHeader /> */}
 
       <ProtectedSidebar />
 
