@@ -220,8 +220,29 @@ def next_card(deck_id):
 @cards.route('/get_review_counts')
 @jwt_required()
 def get_daily_counts():
-    start_date = request.args.get("start_date", date.today())
-    end_date = request.args.get("end_date", date.today())
+    # iso format: YYYY-MM-DD
+    try:
+        start_date = datetime.strptime(
+            request.args.get("start_date", date.today()),
+            "%y-%m-%d"
+        ).date()
+        end_date = datetime.strptime(
+            request.args.get("end_date", date.today()),
+            "%y-%m-%d"
+        ).date()
+    except ValueError:
+        return jsonify({
+            "message": "Date format incorrect. Should be YYYY-MM-DD"
+        })
+    
+    if (start_date > end_date):
+        return jsonify({
+            "message": "Start date must be bedore end date"
+        }), HTTPStatus.BAD_REQUEST
+    
     user: User = get_current_user()
     counts = getReviewCounts(user_id=user.id, start_date=start_date, end_date=end_date)
     
+    return jsonify({
+        "review_counts": [c.to_dict() for c in counts]
+    }), HTTPStatus.OK
