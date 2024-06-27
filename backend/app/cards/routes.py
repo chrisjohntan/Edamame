@@ -5,9 +5,10 @@ from http import HTTPStatus
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import httpx
 from ..models import Card, Deck, User
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy import and_
 from .translation import deepl_translate
+from .counter import getReviewCounts
 
 cards = Blueprint("cards", __name__)
 
@@ -178,3 +179,12 @@ def move_card(id, deck_id):
             "deck_id": new_deck.id
         }
     }), HTTPStatus.OK
+
+@cards.route('/get_review_counts')
+@jwt_required()
+def get_daily_counts():
+    start_date = request.args.get("start_date", date.today())
+    end_date = request.args.get("end_date", date.today())
+    user: User = get_current_user()
+    counts = getReviewCounts(user_id=user.id, start_date=start_date, end_date=end_date)
+    
