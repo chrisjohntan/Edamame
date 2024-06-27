@@ -113,10 +113,11 @@ def edit_card(id):
     current_user = get_current_user()
     now = datetime.now()
     card: Card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
     header = request.get_json().get('header', card.header)
     body = request.get_json().get('body', card.body)
@@ -143,10 +144,11 @@ def delete_card(id):
     current_user = get_current_user()
     now = datetime.now()
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
-
+    
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+
+    deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
     deck.last_modified = now
     db.session.delete(card)
@@ -160,11 +162,13 @@ def move_card(id, deck_id):
     current_user = get_current_user()
     now = datetime.now()
     card = Card.query.filter_by(user_id=current_user.id, id=id).first()
-    new_deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
-    prev_deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
+    
+    new_deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    prev_deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
