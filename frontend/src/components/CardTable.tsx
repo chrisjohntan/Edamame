@@ -1,4 +1,4 @@
-import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard, Menu, Grid, SimpleGrid } from "@mantine/core";
+import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard, Menu, Grid, SimpleGrid, Button, Divider } from "@mantine/core";
 import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash, IconDotsVertical } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
@@ -64,14 +64,14 @@ const DisplayCard = ({ cardData } : {cardData: Card}) => {
   return (
     <MantineCard shadow="sm" padding="lg" radius="md" withBorder>
       
-      <MantineCard.Section>
+      {/* <MantineCard.Section>
 
-      </MantineCard.Section>
-      <Group>
-        <Text>{cardData.header}</Text>
+      </MantineCard.Section> */}
+      <Group justify="space-between" >
+        <Text truncate style={{flexGrow:1}}>{cardData.header}</Text>
         <Menu>
           <Menu.Target>
-            <ActionIcon radius="100%">
+            <ActionIcon variant="transparent" >
               <IconDotsVertical/>
             </ActionIcon>
           </Menu.Target>
@@ -80,12 +80,18 @@ const DisplayCard = ({ cardData } : {cardData: Card}) => {
             <Menu.Item leftSection={<IconPencil style={{ width: rem(14), height: rem(14) }} />}>
               Edit card
             </Menu.Item>
-            <Menu.Item leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}>
+            <Menu.Item 
+              leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />} 
+              >
               Delete
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
       </Group>
+      <Text mt="md">
+        {cardData.header_flipped}
+      </Text>
+
     </MantineCard>
   )
 }
@@ -134,20 +140,20 @@ function CardTable(props: {
 }) {
   const [sortBy, setSortBy] = useState<keyof Omit<Card,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
-  const [data, setData] = useState<Card[]>([]);
-  const [sortedData, setSortedData] = useState<Card[]>(data);
+  const [sortedData, setSortedData] = useState<Card[]>(props.data);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
+    setSortedData(sortData(props.data, {sortBy, descending: descending, search: props.searchFilter}))
     console.log("sorting")
-  }, [props.searchFilter, data])
+    return
+  }, [props.searchFilter, props.data])
   
   function handleSort(field: keyof Omit<Card, "id">) {
     const desc = field === sortBy ? !descending : false
     setSortBy(field);
     setDescending(desc);
-    setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
+    setSortedData(sortData(props.data, {sortBy, descending: descending, search: props.searchFilter}))
   }
 
   if (props.view === "table") {
@@ -234,7 +240,7 @@ function CardTable(props: {
 
   if (props.view == "grid") {
     const rows = sortedData?.map(card => (
-      <DisplayCard cardData={card}/>
+      <DisplayCard cardData={card} key={card.id}/>
     ))
 
     return (
@@ -243,10 +249,17 @@ function CardTable(props: {
         Nothing found
       </Text> 
       ) : 
-      <SimpleGrid >
-        {rows}
-      </SimpleGrid>
+      <ScrollArea >
+        <SimpleGrid cols={{ base: 1, xs: 2, md: 3, lg: 4, xl: 5 }}>
+          {rows}
+        </SimpleGrid>
+        <Divider mt="lg" label="You have reached the end" />
+      </ScrollArea>
     )
+  }
+
+  if (loading) {
+    return <LoadingOverlay visible={props.loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
   }
 }
 
