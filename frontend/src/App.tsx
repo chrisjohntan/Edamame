@@ -41,8 +41,9 @@ function App() {
         {/* All protected routes should be nested here */}
           <Route element={<ProtectedRoute/>}>
             <Route element={<CustomAppShell />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/decks" element={<Dashboard />} />
               <Route path="/cards/:deckId" element={<MultiCardView/>}/>
+              <Route path="/stats" element={"Hi"}></Route>
             </Route>
           </Route>
           
