@@ -230,6 +230,11 @@ def review_card(id, response):
     
     deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
+    if card.time_for_review >= now:
+        return jsonify({
+        "message": "Card not available for review yet",
+        }), HTTPStatus.TOO_EARLY
+
     if response not in [1,2,3,4]:
         return jsonify({
             "message": "Invalid Response",
