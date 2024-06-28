@@ -249,11 +249,11 @@ def review_card(id, response):
     card.time_for_review = now + timedelta(seconds=interval)
     card.time_interval = timedelta(seconds=interval)
     card.last_reviewed = now
-    card.last_modified += 1
     card.reviews_done += 1
 
     deck.last_reviewed = now
     deck.reviews_done += 1
+    db.session.commit()
 
     return jsonify({
         "message": f"Review done, card available next at {card.time_for_review}",
