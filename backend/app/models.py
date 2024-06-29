@@ -76,6 +76,22 @@ class Card(db.Model, Base):
         # }
         return card
 
+    def calculate_time_interval(self):
+        # placeholder
+        if self.time_interval == 0:
+            self.time_interval = timedelta(seconds=60)
+
+        return [self.time_interval * self.forgot_multiplier, 
+                self.time_interval * self.hard_multiplier, 
+                self.time_interval * self.okay_multiplier, 
+                self.time_interval * self.easy_multiplier]
+
+    def update_time_interval(self, response):
+        time_interval = self.calculate_time_interval[response]
+        self.time_interval = time_interval
+        # if time_interval > timedelta(days=1):
+
+
 class Deck(db.Model, Base):
     __tablename__ = "decks"
     id: Mapped[int] = mapped_column(primary_key=True)
