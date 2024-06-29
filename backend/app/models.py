@@ -86,9 +86,10 @@ class Card(db.Model, Base):
                 self.time_interval * self.okay_multiplier, 
                 self.time_interval * self.easy_multiplier]
 
-    def update_time_interval(self, response):
+    def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval[response]
         self.time_interval = time_interval
+        # TODO: round to next day
         # if time_interval > timedelta(days=1):
 
 
