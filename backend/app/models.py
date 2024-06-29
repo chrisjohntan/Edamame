@@ -41,6 +41,10 @@ class Card(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    forgot_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    hard_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    okay_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    easy_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
