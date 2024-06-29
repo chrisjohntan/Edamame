@@ -103,7 +103,7 @@ class Card(db.Model, Base):
                 minute = ceildiv(interval.seconds, 60)
                 interval = timedelta(minutes=minute)
             intervals_list[i] = interval
-        print(intervals_list)
+        # print(intervals_list)
         return intervals_list
 
     def update_time_interval(self, response: int):
