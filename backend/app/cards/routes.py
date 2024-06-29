@@ -232,7 +232,7 @@ def next_card(deck_id):
 
 @cards.route("/review_card/<int:id>/<int:response>", methods=["PUT", "PATCH"])
 @jwt_required()
-def review_card(id, response):
+def review_card(id: int, response: int):
     current_user = get_current_user()
     now = datetime.now()
 
@@ -255,13 +255,11 @@ def review_card(id, response):
             "message": "Invalid Response",
         }), HTTPStatus.NOT_FOUND
 
-    # TODO: change to SRS
-    # placeholder in seconds
-    intervals = [60, 120, 180, 240]
-    interval = intervals[response-1]
-    
-    card.time_for_review = now + timedelta(seconds=interval)
-    card.time_interval = timedelta(seconds=interval)
+    # # placeholder in seconds
+    # intervals = [60, 120, 180, 240]
+    # interval = intervals[response-1]
+    card.update_time_interval(response)
+    card.time_for_review = now + card.time_interval
     card.last_reviewed = now
     card.reviews_done += 1
 
