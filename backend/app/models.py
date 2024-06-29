@@ -77,23 +77,38 @@ class Card(db.Model, Base):
         return card
 
     def calculate_time_interval(self):
+        def ceildiv(a, b):
+            return -(a // -b)
         # placeholder
         if self.time_interval == timedelta(seconds=0):
             self.time_interval = timedelta(seconds=60)
 
-        return [self.time_interval * self.forgot_multiplier, 
+        intervals_list = [self.time_interval * self.forgot_multiplier, 
                 self.time_interval * self.hard_multiplier, 
                 self.time_interval * self.okay_multiplier, 
                 self.time_interval * self.easy_multiplier]
+        
+        for interval in intervals_list:
+            
+            if interval < timedelta(hour=1):
+                # round up to nearest min
+                minute = ceildiv(interval.seconds, 60)
+                interval = timedelta(minutes=minute)
+            elif interval < timedelta(days=1):
+                # round up to nearest hour
+                hour = ceildiv(interval.seconds, 3600)
+                interval = timedelta(hours=hour)
+            else:
+                # round up to nearest day
+                interval = timedelta(days=interval.days)
+                
+        return intervals_list
 
     def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval()[response]
         if time_interval == timedelta(seconds=0):
             time_interval = timedelta(seconds=60)
-        
-        # TODO: round to next day
-        # if time_interval > timedelta(days=1):
-        
+
         self.time_interval = time_interval
 
 
