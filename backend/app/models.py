@@ -78,7 +78,7 @@ class Card(db.Model, Base):
 
     def calculate_time_interval(self):
         # placeholder
-        if self.time_interval == 0:
+        if self.time_interval == timedelta(seconds=0):
             self.time_interval = timedelta(seconds=60)
 
         return [self.time_interval * self.forgot_multiplier, 
@@ -87,10 +87,14 @@ class Card(db.Model, Base):
                 self.time_interval * self.easy_multiplier]
 
     def update_time_interval(self, response: int):
-        time_interval = self.calculate_time_interval[response]
-        self.time_interval = time_interval
+        time_interval = self.calculate_time_interval()[response]
+        if time_interval == timedelta(seconds=0):
+            time_interval = timedelta(seconds=60)
+        
         # TODO: round to next day
         # if time_interval > timedelta(days=1):
+        
+        self.time_interval = time_interval
 
 
 class Deck(db.Model, Base):
