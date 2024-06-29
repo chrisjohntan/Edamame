@@ -244,14 +244,8 @@ def review_card(id, response):
 
     # TODO: change to SRS
     # placeholder in seconds
-    if response == 1:
-        interval = 60
-    if response == 2:
-        interval = 120
-    if response == 3:
-        interval = 180
-    if response == 4:
-        interval = 240
+    intervals = [60, 120, 180, 240]
+    interval = intervals[response-1]
     
     card.time_for_review = now + timedelta(seconds=interval)
     card.time_interval = timedelta(seconds=interval)
