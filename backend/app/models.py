@@ -88,9 +88,11 @@ class Card(db.Model, Base):
                 self.time_interval * self.okay_multiplier, 
                 self.time_interval * self.easy_multiplier]
         
-        for interval in intervals_list:
-            
-            if interval < timedelta(hour=1):
+        for i in range(len(intervals_list)):
+            interval = intervals_list[i]
+            # truncate to seconds
+            interval = timedelta(seconds=interval.seconds)
+            if interval < timedelta(hours=1):
                 # round up to nearest min
                 minute = ceildiv(interval.seconds, 60)
                 interval = timedelta(minutes=minute)
@@ -101,7 +103,8 @@ class Card(db.Model, Base):
             else:
                 # round up to nearest day
                 interval = timedelta(days=interval.days)
-                
+            intervals_list[i] = interval
+
         return intervals_list
 
     def update_time_interval(self, response: int):
