@@ -27,16 +27,16 @@ def upgrade():
        #  batch_op.execute(f"UPDATE cards SET time_interval = {timedelta(seconds=60)}")
 
         batch_op.alter_column('forgot_multiplier',
-               existing_type=sa.INTEGER(),
+               existing_type=sa.Float(),
                nullable=False)
         batch_op.alter_column('hard_multiplier',
-               existing_type=sa.INTEGER(),
+               existing_type=sa.Float(),
                nullable=False)
         batch_op.alter_column('okay_multiplier',
-               existing_type=sa.INTEGER(),
+               existing_type=sa.Float(),
                nullable=False)
         batch_op.alter_column('easy_multiplier',
-               existing_type=sa.INTEGER(),
+               existing_type=sa.Float(),
                nullable=False)
 
     # ### end Alembic commands ###

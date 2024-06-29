@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Text, ForeignKey, DateTime, Interval, Date
+from sqlalchemy import String, Integer, Float, Text, ForeignKey, DateTime, Interval, Date
 from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
@@ -41,10 +41,10 @@ class Card(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
-    forgot_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
-    hard_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
-    okay_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
-    easy_multiplier: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    forgot_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
