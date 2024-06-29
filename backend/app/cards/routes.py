@@ -83,6 +83,10 @@ def create_card(deck_id):
         last_reviewed=now,  # placeholder
         last_modified=now,
         reviews_done=0,
+        forgot_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[1],
+        hard_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[2],
+        okay_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[3],
+        easy_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[4],
     )
 
     deck.last_modified=now
