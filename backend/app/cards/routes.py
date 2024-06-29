@@ -10,6 +10,15 @@ from sqlalchemy import and_
 from .translation import deepl_translate
 from .counter import getReviewCounts
 
+# placeholder
+DEFAULT_TIME_INTERVAL_MULTIPLIER = {
+    1: 0,    # forgot
+    2: 1.2,  # hard
+    3: 2.5,  # okay
+    4: 3.25  # easy
+}
+
+
 cards = Blueprint("cards", __name__)
 
 # Depreciated
@@ -73,7 +82,7 @@ def create_card(deck_id):
         time_interval=timedelta(0, 60),  # placeholder
         last_reviewed=now,  # placeholder
         last_modified=now,
-        reviews_done=0
+        reviews_done=0,
     )
 
     deck.last_modified=now
