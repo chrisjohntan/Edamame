@@ -95,14 +95,14 @@ function DeckTable(props: {
   data: Deck[],
   setData: (d:Deck[])=>void
 }) {
-  const [view, setView] = useState<"grid"|"table">("table");
-  const toggleView = () => {
-    if (view === "grid") {
-      setView("table");
-    } else {
-      setView("grid");
-    }
-  }
+  // const [view, setView] = useState<"grid"|"table">("table");
+  // const toggleView = () => {
+  //   if (view === "grid") {
+  //     setView("table");
+  //   } else {
+  //     setView("grid");
+  //   }
+  // }
   const [sortBy, setSortBy] = useState<keyof Omit<Deck,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
   const [sortedData, setSortedData] = useState<Deck[]>(props.data);
@@ -121,7 +121,7 @@ function DeckTable(props: {
     setSortedData(sortData(sortedData, {sortBy, descending: descending, search: props.searchFilter}))
   }
 
-  if (view === "table") {
+  if (props.view === "table") {
     const rows = sortedData?.map((deck) => (
       <Table.Tr key={deck.id} className={classes.row} onClick={()=>navigate(`/cards/${deck.id}`)}>
         
