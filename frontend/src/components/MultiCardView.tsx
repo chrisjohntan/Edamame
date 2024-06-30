@@ -8,7 +8,7 @@ import { AxiosResponse, isAxiosError } from "axios";
 import CardTable from "./CardTable";
 import { dataToCard } from "./utils";
 import CreateCard from "./CreateCard";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconBook } from "@tabler/icons-react";
 import CardViewer from "./CardViewer";
 
 
@@ -79,7 +79,12 @@ function MultiCardView() {
           <SearchBar
             searchFilter={searchFilter}
             onSearchFilterChange={setSearchFilter}/>
-          <Button onClick={()=>setViewerOpened(true)}>Review</Button>
+          <Button 
+            onClick={()=>setViewerOpened(true)}
+            leftSection={<IconBook/>}
+          >
+            Review
+          </Button>
           <CreateCard addData={addData} deckId={deckId} />
         </Group>
         <CardTable 
@@ -89,7 +94,10 @@ function MultiCardView() {
           view={view} 
           loading={pageLoading} />
 
-        <CardViewer opened={viewerOpened} onClose={()=>setViewerOpened(false)} deckId={deckId}/>
+        <CardViewer 
+          opened={viewerOpened} 
+          onClose={()=>setViewerOpened(false)} 
+          deckId={deckId}/>
       </>
     )
   }
