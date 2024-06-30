@@ -10,7 +10,6 @@ import { dataToCard } from "./utils";
 function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClose: () => void }) {
   // const cardData
   const [loading, setLoading] = useState(false);
-  console.log("opened")
 
   /**
    * @todo: should put this in parent
@@ -30,7 +29,8 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     try {
       setLoading(true);
       const response = await axios.get(`/next_card/${props.deckId}`);
-      setCurrentCard(dataToCard(response));
+      console.log(response)
+      setCurrentCard(dataToCard(response.data.card));
     } catch (err) {
       if (isAxiosError(err)) {
         
@@ -48,10 +48,16 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     }
   }, [])
 
-  if (props.card) {
+  if (loading) {
+    return <div>loading</div>
+  }
+
+  if (currentCard) {
+    console.log("card" + currentCard.header)
     return (
       <>
         <Modal
+          // opened={props.opened}
           opened={props.opened}
           onClose={props.onClose}
         >
@@ -60,14 +66,14 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
             side === "front"
               ? (
                 <Box>
-                  <Text ta="center">{props.card.header}</Text>
-                  <Text ta="center">{props.card.body}</Text>
+                  <Text ta="center">{currentCard.header}</Text>
+                  <Text ta="center">{currentCard.body}</Text>
                   <Button onClick={toggleSide}>Show back</Button>
                 </Box>
               ) : (
                 <Box>
-                  <Text ta="center">{props.card.header_flipped}</Text>
-                  <Text ta="center">{props.card.body_flipped}</Text>
+                  <Text ta="center">{currentCard.header_flipped}</Text>
+                  <Text ta="center">{currentCard.body_flipped}</Text>
                   <Button onClick={toggleSide}>Show front</Button>
                   <Button onClick={()=>{toggleSide();getNextCard();}}>Next card</Button>
                 </Box>
@@ -76,6 +82,8 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
         </Modal>
       </>
     )
+  } else {
+    return <div>dddd</div>
   }
 }
 
