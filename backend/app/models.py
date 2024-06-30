@@ -70,6 +70,11 @@ class Card(db.Model, Base):
         #         if col.name not in exclude
         # }
         return card
+        
+    def get_deck(self):
+        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+
+        return deck
 
     def calculate_time_interval(self):
         def ceildiv(a, b):
@@ -78,7 +83,7 @@ class Card(db.Model, Base):
         if self.time_interval == timedelta(seconds=0):
             self.time_interval = timedelta(seconds=60)
 
-        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+        deck: Deck = self.get_deck()
 
         intervals_list = [self.time_interval * deck.forgot_multiplier, 
                 self.time_interval * deck.hard_multiplier, 
@@ -111,13 +116,13 @@ class Card(db.Model, Base):
         self.time_interval = time_interval
 
     def update_last_modified(self, now:datetime):
-        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+        deck: Deck = self.get_deck()
 
         self.last_modified = now
         deck.update_last_modified(now)
 
     def update_last_reviewed(self, now:datetime):
-        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+        deck: Deck = self.get_deck()
 
         self.last_reviewed = now
         self.reviews_done += 1
