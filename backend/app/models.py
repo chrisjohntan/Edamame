@@ -110,6 +110,18 @@ class Card(db.Model, Base):
 
         self.time_interval = time_interval
 
+    def update_last_modified(self, now:datetime):
+        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+
+        self.last_modified = now
+        deck.update_last_modified(now)
+
+    def update_last_reviewed(self, now:datetime):
+        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+
+        self.last_reviewed = now
+        self.reviews_done += 1
+        deck.update_last_reviewed(now)
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
@@ -145,6 +157,13 @@ class Deck(db.Model, Base):
                 d[col.name] = val
         d["size"] = len(self.cards)
         return d
+    
+    def update_last_modified(self, now:datetime):
+        self.last_modified = now
+    
+    def update_last_reviewed(self, now:datetime):
+        self.last_reviewed = now
+        self.reviews_done += 1
     
 class ReviewCount(db.Model, Base):
     __tablename__ = "review_count"
