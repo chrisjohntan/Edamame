@@ -15,7 +15,7 @@ function CustomAppShell() {
         breakpoint: 'sm',
         collapsed: { mobile: !opened }
       }}
-      padding="md">
+      padding="lg">
       {/* <ProtectedHeader /> */}
 
       <ProtectedSidebar />
