@@ -76,7 +76,7 @@ def create_card(deck_id):
         reviews_done=0,
     )
 
-    deck.update_last_modified()
+    deck.update_last_modified(now)
 
     db.session.add(card)
     db.session.commit()
@@ -118,7 +118,7 @@ def edit_card(id):
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
 
-    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    deck: Deck = card.get_deck()
 
     header = request.get_json().get('header', card.header)
     body = request.get_json().get('body', card.body)
@@ -129,7 +129,7 @@ def edit_card(id):
     card.body = body
     card.header_flipped = header_flipped
     card.body_flipped = body_flipped
-    card.update_last_modified()
+    card.update_last_modified(now)
 
     db.session.commit()
 
@@ -148,9 +148,9 @@ def delete_card(id):
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
 
-    deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    deck: Deck = card.get_deck()
 
-    deck.update_last_modified()
+    deck.update_last_modified(now)
     db.session.delete(card)
     db.session.commit()
 
@@ -167,14 +167,14 @@ def move_card(id, deck_id):
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
     
     new_deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
-    prev_deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    prev_deck: Deck = card.get_deck()
     
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     card.deck_id = new_deck.id
-    prev_deck.update_last_modified()
-    new_deck.update_last_modified()
+    prev_deck.update_last_modified(now)
+    new_deck.update_last_modified(now)
     db.session.commit()
     return jsonify({
         "message": "Card moved",
@@ -226,8 +226,6 @@ def review_card(id: int, response: int):
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
-    
-    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
     ignore_review_time = request.get_json().get('ignore_review_time', '')
 
