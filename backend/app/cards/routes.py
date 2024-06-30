@@ -183,7 +183,7 @@ def move_card(id, deck_id):
         }
     }), HTTPStatus.OK
 
-@cards.route("/next_card/<int:deck_id>", methods=["GET"])
+@cards.route("/next_card/<int:deck_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def next_card(deck_id):
     current_user = get_current_user()
