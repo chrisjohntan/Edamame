@@ -1,4 +1,4 @@
-import { Box, Button, LoadingOverlay, Modal, Text } from "@mantine/core";
+import { Box, Button, Group, LoadingOverlay, Modal, Text } from "@mantine/core";
 import { Card } from "../types";
 import { useEffect, useState } from "react";
 import axios from "../axiosConfig";
@@ -29,13 +29,16 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     try {
       console.log("getting next card..")
       setLoading(true);
-      const response = await axios.put(`/next_card/${props.deckId}`);
+      const response = await axios.put(`/next_card/${props.deckId}`, {});
       console.log(response)
       setCurrentCard(dataToCard(response.data.card));
     } catch (err) {
       if (isAxiosError(err)) {
-        
+        if (err.response?.status === 404) {
+          console.log("no cards found")
+        }
       }
+      props.onClose();
     } finally {
       setLoading(false);
     }
@@ -51,8 +54,15 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     }
   }, [props.opened])
 
-  if (loading) {
-    return <div>loading</div>
+  const handleNext = async (ease: number) => {
+    if (currentCard) {
+      try {
+        const reponse = axios.put(`/review_card/${currentCard.id}/${ease}`);
+        
+      } catch (err) {
+
+      }
+    }
   }
 
   if (currentCard) {
@@ -69,24 +79,30 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
             side === "front"
               ? (
                 <Box>
-                  <Text ta="center">{currentCard.header}</Text>
-                  <Text ta="center">{currentCard.body}</Text>
+                  <Text ta="center" mb="md">{currentCard.header}</Text>
+                  <Text ta="center" mb="md">{currentCard.body}</Text>
                   <Button onClick={toggleSide}>Show back</Button>
                 </Box>
               ) : (
                 <Box>
-                  <Text ta="center">{currentCard.header_flipped}</Text>
-                  <Text ta="center">{currentCard.body_flipped}</Text>
-                  <Button onClick={toggleSide}>Show front</Button>
-                  <Button onClick={()=>{toggleSide();getNextCard();}}>Next card</Button>
+                  <Text ta="center" mb="md">{currentCard.header_flipped}</Text>
+                  <Text ta="center" mb="md">{currentCard.body_flipped}</Text>
+                  <Button onClick={toggleSide} mb="xl">Show front</Button>
+                  {/* <Button onClick={()=>{toggleSide();getNextCard();}}>Next card</Button> */}
+                  <Button>
+                    <Button.Group variant="default" >
+                      <Button variant="default">Forgot</Button>
+                      <Button variant="default">Hard</Button>
+                      <Button variant="default">Okay</Button>
+                      <Button variant="default">Easy</Button>
+                    </Button.Group>
+                  </Button>
                 </Box>
               )
           }
         </Modal>
       </>
     )
-  } else {
-    return <div>dddd</div>
   }
 }
 
