@@ -47,7 +47,7 @@ cards = Blueprint("cards", __name__)
 def create_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     header = request.json["header"]
     body = request.get_json().get("body", "")
@@ -76,7 +76,7 @@ def create_card(deck_id):
         reviews_done=0,
     )
 
-    deck.last_modified=now
+    deck.update_last_modified()
 
     db.session.add(card)
     db.session.commit()
@@ -129,8 +129,7 @@ def edit_card(id):
     card.body = body
     card.header_flipped = header_flipped
     card.body_flipped = body_flipped
-    card.last_modified = now
-    deck.last_modified = now
+    card.update_last_modified()
 
     db.session.commit()
 
@@ -151,7 +150,7 @@ def delete_card(id):
 
     deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
-    deck.last_modified = now
+    deck.update_last_modified()
     db.session.delete(card)
     db.session.commit()
 
@@ -162,20 +161,20 @@ def delete_card(id):
 def move_card(id, deck_id):
     current_user = get_current_user()
     now = datetime.now()
-    card = Card.query.filter_by(user_id=current_user.id, id=id).first()
+    card: Card = Card.query.filter_by(user_id=current_user.id, id=id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
     
-    new_deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
-    prev_deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    new_deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    prev_deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
     
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     card.deck_id = new_deck.id
-    prev_deck.last_modified = now
-    new_deck.last_modified = now
+    prev_deck.update_last_modified()
+    new_deck.update_last_modified()
     db.session.commit()
     return jsonify({
         "message": "Card moved",
@@ -247,11 +246,8 @@ def review_card(id: int, response: int):
     # interval = intervals[response-1]
     card.update_time_interval(response-1)
     card.time_for_review = now + card.time_interval
-    card.last_reviewed = now
-    card.reviews_done += 1
+    card.update_last_reviewed(now)
 
-    deck.last_reviewed = now
-    deck.reviews_done += 1
     db.session.commit()
 
     return jsonify({
