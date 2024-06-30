@@ -27,8 +27,9 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
 
   const getNextCard = async () => {
     try {
+      console.log("getting next card..")
       setLoading(true);
-      const response = await axios.get(`/next_card/${props.deckId}`);
+      const response = await axios.put(`/next_card/${props.deckId}`);
       console.log(response)
       setCurrentCard(dataToCard(response.data.card));
     } catch (err) {
@@ -41,12 +42,14 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
   }
 
   useEffect(() => {
-    if (props.card) {
-      setCurrentCard(props.card);
-    } else {
-      getNextCard();
+    if (props.opened) {
+      if (props.card) {
+        setCurrentCard(props.card);
+      } else {
+        getNextCard();
+      }
     }
-  }, [])
+  }, [props.opened])
 
   if (loading) {
     return <div>loading</div>
