@@ -10,15 +10,6 @@ from sqlalchemy import and_
 from .translation import deepl_translate
 from .counter import getReviewCounts
 
-# placeholder
-DEFAULT_TIME_INTERVAL_MULTIPLIER = {
-    1: 0,    # forgot
-    2: 1.2,  # hard
-    3: 2.5,  # okay
-    4: 3.25  # easy
-}
-
-
 cards = Blueprint("cards", __name__)
 
 # Depreciated
@@ -56,7 +47,7 @@ cards = Blueprint("cards", __name__)
 def create_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
-    deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     
     header = request.json["header"]
     body = request.get_json().get("body", "")
@@ -83,13 +74,9 @@ def create_card(deck_id):
         last_reviewed=now,  # placeholder
         last_modified=now,
         reviews_done=0,
-        forgot_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[1],
-        hard_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[2],
-        okay_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[3],
-        easy_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[4],
     )
 
-    deck.last_modified=now
+    deck.update_last_modified(now)
 
     db.session.add(card)
     db.session.commit()
@@ -131,7 +118,7 @@ def edit_card(id):
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
 
-    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    deck: Deck = card.get_deck()
 
     header = request.get_json().get('header', card.header)
     body = request.get_json().get('body', card.body)
@@ -142,8 +129,7 @@ def edit_card(id):
     card.body = body
     card.header_flipped = header_flipped
     card.body_flipped = body_flipped
-    card.last_modified = now
-    deck.last_modified = now
+    card.update_last_modified(now)
 
     db.session.commit()
 
@@ -162,9 +148,9 @@ def delete_card(id):
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
 
-    deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    deck: Deck = card.get_deck()
 
-    deck.last_modified = now
+    deck.update_last_modified(now)
     db.session.delete(card)
     db.session.commit()
 
@@ -175,20 +161,20 @@ def delete_card(id):
 def move_card(id, deck_id):
     current_user = get_current_user()
     now = datetime.now()
-    card = Card.query.filter_by(user_id=current_user.id, id=id).first()
+    card: Card = Card.query.filter_by(user_id=current_user.id, id=id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
     
-    new_deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
-    prev_deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
+    new_deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    prev_deck: Deck = card.get_deck()
     
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     card.deck_id = new_deck.id
-    prev_deck.last_modified = now
-    new_deck.last_modified = now
+    prev_deck.update_last_modified(now)
+    new_deck.update_last_modified(now)
     db.session.commit()
     return jsonify({
         "message": "Card moved",
@@ -197,12 +183,13 @@ def move_card(id, deck_id):
         }
     }), HTTPStatus.OK
 
-@cards.route("/next_card/<int:deck_id>", methods=["PUT", "PATCH"])
+@cards.route("/next_card/<int:deck_id>", methods=["GET"])
 @jwt_required()
 def next_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
-    
+    ignore_review_time = request.get_json().get('ignore_review_time', '')
+
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     if not deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
@@ -221,7 +208,7 @@ def next_card(deck_id):
 
     card = cards.order_by(Card.time_for_review.asc()).first()
 
-    if card.time_for_review >= now:
+    if card.time_for_review >= now and not ignore_review_time:
         return jsonify({
         "message": "No cards due for review now",
         }), HTTPStatus.OK
@@ -235,15 +222,12 @@ def next_card(deck_id):
 def review_card(id: int, response: int):
     current_user = get_current_user()
     now = datetime.now()
+    ignore_review_time = request.get_json().get('ignore_review_time', '')
 
     card: Card = Card.query.filter_by(user_id=current_user.id, id=id).first()
     
     if not card:
         return jsonify({"message": "Card not found"}),HTTPStatus.NOT_FOUND
-    
-    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
-
-    ignore_review_time = request.get_json().get('ignore_review_time', '')
 
     if card.time_for_review >= now and not ignore_review_time:
         return jsonify({
@@ -260,11 +244,8 @@ def review_card(id: int, response: int):
     # interval = intervals[response-1]
     card.update_time_interval(response-1)
     card.time_for_review = now + card.time_interval
-    card.last_reviewed = now
-    card.reviews_done += 1
+    card.update_last_reviewed(now)
 
-    deck.last_reviewed = now
-    deck.reviews_done += 1
     db.session.commit()
 
     return jsonify({

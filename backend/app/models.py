@@ -41,12 +41,7 @@ class Card(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
-    forgot_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
-    hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
-    okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
-    easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
 
-    # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
     # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -75,6 +70,11 @@ class Card(db.Model, Base):
         #         if col.name not in exclude
         # }
         return card
+        
+    def get_deck(self):
+        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+
+        return deck
 
     def calculate_time_interval(self):
         def ceildiv(a, b):
@@ -83,10 +83,12 @@ class Card(db.Model, Base):
         if self.time_interval == timedelta(seconds=0):
             self.time_interval = timedelta(seconds=60)
 
-        intervals_list = [self.time_interval * self.forgot_multiplier, 
-                self.time_interval * self.hard_multiplier, 
-                self.time_interval * self.okay_multiplier, 
-                self.time_interval * self.easy_multiplier]
+        deck: Deck = self.get_deck()
+
+        intervals_list = [self.time_interval * deck.forgot_multiplier, 
+                self.time_interval * deck.hard_multiplier, 
+                self.time_interval * deck.okay_multiplier, 
+                self.time_interval * deck.easy_multiplier]
         
         for i in range(len(intervals_list)):
             interval = intervals_list[i]
@@ -113,6 +115,18 @@ class Card(db.Model, Base):
 
         self.time_interval = time_interval
 
+    def update_last_modified(self, now:datetime):
+        deck: Deck = self.get_deck()
+
+        self.last_modified = now
+        deck.update_last_modified(now)
+
+    def update_last_reviewed(self, now:datetime):
+        deck: Deck = self.get_deck()
+
+        self.last_reviewed = now
+        self.reviews_done += 1
+        deck.update_last_reviewed(now)
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
@@ -122,8 +136,11 @@ class Deck(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    forgot_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
 
-    # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     # card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
     user: Mapped["User"] = relationship("User", back_populates="user_decks")
@@ -145,6 +162,13 @@ class Deck(db.Model, Base):
                 d[col.name] = val
         d["size"] = len(self.cards)
         return d
+    
+    def update_last_modified(self, now:datetime):
+        self.last_modified = now
+    
+    def update_last_reviewed(self, now:datetime):
+        self.last_reviewed = now
+        self.reviews_done += 1
     
 class ReviewCount(db.Model, Base):
     __tablename__ = "review_count"
