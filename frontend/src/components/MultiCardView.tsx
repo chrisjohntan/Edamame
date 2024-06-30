@@ -1,4 +1,4 @@
-import { Anchor, Box, Center, Group, Text, UnstyledButton, rem } from "@mantine/core";
+import { Anchor, Box, Button, Center, Group, Text, UnstyledButton, rem } from "@mantine/core";
 import { useNavigate, useParams } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { useEffect, useState } from "react";
@@ -9,17 +9,19 @@ import CardTable from "./CardTable";
 import { dataToCard } from "./utils";
 import CreateCard from "./CreateCard";
 import { IconArrowLeft } from "@tabler/icons-react";
+import CardViewer from "./CardViewer";
 
 
 function MultiCardView() {
   const params = useParams();
-  const deckId = params.deckId;
+  const deckId = Number(params.deckId as string);
   const navigate = useNavigate();
   const [searchFilter, setSearchFilter] = useState("");
   const [data, setData] = useState<Card[]>([])
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState<string|null>("")
   const [view, setView] = useState<"grid"|"table">("grid")
+  const [viewerOpened, setViewerOpened] = useState(false)
 
   useEffect(() => {
     const getData = async () => {
@@ -32,7 +34,8 @@ function MultiCardView() {
         console.log("parsed response " + data)
       } catch (err) {
         if (isAxiosError(err)) {
-          setError(err.response?.data.message) 
+          
+          setError(err.response?.data.error) 
         }
         console.error(err);
       } finally{
@@ -43,7 +46,7 @@ function MultiCardView() {
   }, [])
 
   const addData = (newCard: Card) => {
-    setData([...data, newCard])
+    setData([newCard, ...data])
   }
 
   const toggleView = () => {
@@ -55,26 +58,29 @@ function MultiCardView() {
   }
 
   if (error) {
+    console.log(error)
+    throw(error);
     return <div>{error}</div>
   } else {
     return (
       <>
-          <Anchor
-            href="/decks"
-            underline="always"
-            mb="xl"
-            onClick={e=>{e.preventDefault(); navigate("/decks")}}
-            w="auto">
-              <Center inline mb="xs">
-                <IconArrowLeft style={{ width: rem(15), height: rem(15) }}/>
-                <Box ml={1}>Back to decks</Box>
-              </Center>
-          </Anchor>
+        <Anchor
+          href="/decks"
+          underline="always"
+          mb="xl"
+          onClick={e=>{e.preventDefault(); navigate("/decks")}}
+          w="auto">
+            <Center inline mb="xs">
+              <IconArrowLeft style={{ width: rem(15), height: rem(15) }}/>
+              <Box ml={1}>Back to decks</Box>
+            </Center>
+        </Anchor>
         <Group mb="md">
           <SearchBar
             searchFilter={searchFilter}
             onSearchFilterChange={setSearchFilter}/>
-          <CreateCard addData={addData} deckId={deckId as string} />
+          <Button onClick={()=>setViewerOpened(true)}>Review</Button>
+          <CreateCard addData={addData} deckId={deckId} />
         </Group>
         <CardTable 
           data={data} 
@@ -82,6 +88,8 @@ function MultiCardView() {
           searchFilter={searchFilter} 
           view={view} 
           loading={pageLoading} />
+
+        <CardViewer opened={viewerOpened} onClose={()=>setViewerOpened(false)} deckId={deckId}/>
       </>
     )
   }
