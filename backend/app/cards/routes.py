@@ -57,7 +57,7 @@ def create_card(deck_id):
     
     if card_type == "auto":
         try:
-            body_flipped = deepl_translate(header)
+            header_flipped = deepl_translate(header)
         except ValueError:
             print("Something went wrong")
 
