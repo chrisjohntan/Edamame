@@ -78,10 +78,12 @@ class Card(db.Model, Base):
         if self.time_interval == timedelta(seconds=0):
             self.time_interval = timedelta(seconds=60)
 
-        intervals_list = [self.time_interval * self.forgot_multiplier, 
-                self.time_interval * self.hard_multiplier, 
-                self.time_interval * self.okay_multiplier, 
-                self.time_interval * self.easy_multiplier]
+        deck: Deck = Deck.query.filter_by(id=self.deck_id).first()
+
+        intervals_list = [self.time_interval * deck.forgot_multiplier, 
+                self.time_interval * deck.hard_multiplier, 
+                self.time_interval * deck.okay_multiplier, 
+                self.time_interval * deck.easy_multiplier]
         
         for i in range(len(intervals_list)):
             interval = intervals_list[i]
