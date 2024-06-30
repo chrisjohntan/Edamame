@@ -5,6 +5,7 @@ import DeckTable from "./DeckTable";
 import CreateDeck from "./CreateDeck";
 import axios from "../axiosConfig"
 import { Container, Group } from "@mantine/core";
+import { dataToDeck } from "./utils";
 
 function MultiDeckView() {
   const [searchFilter, setSearchFilter] = useState(""); 
@@ -18,7 +19,7 @@ function MultiDeckView() {
         setLoading(true);
         const response = await axios.get("/get_decks")
         // Parse response
-        const parsedResponse = await response.data.map((resObj:any): Deck => ({id: resObj.id, deck_name: resObj.deck_name, size: resObj.size}))
+        const parsedResponse = await response.data.map(dataToDeck)
         setData(parsedResponse)
         console.log(data)
       } catch (err) {
