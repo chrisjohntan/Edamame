@@ -6,6 +6,14 @@ from flask_jwt_extended import jwt_required, get_current_user
 from datetime import datetime
 from sqlalchemy import and_
 
+# placeholder
+DEFAULT_TIME_INTERVAL_MULTIPLIER = {
+    1: 0,    # forgot
+    2: 1.2,  # hard
+    3: 2.5,  # okay
+    4: 3.25  # easy
+}
+
 decks = Blueprint("decks", __name__)
 
 @decks.route("/create_deck", methods=["POST"])
@@ -29,7 +37,11 @@ def create_deck():
         time_created=now,
         last_reviewed=now,  # placeholder
         last_modified=now,
-        reviews_done=0
+        reviews_done=0,
+        forgot_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[1],
+        hard_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[2],
+        okay_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[3],
+        easy_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[4],
     )
 
     db.session.add(deck)
