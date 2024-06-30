@@ -41,12 +41,7 @@ class Card(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
-    forgot_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
-    hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
-    okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
-    easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
 
-    # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
     # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -122,8 +117,11 @@ class Deck(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    forgot_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
 
-    # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     # card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))
     user: Mapped["User"] = relationship("User", back_populates="user_decks")
