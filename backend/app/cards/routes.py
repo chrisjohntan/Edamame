@@ -98,7 +98,7 @@ def get_cards(deck_id):
         ).scalar()
     if not deck_exists:
         return jsonify({
-            "error": "Deck not found"
+            "message": "Deck not found"
         }), HTTPStatus.NOT_FOUND
     
     data = []
