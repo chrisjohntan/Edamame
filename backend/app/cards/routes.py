@@ -10,6 +10,15 @@ from sqlalchemy import and_
 from .translation import deepl_translate
 from .counter import getReviewCounts
 
+# placeholder
+DEFAULT_TIME_INTERVAL_MULTIPLIER = {
+    1: 0,    # forgot
+    2: 1.2,  # hard
+    3: 2.5,  # okay
+    4: 3.25  # easy
+}
+
+
 cards = Blueprint("cards", __name__)
 
 # Depreciated
@@ -73,7 +82,11 @@ def create_card(deck_id):
         time_interval=timedelta(0, 60),  # placeholder
         last_reviewed=now,  # placeholder
         last_modified=now,
-        reviews_done=0
+        reviews_done=0,
+        forgot_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[1],
+        hard_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[2],
+        okay_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[3],
+        easy_multiplier=DEFAULT_TIME_INTERVAL_MULTIPLIER[4],
     )
 
     deck.last_modified=now
@@ -98,7 +111,7 @@ def get_cards(deck_id):
         ).scalar()
     if not deck_exists:
         return jsonify({
-            "error": "Deck not found"
+            "message": "Deck not found"
         }), HTTPStatus.NOT_FOUND
     
     data = []
@@ -219,7 +232,7 @@ def next_card(deck_id):
 
 @cards.route("/review_card/<int:id>/<int:response>", methods=["PUT", "PATCH"])
 @jwt_required()
-def review_card(id, response):
+def review_card(id: int, response: int):
     current_user = get_current_user()
     now = datetime.now()
 
@@ -230,30 +243,29 @@ def review_card(id, response):
     
     deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=card.deck_id).first()
 
+    ignore_review_time = request.get_json().get('ignore_review_time', '')
+
+    if card.time_for_review >= now and not ignore_review_time:
+        return jsonify({
+        "message": "Card not available for review yet",
+        }), HTTPStatus.TOO_EARLY
+
     if response not in [1,2,3,4]:
         return jsonify({
             "message": "Invalid Response",
         }), HTTPStatus.NOT_FOUND
 
-    # TODO: change to SRS
-    # placeholder in seconds
-    if response == 1:
-        interval = 60
-    if response == 2:
-        interval = 120
-    if response == 3:
-        interval = 180
-    if response == 4:
-        interval = 240
-    
-    card.time_for_review = now + timedelta(seconds=interval)
-    card.time_interval = timedelta(seconds=interval)
+    # # placeholder in seconds
+    # intervals = [60, 120, 180, 240]
+    # interval = intervals[response-1]
+    card.update_time_interval(response-1)
+    card.time_for_review = now + card.time_interval
     card.last_reviewed = now
-    card.last_modified += 1
     card.reviews_done += 1
 
     deck.last_reviewed = now
     deck.reviews_done += 1
+    db.session.commit()
 
     return jsonify({
         "message": f"Review done, card available next at {card.time_for_review}",

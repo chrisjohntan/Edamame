@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Text, ForeignKey, DateTime, Interval, Date
+from sqlalchemy import String, Integer, Float, Text, ForeignKey, DateTime, Interval, Date
 from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
@@ -41,6 +41,10 @@ class Card(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    forgot_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
 
     # TODO: in legacy, try to change later
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
@@ -71,6 +75,44 @@ class Card(db.Model, Base):
         #         if col.name not in exclude
         # }
         return card
+
+    def calculate_time_interval(self):
+        def ceildiv(a, b):
+            return -(a // -b)
+        # placeholder
+        if self.time_interval == timedelta(seconds=0):
+            self.time_interval = timedelta(seconds=60)
+
+        intervals_list = [self.time_interval * self.forgot_multiplier, 
+                self.time_interval * self.hard_multiplier, 
+                self.time_interval * self.okay_multiplier, 
+                self.time_interval * self.easy_multiplier]
+        
+        for i in range(len(intervals_list)):
+            interval = intervals_list[i]
+            if interval > timedelta(days=1):
+                # round up to nearest day
+                day = ceildiv(interval.days*86400 + interval.seconds, 86400)
+                interval = timedelta(days=day)
+            elif interval > timedelta(hours=1):
+                # round up to nearest hour
+                hour = ceildiv(interval.days*86400 + interval.seconds, 3600)
+                interval = timedelta(hours=hour)
+            else:
+                # round up to nearest min
+                minute = ceildiv(interval.seconds, 60)
+                interval = timedelta(minutes=minute)
+            intervals_list[i] = interval
+        # print(intervals_list)
+        return intervals_list
+
+    def update_time_interval(self, response: int):
+        time_interval = self.calculate_time_interval()[response]
+        if time_interval == timedelta(seconds=0):
+            time_interval = timedelta(seconds=60)
+
+        self.time_interval = time_interval
+
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
