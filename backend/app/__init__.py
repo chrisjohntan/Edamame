@@ -28,7 +28,7 @@ def create_app(test_config=None):
     from .extensions import migrate
     from .extensions import jwt_manager
     # import all models
-    from .models import User, Card
+    from .models import User, Card, Deck, ReviewCount
     
     db.init_app(app)
     with app.app_context():
