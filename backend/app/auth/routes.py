@@ -100,7 +100,16 @@ def protected():
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
 
-@auth.route("/forgot_password", methods=["GET"])
+@auth.route("/forgot_password/<int:user_id>", methods=["GET"])
 @jwt_required()
-def forgot_password():
-    pass
+def forgot_password(id):
+    user: User = User.query.filter_by(id=id).first()
+    
+    # placeholder
+    new_password = "ABC"
+    user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
+    db.session.commit()
+
+    return jsonify({
+        "message": "Password Reset",
+    }), HTTPStatus.OK
