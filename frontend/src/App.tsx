@@ -17,6 +17,7 @@ import classes from "./App.module.css"
 import MultiCardView from './components/MultiCardView.tsx';
 import { ForgotPassword } from './components/ForgetPasswordForm.tsx';
 import { Notifications } from '@mantine/notifications';
+import Stats from './routes/Stats.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -42,7 +43,7 @@ const router = createBrowserRouter(
           <Route element={<CustomAppShell />} errorElement={<IconError404 />}>
             <Route path="/decks" element={<Dashboard />} />
             <Route path="/cards/:deckId" element={<MultiCardView />} />
-            <Route path="/stats" element={"Hi"}></Route>
+            <Route path="/stats" element={<Stats/>}></Route>
           </Route>
         </Route>
 
