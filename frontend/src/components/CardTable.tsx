@@ -242,12 +242,14 @@ function CardTable(props: {
           Nothing found
         </Text>
       ) :
-        <ScrollArea >
-          <SimpleGrid cols={{ base: 1, xs: 2, md: 3, lg: 4, xl: 5,  }}>
-            {rows}
-          </SimpleGrid>
-          <Divider mt="lg" label="You have reached the end" />
-        </ScrollArea>
+        <div>
+          {/* <ScrollArea scrollbars="y" type="always" p="md" mih={600}> */}
+            <SimpleGrid cols={{ base: 1, xs: 2, md: 3, lg: 4, xl: 5,  }}>
+              {rows}
+            </SimpleGrid>
+            <Divider mt="lg" label="You have reached the end" />
+          {/* </ScrollArea> */}
+        </div>
     )
   }
 
