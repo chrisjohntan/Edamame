@@ -25,9 +25,11 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
   const handleCreate = async (cardData: any) => {
     try {
       setLoading(true);
+      console.log(cardData)
       const response = await axios.post(`/create_card/${props.deckId}`, { ...cardData, card_type: type })
       const card = dataToCard(response.data.card)
       props.addData(card)
+      close()
     } catch (err) {
       if (isAxiosError(err)) {
 
@@ -38,7 +40,7 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
     }
   }
 
-  const typeTooltip = "Auto (WIP): Translates fields automatically"
+  const typeTooltipText = "Auto (WIP): Translates fields automatically"
 
   return (
     <>
@@ -48,7 +50,7 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
         size="sm" >
         New Card
       </Button>
-      <Modal size="auto"
+      <Modal size="md"
         opened={opened}
         onClose={close}
         title={<Text size="xl">New card</Text>}
@@ -57,12 +59,13 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
         withCloseButton={!loading}
         padding="lg">
         <form onSubmit={form.onSubmit(handleCreate)}>
-          <Tooltip label={typeTooltip}>
+          <Tooltip label={typeTooltipText}>
             <SegmentedControl
               data={[{ label: "Manual", value: "manual" }, { label: "Auto", value: "auto" }]}
               value={type}
               onChange={setType}
-              mb="md" />
+              mb="md"
+            />
           </Tooltip>
           <Group
             wrap="nowrap"
@@ -72,18 +75,31 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
               <Text>Front</Text>
               <TextInput label="Header" autoComplete="off" key={form.key("header")}
                 {...form.getInputProps('header')} required withAsterisk />
-              <TextInput label="Body" autoComplete="off" key={form.key("body")}
-                {...form.getInputProps('body')} />
+              {
+                type === "manual"
+                  ?
+                  <TextInput label="Body" autoComplete="off" key={form.key("body")}
+                    {...form.getInputProps('body')} />
+                  : null
+              }
 
             </Stack>
-            <Divider orientation="vertical" size="md" />
-            <Stack >
-              <Text>Back</Text>
-              <TextInput label="Header" autoComplete="off" key={form.key("header_flipped")}
-                {...form.getInputProps('header_flipped')} required withAsterisk />
-              <TextInput label="Body" autoComplete="off" key={form.key("body_flipped")}
-                {...form.getInputProps('body_flipped')} />
-            </Stack>
+            {
+              type === "manual"
+                ?
+                <>
+                  <Divider orientation="vertical" size="md" />
+                  <Stack >
+                    <Text>Back</Text>
+                    <TextInput label="Header" autoComplete="off" key={form.key("header_flipped")}
+                      {...form.getInputProps('header_flipped')} required withAsterisk />
+                    <TextInput label="Body" autoComplete="off" key={form.key("body_flipped")}
+                      {...form.getInputProps('body_flipped')} />
+                  </Stack>
+                </>
+                :
+                null
+            }
           </Group>
           <Button type="submit" w="100%" mt="lg">Add</Button>
         </form>
