@@ -46,7 +46,7 @@ function ProtectedSidebar() {
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
           <Group className={classes.header}>
-            <img src={edamameLogo} style={{width: "1rem", height: "1rem"}}/>
+            <img src={edamameLogo} style={{ width: "1rem", height: "1rem" }} />
             <h2>Edamame</h2>
           </Group>
           {links}
@@ -58,7 +58,7 @@ function ProtectedSidebar() {
             <span>Settings</span>
           </a>
 
-          <a href="/logout" className={classes.link} 
+          <a href="/logout" className={classes.link}
             onClick={(event) => {
               event.preventDefault();
               signOut()
