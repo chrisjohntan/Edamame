@@ -29,7 +29,7 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       const payload = {
         "deck_name": input.deckName
       }
-      const reponse = await axios.put(`/edit_deck/${props.deck.id + 100}`, payload);
+      const reponse = await axios.put(`/edit_deck/${props.deck.id}`, payload);
       // props.deck.deck_name = input.deckName
       const mapper = (d: Deck) => {
         if (d.id === props.deck.id) {
