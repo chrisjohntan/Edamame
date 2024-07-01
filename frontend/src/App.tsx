@@ -1,14 +1,15 @@
 import Root from './routes/Root.tsx'
-import { BrowserRouter, Outlet, Route, RouterProvider, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import ErrorPage from './components/ErrorPage.tsx'
 import Register from './routes/Register.tsx'
 import Login from './routes/Login.tsx'
 import Dashboard from './routes/Dashboard.tsx';
 import ProtectedRoute from './routes/ProtectedRoute.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
-import { AppShell, Button, MantineProvider, createTheme, rem } from '@mantine/core';
+import { Button, MantineProvider, createTheme } from '@mantine/core';
 
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import ProtectedHeader from './components/ProtectedHeader.tsx';
 import CustomAppShell from './routes/CustomAppShell.tsx';
 import { IconError404 } from '@tabler/icons-react';
@@ -26,61 +27,29 @@ const theme = createTheme({
   },
 })
 
-
-// function App() {
-//   return (
-//     <MantineProvider theme={theme} defaultColorScheme='light'>
-//       <Notifications />
-//       <BrowserRouter>
-//       <AuthProvider>
-//         <Routes>
-//           {/* Public routes */}
-//           <Route path="/" element={<Root />} />
-//           <Route path="/signup" element={<Register />} />
-//           <Route path="/login" element={<Login />} />
-//           <Route path="/recover-account" element={<ForgotPassword />}/>
-
-//           {/* All protected routes should be nested here */}
-//             <Route element={<ProtectedRoute/>}>
-//               <Route element={<CustomAppShell />}>
-//                 <Route path="/decks" element={<Dashboard />} />
-//                 <Route path="/cards/:deckId" element={<MultiCardView/>}/>
-//                 <Route path="/stats" element={"Hi"}></Route>
-//               </Route>
-//             </Route>
-            
-//           {/* Error page route */}
-//           <Route path="*" element={<IconError404/>} />
-//         </Routes>
-//       </AuthProvider>
-//       </BrowserRouter>
-//     </MantineProvider>
-//   )
-// }
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-    <>
-      {/* Public routes */}
-      <Route path="/" element={<Root />} />
-      <Route path="/signup" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/recover-account" element={<ForgotPassword />}/>
+      <>
+        {/* Public routes */}
+        <Route path="/" element={<Root />} />
+        <Route path="/signup" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/recover-account" element={<ForgotPassword />} />
 
-      {/* All protected routes should be nested here */}
-        <Route element={<ProtectedRoute/>}>
-          <Route element={<CustomAppShell />} errorElement={<IconError404/>}>
-            <Route path="/decks" element={<Dashboard />}/>
-            <Route path="/cards/:deckId" element={<MultiCardView/>}/>
+        {/* All protected routes should be nested here */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<CustomAppShell />} errorElement={<IconError404 />}>
+            <Route path="/decks" element={<Dashboard />} />
+            <Route path="/cards/:deckId" element={<MultiCardView />} />
             <Route path="/stats" element={"Hi"}></Route>
           </Route>
         </Route>
-        
-      {/* Error page route */}
-      <Route path="*" element={<IconError404/>} />
+
+        {/* Error page route */}
+        <Route path="*" element={<IconError404 />} />
+      </>
     </>
-  </>
   )
 )
 
@@ -88,9 +57,9 @@ const router = createBrowserRouter(
 function App() {
   return (
     <MantineProvider theme={theme} defaultColorScheme='light'>
-      <Notifications />
+      <Notifications position="bottom-right" zIndex={1001} />
       <AuthProvider>
-        <RouterProvider router={router}/>
+        <RouterProvider router={router} />
       </AuthProvider>
     </MantineProvider>
   )
