@@ -27,9 +27,11 @@ function EditCard(
       setLoading(true);
       const response = await axios.put(`/edit_card/${card.id}`, cardData)
       const returnCard = dataToCard(response.data.card)
-      
+      close();
     } catch (err) {
 
+    } finally {
+      setLoading(false);
     }
   }
 
