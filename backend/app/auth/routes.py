@@ -99,3 +99,8 @@ def protected():
     if current_user == None:
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
+
+@auth.route("/forgot_password", methods=["GET"])
+@jwt_required()
+def forgot_password():
+    pass
