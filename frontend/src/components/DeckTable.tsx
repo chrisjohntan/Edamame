@@ -1,9 +1,14 @@
-import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay } from "@mantine/core";
-import { IconChevronUp, IconChevronDown, IconSelector } from "@tabler/icons-react";
+import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex } from "@mantine/core";
+import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
 import type { Deck } from "../types";
 import axios from "../axiosConfig"
+import DeleteDeck from "./DeleteDeck";
+import RenameDeck from "./RenameDeck";
+import { useNavigate } from "react-router-dom";
+
+
 
 interface ThProps {
   children: React.ReactNode;
@@ -17,7 +22,7 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
   return (
     <Table.Th className={classes.control} onClick={onSort}>
       <UnstyledButton onClick={onSort} className={classes.control} >
-        <Group justify="space-between">
+        <Group justify="flex-start">
           <Text fw={500} fz="sm">
             {children}
           </Text>
@@ -30,12 +35,22 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
   );
 }
 
+function TdText({children}: {children: React.ReactNode}) {
+  return ( 
+    <Table.Td>
+      <Text truncate="end" inherit>
+        {children}
+      </Text>
+    </Table.Td>
+  )
+}
+
 function filterData(data: Deck[], filter: string) {
   if (data.length == 0) {
     return [];
   }
   const query = filter.toLowerCase().trim();
-  return data.filter(item => item?.deckName.includes(query));
+  return data.filter(item => item?.deck_name.includes(query));
 }
 
 function sortData(
@@ -50,18 +65,22 @@ function sortData(
 
   return filterData(
     [...data].sort((a, b) => {
-      if (sortBy === "size") {
-        if (payload.descending) {
-          return b[sortBy] - a[sortBy];
-        }
-        return a[sortBy] - b[sortBy];
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return payload.descending ? bVal - aVal : aVal - bVal;
       }
 
-      if (payload.descending) {
-        return b[sortBy].localeCompare(a[sortBy]);
+      if (aVal instanceof Date && bVal instanceof Date) {
+        return payload.descending ? bVal.getTime() - aVal.getTime() : aVal.getTime() - bVal.getTime();
       }
-      return a[sortBy].localeCompare(b[sortBy]);
-      
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return payload.descending ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+      }
+
+      return 0;
     }),
     payload.search
   );
@@ -69,72 +88,67 @@ function sortData(
 
 
 
-function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
-  const [view, setView] = useState<"grid"|"table">("table");
-  const toggleView = () => {
-    if (view === "grid") {
-      setView("table");
-    } else {
-      setView("grid");
-    }
-  }
+function DeckTable(props: {
+  searchFilter: string, 
+  view: "grid"|"table", 
+  loading: boolean, 
+  data: Deck[],
+  setData: (d:Deck[])=>void
+}) {
+  // const [view, setView] = useState<"grid"|"table">("table");
+  // const toggleView = () => {
+  //   if (view === "grid") {
+  //     setView("table");
+  //   } else {
+  //     setView("grid");
+  //   }
+  // }
   const [sortBy, setSortBy] = useState<keyof Omit<Deck,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
-  const [data, setData] = useState<Deck[]>([]);
-  const [sortedData, setSortedData] = useState<Deck[]>(data);
-  const [loading, setLoading] = useState(false);
+  const [sortedData, setSortedData] = useState<Deck[]>(props.data);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("/get_decks")
-        // Parse response
-        const parsedResponse = await response.data.map((resObj:any): Deck => ({id: resObj.id, deckName: resObj.deck_name, size: resObj.size}))
-        setData(parsedResponse)
-        console.log(data)
-      } catch (err) {
-        console.error(err);
-      } finally{
-        setLoading(false);
-      }
-    }
-    getData()
-  }, [])
-
-  useEffect(() => {
-    setDescending(!descending)
-    setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
+    // setSortedData(props.data)
+    setSortedData(sortData(props.data, {sortBy, descending: descending, search: props.searchFilter}))
     console.log("sorting")
-  }, [props.searchFilter, data])
+  }, [props.searchFilter, props.loading, props.data])
   
   function handleSort(field: keyof Omit<Deck, "id">) {
     const desc = field === sortBy ? !descending : false
     setSortBy(field);
     setDescending(desc);
-    setSortedData(sortData(data, {sortBy, descending: descending, search: props.searchFilter}))
+    setSortedData(sortData(sortedData, {sortBy, descending: descending, search: props.searchFilter}))
   }
 
-  if (view === "table") {
+  if (props.view === "table") {
     const rows = sortedData?.map((deck) => (
-      <Table.Tr key={deck.id}>
-        <Table.Td>{deck.deckName}</Table.Td>
+      <Table.Tr key={deck.id} className={classes.row} onClick={()=>navigate(`/cards/${deck.id}`)}>
+        
+        <TdText>{deck.deck_name}</TdText>
         <Table.Td>{deck.size}</Table.Td>
-        {/* <Table.Td>{deck.}</Table.Td> */}
+          {/* <Table.Td>{deck.}</Table.Td> */}
+        
+        <Table.Td onClick={e => e.stopPropagation()}>
+          <Group gap={0} justify="flex-end" wrap="nowrap">
+            <RenameDeck deck={deck} data={props.data} setData={props.setData}/>
+            <DeleteDeck data={sortedData} setData={setSortedData} deck={deck}/>
+          </Group>
+        </Table.Td>
       </Table.Tr>
     ));
 
     return (
-      <ScrollArea type="hover">
-        <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-        <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed">
+      <Table.ScrollContainer minWidth={700}>
+        <LoadingOverlay visible={props.loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
+        <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
           <Table.Thead>
             <Table.Tr>
               <Th
-                sorted={sortBy === 'deckName'}
+                sorted={sortBy === 'deck_name'}
                 descending={descending}
                 // TODO: nah this is fucked here
-                onSort={() => handleSort('deckName')}
+                onSort={() => handleSort('deck_name')}
                 // style={{padding:0, margin:0}}
               >
                 Deck Name
@@ -146,6 +160,7 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
               >
                 Size
               </Th>
+              <Table.Th className={classes.empty}/>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -163,7 +178,7 @@ function DeckTable(props: {searchFilter: string, view: "grid"|"table"}) {
             )}
           </Table.Tbody>
         </Table>
-      </ScrollArea>
+      </Table.ScrollContainer>
     )
   }
 }

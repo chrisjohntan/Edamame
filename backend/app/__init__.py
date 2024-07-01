@@ -15,7 +15,7 @@ def create_app(test_config=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     app.config["JWT_SECRET_KEY"] = "123"
     
     if test_config == None:
@@ -28,7 +28,7 @@ def create_app(test_config=None):
     from .extensions import migrate
     from .extensions import jwt_manager
     # import all models
-    from .models import User, Card
+    from .models import User, Card, Deck, ReviewCount
     
     db.init_app(app)
     with app.app_context():
@@ -41,7 +41,8 @@ def create_app(test_config=None):
     
     # import blueprints here
     from .auth.routes import auth
-    from .cards.routes import cards, decks
+    from .cards.routes import cards
+    from .decks.routes import decks
     app.register_blueprint(auth)
     app.register_blueprint(cards)
     app.register_blueprint(decks)

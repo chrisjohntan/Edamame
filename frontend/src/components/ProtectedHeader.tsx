@@ -23,9 +23,9 @@ function ProtectedHeader() {
               <img src={edamameLogo} style={{width: "1rem", height: "1rem"}}/>
               <h2>Edamame</h2>
             </Group>
-            <Button mt="" onClick={signOut}>
+            {/* <Button mt="" onClick={signOut}>
               Sign Out
-            </Button>
+            </Button> */}
           </Group>
       </AppShell.Header>
       {/* <Outlet /> */}

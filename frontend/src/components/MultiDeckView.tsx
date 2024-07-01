@@ -1,24 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Deck } from "../types";
 import SearchBar from "./SearchBar";
 import DeckTable from "./DeckTable";
+import CreateDeck from "./CreateDeck";
+import axios from "../axiosConfig"
+import { Container, Group } from "@mantine/core";
+import { dataToDeck } from "./utils";
 
 function MultiDeckView() {
+  const [searchFilter, setSearchFilter] = useState(""); 
+  const [data, setData] = useState<Deck[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<"table"|"grid">("table")
 
-  // sort by
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/get_decks")
+        // Parse response
+        const parsedResponse = await response.data.map(dataToDeck)
+        setData(parsedResponse)
+        console.log(data)
+      } catch (err) {
+        console.error(err);
+      } finally{
+        setLoading(false);
+      }
+    }
+    getData()
+  }, [])
 
-  const [searchFilter, setSearchFilter] = useState("");
-  
-
-
-  // const data = 
+  const addData = (newDeck: Deck) => {
+    setData([...data, newDeck]);
+  }
 
   return (
     <>
-      <SearchBar
+      <Group mb="md">
+        <SearchBar
+          searchFilter={searchFilter} 
+          onSearchFilterChange={setSearchFilter}/>
+        <CreateDeck addData={addData}/>
+      </Group>
+      <DeckTable 
         searchFilter={searchFilter} 
-        onSearchFilterChange={setSearchFilter}/>
-      <DeckTable searchFilter={searchFilter} view="table"/>
+        view={view} 
+        data={data} 
+        setData={setData} 
+        loading={loading}/>
     </>
   )
 }
