@@ -8,7 +8,7 @@ from ..models import User
 import validators
 from http import HTTPStatus
 from sqlalchemy import or_
-from .mail import send_email
+from .mail import send_email, encode_token, decode_token
 
 auth = Blueprint("auth", __name__)
 
@@ -101,17 +101,17 @@ def protected():
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
 
-@auth.route("/forgot_password_email/<int:id>", methods=["GET"])
+@auth.route("/send_forgot_password_email/<str:user_email>", methods=["GET"])
 @jwt_required()
-def forgot_password_email(id):
-    user: User = User.query.filter_by(id=id).first()
-    email = user.email
-    link = "www.google.com"
+def send_forgot_password_email(user_email):
+    user: User = User.query.filter_by(email=user_email).first()
+    token = encode_token(user.password[7:14], {"id": user.id})
+    link = f"www.edamame.com/reset/{token}"
 
     msg = f"""\
     Subject: Reset Password\nReset your password by clicking this link here {link}"""
 
-    send_email(email, msg)
+    send_email(user_email, msg)
 
 @auth.route("/forgot_password/<int:id>", methods=["GET"])
 @jwt_required()
