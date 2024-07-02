@@ -8,6 +8,7 @@ from ..models import User
 import validators
 from http import HTTPStatus
 from sqlalchemy import or_
+from .mail import send_email
 
 auth = Blueprint("auth", __name__)
 
@@ -100,7 +101,19 @@ def protected():
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
 
-@auth.route("/forgot_password/<int:user_id>", methods=["GET"])
+@auth.route("/forgot_password_email/<int:id>", methods=["GET"])
+@jwt_required()
+def forgot_password_email(id):
+    user: User = User.query.filter_by(id=id).first()
+    email = user.email
+    link = "www.google.com"
+
+    msg = f"""\
+    Subject: Reset Password\nReset your password by clicking this link here {link}"""
+
+    send_email(email, msg)
+
+@auth.route("/forgot_password/<int:id>", methods=["GET"])
 @jwt_required()
 def forgot_password(id):
     user: User = User.query.filter_by(id=id).first()
