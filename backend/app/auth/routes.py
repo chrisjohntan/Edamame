@@ -125,7 +125,7 @@ def auth_forgot_password_link(user_email, token):
             }), HTTPStatus.OK
     return jsonify({"error": "error"}), HTTPStatus.UNAUTHORIZED
 
-@auth.route("/reset_password/<int:id>/<str:new_password>", methods=["GET"])
+@auth.route("/reset_password/<int:id>/<str:new_password>", methods=["PUT", "PATCH"])
 @jwt_required()
 def reset_password(id, new_password):
     user: User = User.query.filter_by(id=id).first()
