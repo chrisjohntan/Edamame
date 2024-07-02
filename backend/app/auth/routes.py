@@ -112,7 +112,18 @@ def send_forgot_password_email(user_email):
     Subject: Reset Password\nReset your password by clicking this link here {link}"""
 
     send_email(user_email, msg)
-    
+
+@auth.route("/auth_forgot_password_link/<str:user_email>/<str:token>", methods=["GET"])
+@jwt_required()
+def auth_forgot_password_link(user_email, token):
+    user: User = User.query.filter_by(email=user_email).first()
+
+    payload = decode_token(user.password[7:14], token)
+    if payload["id"] == user.id:
+        return jsonify({
+            "message": "Authenticated",
+            }), HTTPStatus.OK
+    return jsonify({"error": "error"}), HTTPStatus.UNAUTHORIZED
 
 @auth.route("/reset_password/<int:id>/<str:new_password>", methods=["GET"])
 @jwt_required()
