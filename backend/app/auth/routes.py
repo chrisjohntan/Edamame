@@ -112,17 +112,17 @@ def send_forgot_password_email(user_email):
     Subject: Reset Password\nReset your password by clicking this link here {link}"""
 
     send_email(user_email, msg)
+    
 
-@auth.route("/forgot_password/<int:id>", methods=["GET"])
+@auth.route("/reset_password/<int:id>/<str:new_password>", methods=["GET"])
 @jwt_required()
-def forgot_password(id):
+def reset_password(id, new_password):
     user: User = User.query.filter_by(id=id).first()
     
     # placeholder
-    new_password = "ABC"
     user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
     db.session.commit()
 
     return jsonify({
         "message": "Password Reset",
-    }), HTTPStatus.OK
+        }), HTTPStatus.OK
