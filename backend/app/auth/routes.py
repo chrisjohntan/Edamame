@@ -102,7 +102,6 @@ def protected():
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
 
 @auth.route("/send_forgot_password_email/<str:user_email>", methods=["GET"])
-@jwt_required()
 def send_forgot_password_email(user_email):
     user: User = User.query.filter_by(email=user_email).first()
     token = encode_token(user.password[7:14], {"id": user.id})
@@ -114,7 +113,6 @@ def send_forgot_password_email(user_email):
     send_email(user_email, msg)
 
 @auth.route("/auth_forgot_password_link/<str:user_email>/<str:token>", methods=["GET"])
-@jwt_required()
 def auth_forgot_password_link(user_email, token):
     user: User = User.query.filter_by(email=user_email).first()
 
@@ -125,11 +123,11 @@ def auth_forgot_password_link(user_email, token):
             }), HTTPStatus.OK
     return jsonify({"error": "error"}), HTTPStatus.UNAUTHORIZED
 
-@auth.route("/reset_password/<int:id>/<str:new_password>", methods=["PUT", "PATCH"])
-@jwt_required()
-def reset_password(id, new_password):
+@auth.route("/reset_password/<int:id>", methods=["PUT", "PATCH"])
+def reset_password(id):
     user: User = User.query.filter_by(id=id).first()
-    
+    new_password = request.json["password"]
+
     # placeholder
     user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
     db.session.commit()
