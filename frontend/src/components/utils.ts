@@ -19,3 +19,13 @@ export function dataToDeck(deck: any): Deck {
     last_modified: new Date(deck.last_modified)
   }
 }
+
+export function dateToIso(date: Date): string {
+  const yr = String(date.getFullYear());
+  let month = String(date.getMonth());
+  month = month.length === 1 ? "0" + month : month;
+  let day = String(date.getDate());
+  day = day.length === 1 ? "0" + day : day;
+
+  return `${yr}-${month}-${day}`;
+}
