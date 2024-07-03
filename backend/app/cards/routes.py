@@ -256,19 +256,19 @@ def review_card(id: int, response: int):
 @jwt_required()
 def get_daily_counts():
     # iso format: YYYY-MM-DD
-    try:
-        start_date = datetime.strptime(
-            request.args.get("start_date", date.today()),
-            "%y-%m-%d"
-        ).date()
-        end_date = datetime.strptime(
-            request.args.get("end_date", date.today()),
-            "%y-%m-%d"
-        ).date()
-    except ValueError:
-        return jsonify({
-            "message": "Date format incorrect. Should be YYYY-MM-DD"
-        })
+    # try:
+    start_date = datetime.strptime(
+        request.args.get("start_date", date.today()),
+        "%Y-%M-%d"
+    ).date()
+    end_date = datetime.strptime(
+        request.args.get("end_date", date.today()),
+        "%Y-%M-%d"
+    ).date()
+    # except ValueError:
+    #     return jsonify({
+    #         "message": "Date format incorrect. Should be YYYY-MM-DD"
+    #     }), HTTPStatus.BAD_REQUEST
     
     if (start_date > end_date):
         return jsonify({
@@ -277,7 +277,7 @@ def get_daily_counts():
     
     user: User = get_current_user()
     counts = getReviewCounts(user_id=user.id, start_date=start_date, end_date=end_date)
-    
+    print(counts)
     return jsonify({
         "review_counts": [c.to_dict() for c in counts]
     }), HTTPStatus.OK
