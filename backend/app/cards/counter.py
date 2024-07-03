@@ -27,7 +27,7 @@ def addDailyCount(user_id: int):
     return 
 
 def getReviewCounts(user_id: int, start_date: dt.date, end_date: dt.date):
-    records: List[ReviewCount] = db.session.query(
+    records: List[ReviewCount] = db.session.execute(
         db.select(ReviewCount)
         .where(
             and_(
