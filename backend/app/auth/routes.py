@@ -135,10 +135,10 @@ def reset_password(id):
         "message": "Password Reset",
         }), HTTPStatus.OK
 
-@auth.route('/change_user_username/<int:id>', methods=["PUT", "PATCH"])
+@auth.route('/change_user_username', methods=["PUT", "PATCH"])
 @jwt_required()
-def change_user_username(id):
-    user: User = User.query.filter_by(id=id).first()
+def change_user_username():
+    user: User = get_current_user()
     new_username = request.json["username"]
 
     # Check if username already exists
@@ -156,10 +156,10 @@ def change_user_username(id):
         "message": f"Username changed to {new_username}"
     }), HTTPStatus.OK
 
-@auth.route('/change_user_email/<int:id>', methods=["PUT", "PATCH"])
+@auth.route('/change_user_email', methods=["PUT", "PATCH"])
 @jwt_required()
 def change_user_email(id):
-    user: User = User.query.filter_by(id=id).first()
+    user: User = get_current_user()
     new_email = request.json["email"]
 
     # Check if email already exists
@@ -177,10 +177,10 @@ def change_user_email(id):
         "message": f"Email changed to {new_email}"
     }), HTTPStatus.OK
 
-@auth.route('/change_user_password/<int:id>', methods=["PUT", "PATCH"])
+@auth.route('/change_user_password', methods=["PUT", "PATCH"])
 @jwt_required()
 def change_user_password(id):
-    user: User = User.query.filter_by(id=id).first()
+    user: User = get_current_user()
     new_password = request.json["password"]
     hashed = bcrypt.generate_password_hash(new_password).decode("utf-8")
 
