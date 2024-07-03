@@ -104,6 +104,10 @@ def protected():
 @auth.route("/send_forgot_password_email/<string:user_email>", methods=["GET"])
 def send_forgot_password_email(user_email):
     user: User = User.query.filter_by(email=user_email).first()
+
+    if not user:
+        return jsonify({"error": "Unable to retrieve user, there is no such email"}), HTTPStatus.UNAUTHORIZED
+
     token = encode_token(user.password[7:14], {"id": user.id})
     link = f"www.edamame.com/reset/{token}"
 
@@ -115,6 +119,9 @@ def send_forgot_password_email(user_email):
 @auth.route("/auth_forgot_password_link/<string:user_email>/<string:token>", methods=["GET"])
 def auth_forgot_password_link(user_email, token):
     user: User = User.query.filter_by(email=user_email).first()
+
+    if not user:
+        return jsonify({"error": "Unable to retrieve user, there is no such email"}), HTTPStatus.UNAUTHORIZED
 
     payload = decode_token(user.password[7:14], token)
     if payload["id"] == user.id:
