@@ -74,7 +74,7 @@ def login():
         db.select(User).filter_by(username=username)
         ).scalar()
     
-    if user == None or not bcrypt.check_password_hash(user.password, password) :
+    if user == None or not bcrypt.check_password_hash(user.password, password):
         return jsonify({
             "error": "Username or password incorrect"
             }), HTTPStatus.BAD_REQUEST
@@ -101,7 +101,7 @@ def protected():
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
 
-@auth.route("/send_forgot_password_email/<str:user_email>", methods=["GET"])
+@auth.route("/send_forgot_password_email/<string:user_email>", methods=["GET"])
 def send_forgot_password_email(user_email):
     user: User = User.query.filter_by(email=user_email).first()
     token = encode_token(user.password[7:14], {"id": user.id})
@@ -112,7 +112,7 @@ def send_forgot_password_email(user_email):
 
     send_email(user_email, msg)
 
-@auth.route("/auth_forgot_password_link/<str:user_email>/<str:token>", methods=["GET"])
+@auth.route("/auth_forgot_password_link/<string:user_email>/<string:token>", methods=["GET"])
 def auth_forgot_password_link(user_email, token):
     user: User = User.query.filter_by(email=user_email).first()
 
@@ -128,10 +128,72 @@ def reset_password(id):
     user: User = User.query.filter_by(id=id).first()
     new_password = request.json["password"]
 
-    # placeholder
     user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
     db.session.commit()
 
     return jsonify({
         "message": "Password Reset",
         }), HTTPStatus.OK
+
+@auth.route('/change_user_username/<int:id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def change_user_username(id):
+    user: User = User.query.filter_by(id=id).first()
+    new_username = request.json["username"]
+
+    # Check if username already exists
+    username_exists = db.session.execute(db.select(User).where(User.username==new_username)).first()
+    print(username_exists)
+    if (username_exists):
+        return jsonify({
+            "error": "Unable to change username, that username is already in use",
+        }), HTTPStatus.CONFLICT
+        
+    user.username = new_username
+    db.session.commit()
+    
+    return jsonify({
+        "message": f"Username changed to {new_username}"
+    }), HTTPStatus.OK
+
+@auth.route('/change_user_email/<int:id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def change_user_email(id):
+    user: User = User.query.filter_by(id=id).first()
+    new_email = request.json["email"]
+
+    # Check if email already exists
+    email_exists = db.session.execute(db.select(User).where(User.email==new_email)).first()
+    if (email_exists):
+        print("email already exist")
+        return jsonify({
+            "error": "Unable to change email, that email is already in use",
+        }), HTTPStatus.CONFLICT
+    
+    user.email = new_email
+    db.session.commit()
+    
+    return jsonify({
+        "message": f"Email changed to {new_email}"
+    }), HTTPStatus.OK
+
+@auth.route('/change_user_password/<int:id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def change_user_password(id):
+    user: User = User.query.filter_by(id=id).first()
+    new_password = request.json["password"]
+    hashed = bcrypt.generate_password_hash(new_password).decode("utf-8")
+
+    # # Check if new password is same as old password (Not sure if necessary)
+    # username_exists = user.password == hashed
+    # if (username_exists):
+    #     return jsonify({
+    #         "error": "New password can't be the same as old password",
+    #     }), HTTPStatus.CONFLICT
+        
+    user.password = hashed
+    db.session.commit()
+    
+    return jsonify({
+        "message": f"Password changed"
+    }), HTTPStatus.OK
