@@ -1,9 +1,14 @@
+import Heatmap from "../components/Heatmap";
 
 
 
 function Stats() {
   return (
-    <div>WIP</div>
+    <div>
+      WIP
+      <Heatmap/>
+    </div>
+
   )
 }
 
