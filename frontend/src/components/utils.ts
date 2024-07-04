@@ -1,4 +1,5 @@
 import { Card, Deck } from "../types";
+import { format } from "date-fns";
 
 export function dataToCard(card: any): Card {
   return {
@@ -18,4 +19,14 @@ export function dataToDeck(deck: any): Deck {
     last_reviewed: new Date(deck.last_reviewed),
     last_modified: new Date(deck.last_modified)
   }
+}
+
+export function dateToIso(date: Date): string {
+  const yr = String(date.getFullYear());
+  let month = String(date.getMonth()+1);
+  month = month.length === 1 ? "0" + month : month;
+  let day = String(date.getDate());
+  day = day.length === 1 ? "0" + day : day;
+
+  return `${yr}-${month}-${day}`;
 }
