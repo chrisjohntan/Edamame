@@ -265,7 +265,7 @@ def get_daily_counts():
         ).date()
         end_date = datetime.strptime(
             request.args.get("end_date", date.today()),
-            "%Y-%M-%d"
+            "%Y-%m-%d"
         ).date()
     except ValueError:
         return jsonify({
