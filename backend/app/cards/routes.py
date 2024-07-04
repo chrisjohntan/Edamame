@@ -254,7 +254,7 @@ def review_card(id: int, response: int):
     db.session.commit()
 
     return jsonify({
-        "message": f"Review done, card available next at {card.time_for_review}",
+        "message": f"Review done, card available next at {card.time_for_review}, time interval is {card.time_interval}, next time intervals will be {card.calculate_time_interval()}",
     }), HTTPStatus.OK
 
 @cards.route('/get_review_counts')
