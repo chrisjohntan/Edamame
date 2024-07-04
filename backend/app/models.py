@@ -4,6 +4,9 @@ from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
 
+MIN_TIME_INTERVAL = timedelta(minutes=10)  # placeholder
+MIN_TIME_INTERVAL_LIST = [timedelta(seconds=60), timedelta(minutes=10), timedelta(minutes=30), timedelta(minutes=60)]  # placeholder
+
 class User(db.Model, Base) :
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -80,8 +83,8 @@ class Card(db.Model, Base):
         def ceildiv(a, b):
             return -(a // -b)
         # placeholder
-        if self.time_interval == timedelta(seconds=0):
-            self.time_interval = timedelta(seconds=60)
+        if self.time_interval == MIN_TIME_INTERVAL:
+            return MIN_TIME_INTERVAL_LIST
 
         deck: Deck = self.get_deck()
 
@@ -91,8 +94,8 @@ class Card(db.Model, Base):
                 self.time_interval * deck.easy_multiplier]
         
         for i in range(len(intervals_list)):
-            interval = intervals_list[i]
-            if interval > timedelta(days=1):
+            interval : timedelta = intervals_list[i]
+            if interval >= timedelta(days=1):
                 # round up to nearest day
                 day = ceildiv(interval.days*86400 + interval.seconds, 86400)
                 interval = timedelta(days=day)
@@ -110,9 +113,9 @@ class Card(db.Model, Base):
 
     def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval()[response]
-        if time_interval == timedelta(seconds=0):
-            time_interval = timedelta(seconds=60)
-
+        if time_interval < MIN_TIME_INTERVAL:
+            time_interval = MIN_TIME_INTERVAL
+        print(self.calculate_time_interval())
         self.time_interval = time_interval
 
     def update_last_modified(self, now:datetime):
