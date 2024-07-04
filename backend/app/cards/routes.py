@@ -252,7 +252,7 @@ def review_card(id: int, response: int):
     card.update_last_reviewed(now)
 
     db.session.commit()
-
+    print(card.calculate_time_interval())
     return jsonify({
         "message": f"Review done, card available next at {card.time_for_review}, time interval is {card.time_interval}, next time intervals will be {card.calculate_time_interval()}",
     }), HTTPStatus.OK

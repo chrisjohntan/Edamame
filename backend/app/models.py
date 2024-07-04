@@ -117,7 +117,7 @@ class Card(db.Model, Base):
         time_interval = self.calculate_time_interval()[response]
         if time_interval < MIN_TIME_INTERVAL:
             time_interval = MIN_TIME_INTERVAL
-        print(self.calculate_time_interval())
+        
         self.time_interval = time_interval
 
     def update_last_modified(self, now:datetime):
@@ -132,6 +132,11 @@ class Card(db.Model, Base):
         self.last_reviewed = now
         self.reviews_done += 1
         deck.update_last_reviewed(now)
+
+    def forgot_card(self):
+        self.times_forgot += 0
+        self.times_remembered_consecutive = 0
+
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
