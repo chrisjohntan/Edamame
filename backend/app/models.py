@@ -115,8 +115,9 @@ class Card(db.Model, Base):
 
     def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval()[response]
-        if time_interval < MIN_TIME_INTERVAL:
+        if response == 1:
             time_interval = MIN_TIME_INTERVAL
+            self.forgot_card()
         
         self.time_interval = time_interval
 
