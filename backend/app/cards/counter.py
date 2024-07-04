@@ -6,7 +6,7 @@ from typing import List
 
 def addDailyCount(user_id: int):
     today = dt.date.today()
-    record_exists: ReviewCount = db.session.query(
+    record_exists: ReviewCount = db.session.execute(
         db.select(ReviewCount)
         .where(
             and_(
