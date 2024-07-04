@@ -36,6 +36,7 @@ function Heatmap() {
         const now = new Date()
         // const today = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
         const today = dateToIso(now);
+        console.log(today)
         const start = `${now.getFullYear()}-01-01`;
         console.log(today);
         const response = await axios.get(`/get_review_counts?start_date=${start}&end_date=${today}`);
