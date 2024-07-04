@@ -44,6 +44,8 @@ class Card(db.Model, Base):
     last_reviewed: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     last_modified: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    times_remembered_consecutive: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    times_forgot: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
@@ -83,8 +85,8 @@ class Card(db.Model, Base):
         def ceildiv(a, b):
             return -(a // -b)
         # placeholder
-        if self.time_interval == MIN_TIME_INTERVAL:
-            return MIN_TIME_INTERVAL_LIST
+        # if self.time_interval == MIN_TIME_INTERVAL:
+        #     return MIN_TIME_INTERVAL_LIST
 
         deck: Deck = self.get_deck()
 
