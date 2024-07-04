@@ -8,7 +8,7 @@ from ..models import Card, Deck, User
 from datetime import datetime, date, timedelta
 from sqlalchemy import and_
 from .translation import deepl_translate
-from .counter import getReviewCounts
+from .counter import getReviewCounts, addDailyCount
 
 cards = Blueprint("cards", __name__)
 
@@ -220,7 +220,7 @@ def next_card(deck_id):
 @cards.route("/review_card/<int:id>/<int:response>", methods=["PUT", "PATCH"])
 @jwt_required()
 def review_card(id: int, response: int):
-    current_user = get_current_user()
+    current_user: User = get_current_user()
     now = datetime.now()
     ignore_review_time = request.get_json().get('ignore_review_time', '')
 
@@ -245,8 +245,10 @@ def review_card(id: int, response: int):
     card.update_time_interval(response-1)
     card.time_for_review = now + card.time_interval
     card.update_last_reviewed(now)
-
+    
     db.session.commit()
+
+    addDailyCount(user_id=current_user.id)
 
     return jsonify({
         "message": f"Review done, card available next at {card.time_for_review}",
@@ -256,19 +258,19 @@ def review_card(id: int, response: int):
 @jwt_required()
 def get_daily_counts():
     # iso format: YYYY-MM-DD
-    # try:
-    start_date = datetime.strptime(
-        request.args.get("start_date", date.today()),
-        "%Y-%M-%d"
-    ).date()
-    end_date = datetime.strptime(
-        request.args.get("end_date", date.today()),
-        "%Y-%M-%d"
-    ).date()
-    # except ValueError:
-    #     return jsonify({
-    #         "message": "Date format incorrect. Should be YYYY-MM-DD"
-    #     }), HTTPStatus.BAD_REQUEST
+    try:
+        start_date = datetime.strptime(
+            request.args.get("start_date", date.today()),
+            "%Y-%M-%d"
+        ).date()
+        end_date = datetime.strptime(
+            request.args.get("end_date", date.today()),
+            "%Y-%M-%d"
+        ).date()
+    except ValueError:
+        return jsonify({
+            "message": "Date format incorrect. Should be YYYY-MM-DD"
+        }), HTTPStatus.BAD_REQUEST
     
     if (start_date > end_date):
         return jsonify({
