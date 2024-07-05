@@ -17,6 +17,8 @@ import classes from './styles/ForgetPassword.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
+import { notifications } from "@mantine/notifications";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -49,20 +51,26 @@ export function ForgotPassword() {
   const timer = () => {
     setDisabled(true);
     if (!requested) {
-      setSeconds(15);
+      setSeconds(5);
       setRequested(true);
     } else {
-      setSeconds(30)
+      setSeconds(10)
     }
   }
 
 
 
   const handleSubmit: (data: { email: string }) => void = async (data) => {
+    timer();
     try {
-      const response = await axios.post("/reset_password", data)
+      const response = await axios.get(`/send_forgot_password_email/${data.email}`)
+      notifications.show({message: "Link successfully sent. Please check your inbox."})
     } catch (err) {
-      console.error(err);
+      if (isAxiosError(err)) {
+        const message = err.response?.data?.error;
+        form.setErrors({email: message ? message : err.message})
+      }
+      console.log(err)
     }
   }
 
@@ -89,9 +97,8 @@ export function ForgotPassword() {
               className={classes.control}
               type="submit"
               disabled={disabled}
-              onClick={timer}
             >
-              {disabled ? seconds : "Send Link"}
+              {disabled ? seconds : requested ? "Resend Link" : "Send Link"}
             </Button>
           </Group>
         </Paper>
