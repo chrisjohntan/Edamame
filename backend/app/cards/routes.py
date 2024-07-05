@@ -48,6 +48,11 @@ def create_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
     deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+
+    if not deck:
+        return jsonify({
+            "message": "Deck not found"
+        }), HTTPStatus.NOT_FOUND
     
     header = request.json["header"]
     body = request.get_json().get("body", "")
@@ -247,11 +252,11 @@ def review_card(id: int, response: int):
     card.update_last_reviewed(now)
     
     db.session.commit()
-
+    print(card.calculate_time_interval())
     addDailyCount(user_id=current_user.id)
-
+    
     return jsonify({
-        "message": f"Review done, card available next at {card.time_for_review}",
+        "message": f"Review done, card available next at {card.time_for_review}, time interval is {card.time_interval}, next time intervals will be {card.calculate_time_interval()}",
     }), HTTPStatus.OK
 
 @cards.route('/get_review_counts')
