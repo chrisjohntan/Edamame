@@ -36,7 +36,7 @@ const router = createBrowserRouter(
         <Route path="/" element={<Root />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/recover-account" element={<ForgotPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* All protected routes should be nested here */}
         <Route element={<ProtectedRoute />}>
