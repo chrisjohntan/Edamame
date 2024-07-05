@@ -1,4 +1,4 @@
-import { Button, Modal, ModalContent, Paper, TextInput, UnstyledButton, rem } from "@mantine/core";
+import { Button, Modal, ModalContent, Paper, Text, TextInput, UnstyledButton, rem } from "@mantine/core";
 import { useState } from "react";
 import { IconCircleXFilled, IconPlus, IconX } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
@@ -31,9 +31,11 @@ function CreateDeck(props: {addData: (d: Deck)=>void}) {
       form.reset()
       // should navigate to the view deck page to add cards
       // and set timeout
-      // navigate()
+      navigate(`/cards/${deck.id}`)
     } catch (err) {
       if (isAxiosError(err)) {
+        console.log("axios")
+        console.log(err.response?.data.message)
         form.setErrors({deckName: err.response?.data.message})
       } else {
         console.error(err)
@@ -54,7 +56,7 @@ function CreateDeck(props: {addData: (d: Deck)=>void}) {
         opened={opened}
         onClose={close}
         transitionProps={{ transition: "pop", duration: 0 }}
-        title={<><h3>Create Deck</h3></>}
+        title={<Text size="xl">Create Deck</Text>}
         closeOnClickOutside={false}
         closeOnEscape={false}
         withCloseButton={!loading}>

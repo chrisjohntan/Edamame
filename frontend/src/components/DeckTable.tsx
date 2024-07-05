@@ -6,6 +6,9 @@ import type { Deck } from "../types";
 import axios from "../axiosConfig"
 import DeleteDeck from "./DeleteDeck";
 import RenameDeck from "./RenameDeck";
+import { useNavigate } from "react-router-dom";
+
+
 
 interface ThProps {
   children: React.ReactNode;
@@ -32,6 +35,16 @@ function Th({ children, descending, sorted, onSort }: ThProps) {
   );
 }
 
+function TdText({children}: {children: React.ReactNode}) {
+  return ( 
+    <Table.Td>
+      <Text truncate="end" inherit>
+        {children}
+      </Text>
+    </Table.Td>
+  )
+}
+
 function filterData(data: Deck[], filter: string) {
   if (data.length == 0) {
     return [];
@@ -52,18 +65,22 @@ function sortData(
 
   return filterData(
     [...data].sort((a, b) => {
-      if (sortBy === "size") {
-        if (payload.descending) {
-          return b[sortBy] - a[sortBy];
-        }
-        return a[sortBy] - b[sortBy];
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return payload.descending ? bVal - aVal : aVal - bVal;
       }
 
-      if (payload.descending) {
-        return b[sortBy].localeCompare(a[sortBy]);
+      if (aVal instanceof Date && bVal instanceof Date) {
+        return payload.descending ? bVal.getTime() - aVal.getTime() : aVal.getTime() - bVal.getTime();
       }
-      return a[sortBy].localeCompare(b[sortBy]);
-      
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return payload.descending ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+      }
+
+      return 0;
     }),
     payload.search
   );
@@ -78,17 +95,18 @@ function DeckTable(props: {
   data: Deck[],
   setData: (d:Deck[])=>void
 }) {
-  const [view, setView] = useState<"grid"|"table">("table");
-  const toggleView = () => {
-    if (view === "grid") {
-      setView("table");
-    } else {
-      setView("grid");
-    }
-  }
+  // const [view, setView] = useState<"grid"|"table">("table");
+  // const toggleView = () => {
+  //   if (view === "grid") {
+  //     setView("table");
+  //   } else {
+  //     setView("grid");
+  //   }
+  // }
   const [sortBy, setSortBy] = useState<keyof Omit<Deck,"id"> | null>(null)
   const [descending, setDescending] = useState(false);
   const [sortedData, setSortedData] = useState<Deck[]>(props.data);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // setSortedData(props.data)
@@ -103,19 +121,18 @@ function DeckTable(props: {
     setSortedData(sortData(sortedData, {sortBy, descending: descending, search: props.searchFilter}))
   }
 
-  if (view === "table") {
+  if (props.view === "table") {
     const rows = sortedData?.map((deck) => (
-      <Table.Tr key={deck.id}>
-        <Table.Td>{deck.deck_name}</Table.Td>
+      <Table.Tr key={deck.id} className={classes.row} onClick={()=>navigate(`/cards/${deck.id}`)}>
+        
+        <TdText>{deck.deck_name}</TdText>
         <Table.Td>{deck.size}</Table.Td>
-        {/* <Table.Td>{deck.}</Table.Td> */}
-        <Table.Td>
+          {/* <Table.Td>{deck.}</Table.Td> */}
+        
+        <Table.Td onClick={e => e.stopPropagation()}>
           <Group gap={0} justify="flex-end" wrap="nowrap">
-            {/* <ActionIcon variant="subtle" color="gray">
-              <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-            </ActionIcon> */}
             <RenameDeck deck={deck} data={props.data} setData={props.setData}/>
-            <DeleteDeck data={sortedData} setData={setSortedData} deckId={deck.id}/>
+            <DeleteDeck data={sortedData} setData={setSortedData} deck={deck}/>
           </Group>
         </Table.Td>
       </Table.Tr>

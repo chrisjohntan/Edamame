@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Modal, TextInput, UnstyledButton, rem } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, Text, TextInput, UnstyledButton, rem } from "@mantine/core";
 import { IconCircleX, IconCircleXFilled, IconPencil, IconX } from "@tabler/icons-react";
 import axios from "../axiosConfig"
 import { useDisclosure } from "@mantine/hooks"
@@ -29,7 +29,7 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       const payload = {
         "deck_name": input.deckName
       }
-      const reponse = await axios.put(`/edit_deck/${props.deck.id + 100}`, payload);
+      const reponse = await axios.put(`/edit_deck/${props.deck.id}`, payload);
       // props.deck.deck_name = input.deckName
       const mapper = (d: Deck) => {
         if (d.id === props.deck.id) {
@@ -58,7 +58,7 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       <Modal
         opened={opened}
         onClose={close}
-        title={<div><h3>Edit deck</h3></div>}
+        title={<Text size="xl">Edit deck</Text>}
       >
         <form onSubmit={form.onSubmit(handleEdit)}>
           <TextInput label="Deck name" mb="md" autoComplete="off" key={form.key("deckName")}

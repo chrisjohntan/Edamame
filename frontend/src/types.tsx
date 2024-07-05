@@ -30,5 +30,9 @@ export type Deck = {
   id: number;
   deck_name: string;
   size: number;
+  time_created: Date,
+  last_reviewed: Date,
+  last_modified: Date,
+  reviews_done: number
 
 }

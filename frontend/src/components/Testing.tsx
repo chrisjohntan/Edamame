@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container } from "react-bootstrap";
+// import { Container } from "react-bootstrap";
 // import axios from "../axios_config";
 import { default as axios } from "../axiosConfig"; // configured to baseURL
 
@@ -21,11 +21,11 @@ function Testing() {
   }, [])
   
   return (
-    <Container>
+    <>
       <h1>{message}</h1>
       <h2>Welcome to Edamame</h2>
       <h4>Bottom text</h4>
-    </Container>
+    </>
   )
 }
 

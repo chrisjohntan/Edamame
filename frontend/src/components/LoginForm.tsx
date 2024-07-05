@@ -29,7 +29,7 @@ function LoginForm() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/dashboard"
+  const from = location.state?.from?.pathname || "/decks"
 
   console.log(auth);
 
@@ -38,7 +38,7 @@ function LoginForm() {
   useEffect(() => {
     console.log(auth)
     if (auth.user.username != "") {
-      navigate("/dashboard");
+      navigate("/decks");
     }
   }, [auth, navigate])
 
@@ -87,7 +87,7 @@ function LoginForm() {
           <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
             {...form.getInputProps("password")} required withAsterisk />
           <Group justify="space-between" mt="lg">
-            <Checkbox label="Remember me" />
+            {/* <Checkbox label="Remember me" /> */}
             <Anchor component="button" size="sm">
               Forgot password?
             </Anchor>

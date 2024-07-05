@@ -13,7 +13,7 @@ import {
   rem,
 } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
-import classes from './styles/ForgotPassword.module.css';
+import classes from './styles/ForgetPassword.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from '@mantine/form';
 
