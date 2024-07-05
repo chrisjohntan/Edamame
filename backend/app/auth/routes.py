@@ -115,6 +115,10 @@ def send_forgot_password_email(user_email):
     Subject: Reset Password\nReset your password by clicking this link here {link}"""
 
     send_email(user_email, msg)
+    
+    return jsonify({
+        "message": "Email sent successfully."
+    })
 
 @auth.route("/auth_forgot_password_link/<string:user_email>/<string:token>", methods=["GET"])
 def auth_forgot_password_link(user_email, token):
