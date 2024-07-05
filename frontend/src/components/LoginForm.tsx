@@ -88,7 +88,7 @@ function LoginForm() {
             {...form.getInputProps("password")} required withAsterisk />
           <Group justify="space-between" mt="lg">
             {/* <Checkbox label="Remember me" /> */}
-            <Anchor component="button" size="sm">
+            <Anchor component="button" size="sm" onClick={()=>navigate("/forgot-password")}>
               Forgot password?
             </Anchor>
           </Group>
