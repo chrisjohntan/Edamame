@@ -16,6 +16,7 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import classes from './styles/ForgetPassword.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from '@mantine/form';
+import { useEffect, useState } from "react";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -31,7 +32,33 @@ export function ForgotPassword() {
     }
   })
 
-  const handleSubmit: (data: {email:string})=>void = async (data) => {
+  const [disabled, setDisabled] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [requested, setRequested] = useState(false);
+
+  useEffect(() => {
+    if (seconds > 0) {
+      console.log(seconds)
+      const interval = setInterval(()=>setSeconds(seconds - 1), 1000)
+      return ()=>clearInterval(interval);
+    } else {
+      setDisabled(false)
+    }
+  }, [seconds])
+
+  const timer = () => {
+    setDisabled(true);
+    if (!requested) {
+      setSeconds(15);
+      setRequested(true);
+    } else {
+      setSeconds(30)
+    }
+  }
+
+
+
+  const handleSubmit: (data: { email: string }) => void = async (data) => {
     try {
       const response = await axios.post("/reset_password", data)
     } catch (err) {
@@ -55,10 +82,17 @@ export function ForgotPassword() {
             <Anchor c="dimmed" size="sm" className={classes.control}>
               <Center inline>
                 <IconArrowLeft style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
-                <Box ml={5} onClick={()=>navigate("/login")}>Return to login</Box>
+                <Box ml={5} onClick={() => navigate("/login")}>Return to login</Box>
               </Center>
             </Anchor>
-            <Button className={classes.control} type="submit">Reset password</Button>
+            <Button
+              className={classes.control}
+              type="submit"
+              disabled={disabled}
+              onClick={timer}
+            >
+              {disabled ? seconds : "Send Link"}
+            </Button>
           </Group>
         </Paper>
       </form>
