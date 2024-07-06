@@ -18,6 +18,7 @@ import MultiCardView from './components/MultiCardView.tsx';
 import { ForgotPassword } from './components/ForgetPasswordForm.tsx';
 import { Notifications } from '@mantine/notifications';
 import Stats from './routes/Stats.tsx';
+import ResetPassword from './components/ResetPassword.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -36,7 +37,8 @@ const router = createBrowserRouter(
         <Route path="/" element={<Root />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/forgot_password" element={<ForgotPassword />} />
+        <Route path="/reset/:email/:token" element={<ResetPassword />} />
 
         {/* All protected routes should be nested here */}
         <Route element={<ProtectedRoute />}>
@@ -44,6 +46,7 @@ const router = createBrowserRouter(
             <Route path="/decks" element={<Dashboard />} />
             <Route path="/cards/:deckId" element={<MultiCardView />} />
             <Route path="/stats" element={<Stats/>}></Route>
+            <Route path="/settings" />
           </Route>
         </Route>
 
