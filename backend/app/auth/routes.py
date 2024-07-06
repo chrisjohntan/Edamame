@@ -9,6 +9,8 @@ import validators
 from http import HTTPStatus
 from sqlalchemy import or_
 from .mail import send_email, encode_token, decode_token
+import datetime as dt
+from jwt import ExpiredSignatureError
 
 auth = Blueprint("auth", __name__)
 
@@ -102,14 +104,17 @@ def protected():
     return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
 
 @auth.route("/send_forgot_password_email/<string:user_email>", methods=["GET"])
-def send_forgot_password_email(user_email):
+def send_forgot_password_email(user_email: str):
     user: User = User.query.filter_by(email=user_email).first()
 
     if not user:
         return jsonify({"error": "Unable to retrieve user, there is no such email"}), HTTPStatus.UNAUTHORIZED
-
-    token = encode_token(user.password[7:14], {"id": user.id})
-    link = f"www.edamame.com/reset/{token}"
+    payload = {
+        "id": user.id,
+        "exp": dt.datetime.now(tz=dt.timezone.utc) + dt.timedelta(minutes=20)
+    }
+    token = encode_token(key=user.password[7:14], payload=payload)
+    link = f"www.edamame.com/reset/{user_email}/{token}"
 
     msg = f"""\
     Subject: Reset Password\nReset your password by clicking this link here {link}"""
@@ -120,23 +125,30 @@ def send_forgot_password_email(user_email):
         "message": "Email sent successfully."
     })
 
-@auth.route("/auth_forgot_password_link/<string:user_email>/<string:token>", methods=["GET"])
-def auth_forgot_password_link(user_email, token):
+@auth.route("/verify_reset_token/<string:user_email>/<string:token>", methods=["GET"])
+def verify_reset_token(user_email, token):
     user: User = User.query.filter_by(email=user_email).first()
 
     if not user:
         return jsonify({"error": "Unable to retrieve user, there is no such email"}), HTTPStatus.UNAUTHORIZED
 
-    payload = decode_token(user.password[7:14], token)
+    try:
+        payload = decode_token(user.password[7:14], token)
+    except ExpiredSignatureError:
+        return jsonify({
+            "error": "Token has expired"
+        }), HTTPStatus.UNAUTHORIZED
+    
     if payload["id"] == user.id:
         return jsonify({
             "message": "Authenticated",
             }), HTTPStatus.OK
-    return jsonify({"error": "error"}), HTTPStatus.UNAUTHORIZED
+    
+    return jsonify({"error": "Token is invalid"}), HTTPStatus.UNAUTHORIZED
 
-@auth.route("/reset_password/<int:id>", methods=["PUT", "PATCH"])
-def reset_password(id):
-    user: User = User.query.filter_by(id=id).first()
+@auth.route("/reset_password/<string:user_email>/<string:token>", methods=["POST"])
+def reset_password(user_email, token):
+    user: User = User.query.filter_by(email=user_email).first()
     new_password = request.json["password"]
 
     user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
