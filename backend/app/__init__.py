@@ -17,6 +17,8 @@ def create_app(test_config=None):
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     app.config["JWT_SECRET_KEY"] = "123"
+    app.config["JWT_COOKIE_SECURE"] = True
+    app.config["JWT_COOKIE_SAMESITE"] = "Lax"
     
     if test_config == None:
         # config from default .env and .flaskenv files
