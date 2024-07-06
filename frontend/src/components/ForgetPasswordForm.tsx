@@ -77,14 +77,14 @@ export function ForgotPassword() {
   return (
     <Container size={460} my={30}>
       <Title className={classes.title} ta="center">
-        Reset password
+        Forgot password
       </Title>
       <Text c="dimmed" fz="sm" ta="center">
         A reset link will be sent to your registered email
       </Text>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-          <TextInput label="Your email" placeholder="you@edamame.com" autoComplete='off' key={form.key("email")}
+          <TextInput mb="md" type="email" label="Your email" placeholder="you@edamame.com" autoComplete='off' key={form.key("email")}
             {...form.getInputProps('email')} required withAsterisk />
           <Group justify="space-between" mt="lg" className={classes.controls}>
             <Anchor c="dimmed" size="sm" className={classes.control}>
