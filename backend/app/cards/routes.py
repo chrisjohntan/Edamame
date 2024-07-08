@@ -58,13 +58,53 @@ def create_card(deck_id):
     body = request.get_json().get("body", "")
     header_flipped = request.get_json().get("header_flipped", header)
     body_flipped = request.get_json().get("body", body)
-    card_type = request.get_json().get("card_type", "manual")
+
+    card = Card(
+        header=header,
+        body=body,
+        header_flipped=header_flipped,
+        body_flipped=body_flipped,
+        user_id=current_user.id,
+        deck_id=deck_id,
+        time_created=now,
+        time_for_review=now,  # placeholder
+        time_interval=timedelta(0, 60),  # placeholder
+        last_reviewed=now,  # placeholder
+        last_modified=now,
+        reviews_done=0,
+    )
+
+    deck.update_last_modified(now)
+
+    db.session.add(card)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Card created",
+        "card": card.to_dict()
+    }), HTTPStatus.CREATED
+
+@cards.route("/create_auto_card/<int:deck_id>", methods=["POST"])
+@jwt_required()
+def create_auto_card(deck_id):
+    current_user = get_current_user()
+    now = datetime.now()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+
+    if not deck:
+        return jsonify({
+            "message": "Deck not found"
+        }), HTTPStatus.NOT_FOUND
     
-    if card_type == "auto":
-        try:
-            header_flipped = deepl_translate(header)
-        except ValueError:
-            print("Something went wrong")
+    header = request.json["header"]
+    body = request.get_json().get("body", "")
+    header_flipped = request.get_json().get("header_flipped", header)
+    body_flipped = request.get_json().get("body", body)
+    
+    try:
+        header_flipped = deepl_translate(header)
+    except ValueError:
+        print("Something went wrong")
 
     card = Card(
         header=header,
