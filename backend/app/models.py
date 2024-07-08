@@ -46,6 +46,7 @@ class Card(db.Model, Base):
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
     times_remembered_consecutive: Mapped[Integer] = mapped_column(Integer, nullable=False)
     times_forgot: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    steps: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
