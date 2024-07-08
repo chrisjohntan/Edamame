@@ -72,6 +72,8 @@ def create_card(deck_id):
         last_reviewed=now,  # placeholder
         last_modified=now,
         reviews_done=0,
+        times_remembered_consecutive=0,
+        times_forgot=0
     )
 
     deck.update_last_modified(now)
