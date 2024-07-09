@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Float, Text, ForeignKey, DateTime, Interval, Date
+from sqlalchemy import String, Integer, Float, Text, ForeignKey, DateTime, Interval, Date, Boolean
 from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
@@ -46,6 +46,7 @@ class Card(db.Model, Base):
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
     times_remembered_consecutive: Mapped[Integer] = mapped_column(Integer, nullable=False)
     times_forgot: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    new: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
     steps: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
