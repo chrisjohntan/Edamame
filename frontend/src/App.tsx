@@ -19,6 +19,7 @@ import { ForgotPassword } from './components/ForgetPasswordForm.tsx';
 import { Notifications } from '@mantine/notifications';
 import Stats from './routes/Stats.tsx';
 import ResetPassword from './components/ResetPassword.tsx';
+import Settings from './routes/Settings.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -45,8 +46,8 @@ const router = createBrowserRouter(
           <Route element={<CustomAppShell />} errorElement={<IconError404 />}>
             <Route path="/decks" element={<Dashboard />} />
             <Route path="/cards/:deckId" element={<MultiCardView />} />
-            <Route path="/stats" element={<Stats/>}></Route>
-            <Route path="/settings" />
+            <Route path="/stats" element={<Stats />} />
+            <Route path="/settings" element={<Settings />}/>
           </Route>
         </Route>
 
