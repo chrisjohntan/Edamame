@@ -23,6 +23,10 @@ def upgrade():
                existing_type=sa.INTEGER(),
                nullable=False)
         batch_op.execute(f"UPDATE cards SET steps = 0")
+        batch_op.alter_column('new',
+               existing_type=sa.BOOLEAN(),
+               nullable=False)
+        batch_op.execute(f"UPDATE cards SET new = True")
 
     # ### end Alembic commands ###
 
@@ -32,6 +36,9 @@ def downgrade():
     with op.batch_alter_table('cards', schema=None) as batch_op:
         batch_op.alter_column('steps',
                existing_type=sa.INTEGER(),
+               nullable=True)
+        batch_op.alter_column('new',
+               existing_type=sa.BOOLEAN(),
                nullable=True)
 
     # ### end Alembic commands ###
