@@ -1,5 +1,6 @@
 export type User = {
-  username: string
+  username: string,
+  email: string,
 }
 
 export type Auth = {
@@ -8,7 +9,8 @@ export type Auth = {
 
 export const EMPTY_AUTH = {
   user: {
-    username: ""
+    username: "",
+    email: "",
   }
 } as const
 
