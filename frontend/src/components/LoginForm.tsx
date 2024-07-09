@@ -16,6 +16,7 @@ import {
   Button,
 } from '@mantine/core';
 import classes from './styles/LoginForm.module.css';
+import { User } from "../types";
 
 function LoginForm() {
   // TODO: change to accept either a username or email
@@ -60,8 +61,9 @@ function LoginForm() {
     setLoading(true);
     try {
       const response = await axios.post("/login", data);
-      // console.log(response)
-      setAuth({ user: { username: data.username } });
+      console.log(response)
+      const user = response.data.user as User
+      setAuth({ user: { username: user.username, email: user.email } });
       navigate(from, { replace: true });
     } catch (err) {
       console.error(err);
@@ -88,7 +90,7 @@ function LoginForm() {
             {...form.getInputProps("password")} required withAsterisk />
           <Group justify="space-between" mt="lg">
             {/* <Checkbox label="Remember me" /> */}
-            <Anchor component="button" size="sm" onClick={()=>navigate("/forgot_password")}>
+            <Anchor size="sm" onClick={()=>navigate("/forgot_password")}>
               Forgot password?
             </Anchor>
           </Group>
