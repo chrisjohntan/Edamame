@@ -72,7 +72,7 @@ def login():
     password = request.json["password"]
 
     # TODO: Something wrong with this
-    user = db.session.execute(
+    user: User | None = db.session.execute(
         db.select(User).filter_by(username=username)
         ).scalar()
     
@@ -81,7 +81,12 @@ def login():
             "error": "Username or password incorrect"
             }), HTTPStatus.BAD_REQUEST
         
-    response = jsonify({"msg": "login successful"})
+    response = jsonify({
+        "message": "login successful",
+        "user": {
+            "username": user.username,
+            "email": user.email
+        }})
     access_token = create_access_token(identity=user.username)
     set_access_cookies(response, access_token)
     
@@ -101,7 +106,12 @@ def protected():
     current_user: User = get_current_user()
     if current_user == None:
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
-    return jsonify(logged_in_as={"username": current_user.username}), HTTPStatus.OK
+    return jsonify({
+        "user": {
+            "username": current_user.username,
+            "email": current_user.email,
+        }
+    }), HTTPStatus.OK
 
 @auth.route("/send_forgot_password_email/<string:user_email>", methods=["GET"])
 def send_forgot_password_email(user_email: str):
