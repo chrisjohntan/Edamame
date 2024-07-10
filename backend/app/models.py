@@ -8,8 +8,8 @@ MIN_TIME_INTERVAL = timedelta(minutes=10)  # placeholder
 MIN_TIME_INTERVAL_LIST = [timedelta(seconds=60), timedelta(minutes=10), timedelta(minutes=30), timedelta(minutes=60)]  # placeholder
 MIN_TIME_INTERVAL_LISTS = [
     [timedelta(minutes=1), timedelta(minutes=10), timedelta(hours=1), timedelta(days=1)],
-    [timedelta(minutes=1), timedelta(minutes=30), timedelta(hours=1), timedelta(days=1)],
-    [timedelta(minutes=1), timedelta(hours=1), timedelta(days=1), timedelta(days=2)]
+    [timedelta(minutes=1), timedelta(hours=1), timedelta(days=1), timedelta(days=2)],
+    [timedelta(minutes=1), timedelta(days=1), timedelta(days=2), timedelta(days=3)]
     ]
 
 class User(db.Model, Base) :
@@ -128,9 +128,12 @@ class Card(db.Model, Base):
 
     def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval()[response]
+        if self.steps < 3:
+            self.steps += response
         if time_interval < MIN_TIME_INTERVAL:
             time_interval = MIN_TIME_INTERVAL
             self.forgot_card()
+            self.steps = 0
         
         self.time_interval = time_interval
 
