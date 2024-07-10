@@ -5,12 +5,11 @@ from typing import List
 from datetime import datetime, timedelta
 
 MIN_TIME_INTERVAL = timedelta(minutes=1)  # placeholder
-MIN_TIME_INTERVAL_LIST = [timedelta(seconds=60), timedelta(minutes=10), timedelta(minutes=30), timedelta(minutes=60)]  # placeholder
 MIN_TIME_INTERVAL_LISTS = [
     [timedelta(minutes=1), timedelta(minutes=10), timedelta(hours=1), timedelta(days=1)],
     [timedelta(minutes=1), timedelta(hours=1), timedelta(days=1), timedelta(days=2)],
     [timedelta(minutes=1), timedelta(days=1), timedelta(days=2), timedelta(days=3)]
-    ]
+    ] # placeholder
 
 class User(db.Model, Base) :
     __tablename__ = "users"
@@ -91,9 +90,6 @@ class Card(db.Model, Base):
     def calculate_time_interval(self):
         def ceildiv(a, b):
             return -(a // -b)
-        # placeholder
-        # if self.time_interval == MIN_TIME_INTERVAL:
-        #     return MIN_TIME_INTERVAL_LIST
 
         deck: Deck = self.get_deck()
 
