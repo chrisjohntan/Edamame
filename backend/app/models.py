@@ -4,7 +4,7 @@ from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
 
-MIN_TIME_INTERVAL = timedelta(minutes=10)  # placeholder
+MIN_TIME_INTERVAL = timedelta(minutes=1)  # placeholder
 MIN_TIME_INTERVAL_LIST = [timedelta(seconds=60), timedelta(minutes=10), timedelta(minutes=30), timedelta(minutes=60)]  # placeholder
 MIN_TIME_INTERVAL_LISTS = [
     [timedelta(minutes=1), timedelta(minutes=10), timedelta(hours=1), timedelta(days=1)],
@@ -100,7 +100,7 @@ class Card(db.Model, Base):
         if self.new or self.steps < 3:
             return self.get_initial_time_intervals()
 
-        intervals_list = [self.time_interval * deck.forgot_multiplier, 
+        intervals_list = [max(self.time_interval * deck.forgot_multiplier, MIN_TIME_INTERVAL), 
                 self.time_interval * deck.hard_multiplier, 
                 self.time_interval * deck.okay_multiplier, 
                 self.time_interval * deck.easy_multiplier]
@@ -128,14 +128,13 @@ class Card(db.Model, Base):
 
     def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval()[response]
-        if self.steps < 3:
-            self.steps += response
         if response == 0:
             self.forgot_card()
         # if time interval is too low, we need to reset steps
-        if time_interval < MIN_TIME_INTERVAL:
-            time_interval = MIN_TIME_INTERVAL
+        if self.steps >= 3 and time_interval < timedelta(days=1):
             self.steps = 0
+        if self.steps < 3:
+            self.steps += response
         
         self.time_interval = time_interval
 
