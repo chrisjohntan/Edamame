@@ -79,7 +79,7 @@ def edit_deck(deck_id):
         }), HTTPStatus.CONFLICT
 
     deck.deck_name = deck_name
-    deck.last_modified = now
+    deck.update_last_modified()
     
     db.session.commit()
 
