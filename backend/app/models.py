@@ -6,6 +6,11 @@ from datetime import datetime, timedelta
 
 MIN_TIME_INTERVAL = timedelta(minutes=10)  # placeholder
 MIN_TIME_INTERVAL_LIST = [timedelta(seconds=60), timedelta(minutes=10), timedelta(minutes=30), timedelta(minutes=60)]  # placeholder
+MIN_TIME_INTERVAL_LISTS = [
+    [timedelta(seconds=60), timedelta(minutes=10), timedelta(hours=1), timedelta(days=1)],
+    [timedelta(seconds=60), timedelta(minutes=30), timedelta(hours=1), timedelta(days=1)],
+    [timedelta(seconds=60), timedelta(hours=1), timedelta(days=1), timedelta(days=2)]
+    ]
 
 class User(db.Model, Base) :
     __tablename__ = "users"
@@ -114,6 +119,9 @@ class Card(db.Model, Base):
             intervals_list[i] = interval
         # print(intervals_list)
         return intervals_list
+    
+    def get_initial_time_intervals(self):
+        pass
 
     def update_time_interval(self, response: int):
         time_interval = self.calculate_time_interval()[response]
