@@ -142,6 +142,8 @@ class Card(db.Model, Base):
 
         self.last_reviewed = now
         self.reviews_done += 1
+        if self.new:
+            self.new = False
         deck.update_last_reviewed(now)
 
     def forgot_card(self):
