@@ -130,9 +130,11 @@ class Card(db.Model, Base):
         time_interval = self.calculate_time_interval()[response]
         if self.steps < 3:
             self.steps += response
+        if response == 0:
+            self.forgot_card()
+        # if time interval is too low, we need to reset steps
         if time_interval < MIN_TIME_INTERVAL:
             time_interval = MIN_TIME_INTERVAL
-            self.forgot_card()
             self.steps = 0
         
         self.time_interval = time_interval
