@@ -271,7 +271,7 @@ def review_card(id: int, response: int):
     # intervals = [60, 120, 180, 240]
     # interval = intervals[response-1]
     card.update_time_interval(response-1)
-    card.time_for_review = now + card.time_interval
+    card.update_time_for_review(now)
     card.update_last_reviewed(now)
     
     db.session.commit()

@@ -134,6 +134,9 @@ class Card(db.Model, Base):
         
         self.time_interval = time_interval
 
+    def update_time_for_review(self, now:datetime):
+        self.time_for_review = now + self.time_interval
+
     def update_last_modified(self, now:datetime):
         deck: Deck = self.get_deck()
 
