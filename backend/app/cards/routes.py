@@ -67,9 +67,9 @@ def create_card(deck_id):
         user_id=current_user.id,
         deck_id=deck_id,
         time_created=now,
-        time_for_review=now,  # placeholder
-        time_interval=timedelta(minutes=1),  # placeholder
-        last_reviewed=now,  # placeholder
+        time_for_review=now,
+        time_interval=timedelta(minutes=1),
+        last_reviewed=now,
         last_modified=now,
         reviews_done=0,
         times_remembered_consecutive=0,
@@ -216,6 +216,7 @@ def move_card(id, deck_id):
 def next_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
+    # for testing purposes
     ignore_review_time = request.get_json().get('ignore_review_time', '')
 
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
@@ -267,9 +268,6 @@ def review_card(id: int, response: int):
             "message": "Invalid Response",
         }), HTTPStatus.NOT_FOUND
 
-    # # placeholder in seconds
-    # intervals = [60, 120, 180, 240]
-    # interval = intervals[response-1]
     card.update_time_interval(response-1)
     card.update_time_for_review(now)
     card.update_last_reviewed(now)
