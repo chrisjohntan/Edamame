@@ -4,12 +4,12 @@ from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
 
-MIN_TIME_INTERVAL = timedelta(minutes=1)  # placeholder
 MIN_TIME_INTERVAL_LISTS = [
     [timedelta(minutes=1), timedelta(minutes=10), timedelta(hours=1), timedelta(days=1)],
     [timedelta(minutes=1), timedelta(hours=1), timedelta(days=1), timedelta(days=2)],
     [timedelta(minutes=1), timedelta(days=1), timedelta(days=2), timedelta(days=3)]
     ] # placeholder
+MIN_TIME_INTERVAL = MIN_TIME_INTERVAL_LISTS[0][0]
 
 class User(db.Model, Base) :
     __tablename__ = "users"
