@@ -127,7 +127,7 @@ class Card(db.Model, Base):
         if response == 0:
             self.forgot_card()
         # if time interval is too low, we need to reset steps
-        if self.steps >= 3 and time_interval < timedelta(days=1):
+        if self.steps >= 3 and time_interval < MIN_TIME_INTERVAL_LISTS[-1][1]:
             self.steps = 0
         if self.steps < 3:
             self.steps += response
@@ -156,7 +156,7 @@ class Card(db.Model, Base):
         self.times_forgot += 1
         self.times_remembered_consecutive = 0
 
-    def change_deck(self, new_deck_id):
+    def change_deck(self, new_deck_id:int):
         self.deck_id = new_deck_id
 
 class Deck(db.Model, Base):
