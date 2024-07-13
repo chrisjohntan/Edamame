@@ -9,6 +9,7 @@ MIN_TIME_INTERVAL_LISTS = [
     [timedelta(minutes=1), timedelta(hours=1), timedelta(days=1), timedelta(days=2)],
     [timedelta(minutes=1), timedelta(days=1), timedelta(days=2), timedelta(days=3)]
     ] # placeholder
+
 MIN_TIME_INTERVAL = MIN_TIME_INTERVAL_LISTS[0][0]
 
 class User(db.Model, Base) :
@@ -102,7 +103,7 @@ class Card(db.Model, Base):
                 self.time_interval * deck.easy_multiplier]
         
         for i in range(len(intervals_list)):
-            interval : timedelta = intervals_list[i]
+            interval: timedelta = intervals_list[i]
             if interval >= timedelta(days=1):
                 # round up to nearest day
                 day = ceildiv(interval.days*86400 + interval.seconds, 86400)
@@ -116,7 +117,17 @@ class Card(db.Model, Base):
                 minute = ceildiv(interval.seconds, 60)
                 interval = timedelta(minutes=minute)
             intervals_list[i] = interval
-        # print(intervals_list)
+
+        # ensure the intervals are always ascending with no duplicates
+        for i in range(len(intervals_list)-1):
+            if intervals_list[i] >= intervals_list[i+1]:
+                interval: timedelta = intervals_list[i] 
+                if interval >= timedelta(days=1):
+                    intervals_list[i+1] = interval + timedelta(days=1)
+                elif interval >= timedelta(hours=1):
+                    intervals_list[i+1] = interval + timedelta(hours=1)
+                else:
+                    intervals_list[i+1] = interval + timedelta(minutes=1)
         return intervals_list
     
     def get_initial_time_intervals(self):
