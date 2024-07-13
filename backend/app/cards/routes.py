@@ -200,7 +200,7 @@ def move_card(id, deck_id):
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
-    card.deck_id = new_deck.id
+    card.change_deck(deck_id)
     prev_deck.update_last_modified(now)
     new_deck.update_last_modified(now)
     db.session.commit()

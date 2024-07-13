@@ -153,6 +153,8 @@ class Card(db.Model, Base):
         self.times_forgot += 1
         self.times_remembered_consecutive = 0
 
+    def change_deck(self, new_deck_id):
+        self.deck_id = new_deck_id
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
