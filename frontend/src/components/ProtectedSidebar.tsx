@@ -53,7 +53,12 @@ function ProtectedSidebar() {
         </div>
 
         <div className={classes.footer}>
-          <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+          <a href="/settings" className={classes.link}
+            onClick={(event) => {
+              event.preventDefault();
+              navigate("/settings");
+            }}
+          >
             <IconSettings className={classes.linkIcon} stroke={1.5} />
             <span>Settings</span>
           </a>
@@ -62,7 +67,8 @@ function ProtectedSidebar() {
             onClick={(event) => {
               event.preventDefault();
               signOut()
-            }}>
+            }}
+          >
             <IconLogout className={classes.linkIcon} stroke={1.5} />
             <span>Logout</span>
           </a>

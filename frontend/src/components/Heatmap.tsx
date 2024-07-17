@@ -57,16 +57,8 @@ function Heatmap() {
 
   return (
     <>
-      <NumberInput 
-        value={year} 
-        onChange={changeYear}
-        max={currentYear}
-        min={currentYear-3}
-        allowDecimal={false}
-        style={{width: "5rem"}}
-        size="sm"
-        mb="md"
-      />
+      <header style={{marginBottom: 'var(--mantine-spacing-md)'}}>Review history</header> 
+      
       {/* <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} style={{borderWidth:"10px"}}/> */}
       <HeatMap
         style={{backgroundColor:""}}
@@ -96,6 +88,16 @@ function Heatmap() {
         }}
         
         />
+        <NumberInput 
+        value={year} 
+        onChange={changeYear}
+        max={currentYear}
+        min={currentYear-3}
+        allowDecimal={false}
+        style={{width: "5rem"}}
+        size="sm"
+        mb="md"
+      />
     </>
   )
 }

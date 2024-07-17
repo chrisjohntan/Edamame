@@ -8,7 +8,7 @@ type AuthContextType = {
 }
 
 const defaultAuthContext: AuthContextType = {
-  auth: { user: { username: "" } },
+  auth: { user: { username: "", email: "" } },
   setAuth: () => {},
 };
 
@@ -16,7 +16,7 @@ const defaultAuthContext: AuthContextType = {
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [auth, setAuth] = useState<Auth>({ user: { username: "" } });
+  const [auth, setAuth] = useState<Auth>({ user: { username: "", email: "" } });
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
