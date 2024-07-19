@@ -139,9 +139,10 @@ class Card(db.Model, Base):
         if response == 0:
             self.forgot_card()
         # if time interval is too low, we need to reset steps
-        if self.steps >= 3 and time_interval < MIN_TIME_INTERVAL_LISTS[-1][1]:
+        steps_limit = len(MIN_TIME_INTERVAL_LISTS)
+        if self.steps >= steps_limit and time_interval < MIN_TIME_INTERVAL_LISTS[-1][1]:
             self.steps = 0
-        if self.steps < 3:
+        if self.steps < steps_limit:
             self.steps += response
         
         self.time_interval = time_interval
