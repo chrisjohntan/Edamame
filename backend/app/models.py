@@ -89,7 +89,7 @@ class Card(db.Model, Base):
 
         return deck
 
-    def calculate_time_interval(self):
+    def calculate_time_interval(self) -> list:
         def ceildiv(a, b):
             return -(a // -b)
 
@@ -131,10 +131,10 @@ class Card(db.Model, Base):
                     intervals_list[i+1] = interval + timedelta(minutes=1)
         return intervals_list
     
-    def get_initial_time_intervals(self):
+    def get_initial_time_intervals(self) -> list:
         return MIN_TIME_INTERVAL_LISTS[self.steps]
 
-    def update_time_interval(self, response: int):
+    def update_time_interval(self, response: int) -> None:
         time_interval = self.calculate_time_interval()[response]
         if response == 0:
             self.forgot_card()
@@ -146,16 +146,16 @@ class Card(db.Model, Base):
         
         self.time_interval = time_interval
 
-    def update_time_for_review(self, now:datetime):
+    def update_time_for_review(self, now:datetime) -> None:
         self.time_for_review = now + self.time_interval
 
-    def update_last_modified(self, now:datetime):
+    def update_last_modified(self, now:datetime) -> None:
         deck: Deck = self.get_deck()
 
         self.last_modified = now
         deck.update_last_modified(now)
 
-    def update_last_reviewed(self, now:datetime):
+    def update_last_reviewed(self, now:datetime) -> None:
         deck: Deck = self.get_deck()
 
         self.last_reviewed = now
@@ -164,11 +164,11 @@ class Card(db.Model, Base):
             self.new = False
         deck.update_last_reviewed(now)
 
-    def forgot_card(self):
+    def forgot_card(self) -> None:
         self.times_forgot += 1
         self.times_remembered_consecutive = 0
 
-    def change_deck(self, new_deck_id:int):
+    def change_deck(self, new_deck_id:int) -> None:
         self.deck_id = new_deck_id
 
 class Deck(db.Model, Base):
@@ -206,10 +206,10 @@ class Deck(db.Model, Base):
         d["size"] = len(self.cards)
         return d
     
-    def update_last_modified(self, now:datetime):
+    def update_last_modified(self, now:datetime) -> None:
         self.last_modified = now
     
-    def update_last_reviewed(self, now:datetime):
+    def update_last_reviewed(self, now:datetime) -> None:
         self.last_reviewed = now
         self.reviews_done += 1
     
@@ -220,7 +220,7 @@ class ReviewCount(db.Model, Base):
     review_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "date": self.date.isoformat(),
             "review_count": self.review_count,
