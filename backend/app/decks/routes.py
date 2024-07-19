@@ -70,6 +70,10 @@ def edit_deck(deck_id):
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     deck_name = request.get_json().get('deck_name', deck.deck_name)
+    forgot_multiplier = request.get_json().get('deck_name', deck.forgot_multiplier)
+    hard_multiplier = request.get_json().get('deck_name', deck.hard_multiplier)
+    okay_multiplier = request.get_json().get('deck_name', deck.okay_multiplier)
+    easy_multiplier = request.get_json().get('deck_name', deck.easy_multiplier)
     name_exists = db.session.execute(
         db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
         ).scalar()
@@ -79,6 +83,10 @@ def edit_deck(deck_id):
         }), HTTPStatus.CONFLICT
 
     deck.deck_name = deck_name
+    deck.forgot_multiplier = forgot_multiplier
+    deck.hard_multiplier = hard_multiplier
+    deck.okay_multiplier = okay_multiplier
+    deck.easy_multiplier = easy_multiplier
     deck.update_last_modified()
     
     db.session.commit()
