@@ -93,7 +93,7 @@ def edit_deck(deck_id):
 
     return jsonify({
         "message": "Deck edited",
-        "card": {
+        "deck": {
             "deck_name": deck_name, "user_id": current_user.id
         }
     }), HTTPStatus.OK
