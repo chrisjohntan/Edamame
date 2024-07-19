@@ -1,7 +1,7 @@
 import { AppShell, Code, Group, NavLink } from "@mantine/core";
 import classes from './styles/Sidebar.module.css';
 import { IconCards, IconChartArea, IconChartBar, IconLogout, IconSettings, IconSwitchHorizontal, IconUser } from '@tabler/icons-react';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useLogout from "../hooks/useLogout";
 import { useLocation, useNavigate } from "react-router-dom";
 import edamameLogo from "../assets/edamame.svg"
@@ -18,6 +18,14 @@ function ProtectedSidebar() {
   const logout = useLogout();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    console.log(path);
+    
+    setActive(path.split("/")[1]);
+  }, [location])
+
   const signOut = () => {
     logout();
     navigate("/");
@@ -26,7 +34,7 @@ function ProtectedSidebar() {
   const links = data.map((item) => (
     <a
       className={classes.link}
-      data-active={item.label === active || undefined}
+      data-active={item.label.toLowerCase() === active || undefined}
       href={item.link}
       key={item.label}
       onClick={(event) => {
