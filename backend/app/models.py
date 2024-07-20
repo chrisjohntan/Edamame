@@ -1,11 +1,16 @@
 from sqlalchemy.orm import Mapped, mapped_column , relationship
-from sqlalchemy import String, Integer, Float, Text, ForeignKey, DateTime, Interval, Date
+from sqlalchemy import String, Integer, Float, Text, ForeignKey, DateTime, Interval, Date, Boolean
 from .extensions import db, Base
 from typing import List
 from datetime import datetime, timedelta
 
-MIN_TIME_INTERVAL = timedelta(minutes=10)  # placeholder
-MIN_TIME_INTERVAL_LIST = [timedelta(seconds=60), timedelta(minutes=10), timedelta(minutes=30), timedelta(minutes=60)]  # placeholder
+MIN_TIME_INTERVAL_LISTS = [
+    [timedelta(minutes=1), timedelta(minutes=10), timedelta(hours=1), timedelta(days=1)],
+    [timedelta(minutes=1), timedelta(hours=1), timedelta(days=1), timedelta(days=2)],
+    [timedelta(minutes=1), timedelta(days=1), timedelta(days=2), timedelta(days=3)]
+    ] # placeholder
+
+MIN_TIME_INTERVAL = MIN_TIME_INTERVAL_LISTS[0][0]
 
 class User(db.Model, Base) :
     __tablename__ = "users"
@@ -46,6 +51,8 @@ class Card(db.Model, Base):
     reviews_done: Mapped[Integer] = mapped_column(Integer, nullable=False)
     times_remembered_consecutive: Mapped[Integer] = mapped_column(Integer, nullable=False)
     times_forgot: Mapped[Integer] = mapped_column(Integer, nullable=False)
+    new: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
+    steps: Mapped[Integer] = mapped_column(Integer, nullable=False)
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     deck_id: Mapped[int] = mapped_column(Integer, ForeignKey("decks.id"), nullable=False)
@@ -74,6 +81,7 @@ class Card(db.Model, Base):
         #     col.name: getattr(self, col.name) for col in self.__table__.columns\
         #         if col.name not in exclude
         # }
+        card["next_time_intervals"] = list(map(lambda val: val.seconds, self.calculate_time_interval()))
         return card
         
     def get_deck(self):
@@ -81,22 +89,22 @@ class Card(db.Model, Base):
 
         return deck
 
-    def calculate_time_interval(self):
+    def calculate_time_interval(self) -> list:
         def ceildiv(a, b):
             return -(a // -b)
-        # placeholder
-        # if self.time_interval == MIN_TIME_INTERVAL:
-        #     return MIN_TIME_INTERVAL_LIST
 
         deck: Deck = self.get_deck()
 
-        intervals_list = [self.time_interval * deck.forgot_multiplier, 
+        if self.new or self.steps < 3:
+            return self.get_initial_time_intervals()
+
+        intervals_list = [max(self.time_interval * deck.forgot_multiplier, MIN_TIME_INTERVAL), 
                 self.time_interval * deck.hard_multiplier, 
                 self.time_interval * deck.okay_multiplier, 
                 self.time_interval * deck.easy_multiplier]
         
         for i in range(len(intervals_list)):
-            interval : timedelta = intervals_list[i]
+            interval: timedelta = intervals_list[i]
             if interval >= timedelta(days=1):
                 # round up to nearest day
                 day = ceildiv(interval.days*86400 + interval.seconds, 86400)
@@ -110,34 +118,59 @@ class Card(db.Model, Base):
                 minute = ceildiv(interval.seconds, 60)
                 interval = timedelta(minutes=minute)
             intervals_list[i] = interval
-        # print(intervals_list)
-        return intervals_list
 
-    def update_time_interval(self, response: int):
+        # ensure the intervals are always ascending with no duplicates
+        for i in range(len(intervals_list)-1):
+            if intervals_list[i] >= intervals_list[i+1]:
+                interval: timedelta = intervals_list[i] 
+                if interval >= timedelta(days=1):
+                    intervals_list[i+1] = interval + timedelta(days=1)
+                elif interval >= timedelta(hours=1):
+                    intervals_list[i+1] = interval + timedelta(hours=1)
+                else:
+                    intervals_list[i+1] = interval + timedelta(minutes=1)
+        return intervals_list
+    
+    def get_initial_time_intervals(self) -> list:
+        return MIN_TIME_INTERVAL_LISTS[self.steps]
+
+    def update_time_interval(self, response: int) -> None:
         time_interval = self.calculate_time_interval()[response]
-        if response == 1:
-            time_interval = MIN_TIME_INTERVAL
+        if response == 0:
             self.forgot_card()
+        # if time interval is too low, we need to reset steps
+        steps_limit = len(MIN_TIME_INTERVAL_LISTS)
+        if self.steps >= steps_limit and time_interval < MIN_TIME_INTERVAL_LISTS[-1][1]:
+            self.steps = 0
+        if self.steps < steps_limit:
+            self.steps += response
         
         self.time_interval = time_interval
 
-    def update_last_modified(self, now:datetime):
+    def update_time_for_review(self, now:datetime) -> None:
+        self.time_for_review = now + self.time_interval
+
+    def update_last_modified(self, now:datetime) -> None:
         deck: Deck = self.get_deck()
 
         self.last_modified = now
         deck.update_last_modified(now)
 
-    def update_last_reviewed(self, now:datetime):
+    def update_last_reviewed(self, now:datetime) -> None:
         deck: Deck = self.get_deck()
 
         self.last_reviewed = now
         self.reviews_done += 1
+        if self.new:
+            self.new = False
         deck.update_last_reviewed(now)
 
-    def forgot_card(self):
-        self.times_forgot += 0
+    def forgot_card(self) -> None:
+        self.times_forgot += 1
         self.times_remembered_consecutive = 0
 
+    def change_deck(self, new_deck_id:int) -> None:
+        self.deck_id = new_deck_id
 
 class Deck(db.Model, Base):
     __tablename__ = "decks"
@@ -174,10 +207,10 @@ class Deck(db.Model, Base):
         d["size"] = len(self.cards)
         return d
     
-    def update_last_modified(self, now:datetime):
+    def update_last_modified(self, now:datetime) -> None:
         self.last_modified = now
     
-    def update_last_reviewed(self, now:datetime):
+    def update_last_reviewed(self, now:datetime) -> None:
         self.last_reviewed = now
         self.reviews_done += 1
     
@@ -188,7 +221,7 @@ class ReviewCount(db.Model, Base):
     review_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "date": self.date.isoformat(),
             "review_count": self.review_count,

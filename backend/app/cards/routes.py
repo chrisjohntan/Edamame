@@ -58,13 +58,6 @@ def create_card(deck_id):
     body = request.get_json().get("body", "")
     header_flipped = request.get_json().get("header_flipped", header)
     body_flipped = request.get_json().get("body", body)
-    card_type = request.get_json().get("card_type", "manual")
-    
-    if card_type == "auto":
-        try:
-            header_flipped = deepl_translate(header)
-        except ValueError:
-            print("Something went wrong")
 
     card = Card(
         header=header,
@@ -74,11 +67,15 @@ def create_card(deck_id):
         user_id=current_user.id,
         deck_id=deck_id,
         time_created=now,
-        time_for_review=now+timedelta(0, 60),  # placeholder
-        time_interval=timedelta(0, 60),  # placeholder
-        last_reviewed=now,  # placeholder
+        time_for_review=now,
+        time_interval=timedelta(minutes=1),
+        last_reviewed=now,
         last_modified=now,
         reviews_done=0,
+        times_remembered_consecutive=0,
+        times_forgot=0,
+        new=True,
+        steps=0
     )
 
     deck.update_last_modified(now)
@@ -90,6 +87,34 @@ def create_card(deck_id):
         "message": "Card created",
         "card": card.to_dict()
     }), HTTPStatus.CREATED
+
+@cards.route("/get_translation_for_card/<int:deck_id>", methods=["POST"])
+@jwt_required()
+def get_translation_for_card(deck_id):
+    current_user = get_current_user()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+
+    if not deck:
+        return jsonify({
+            "message": "Deck not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    header = request.json["header"]
+    body = request.get_json().get("body", "")
+    
+    try:
+        header_flipped = deepl_translate(header)
+    except ValueError:
+        print("Something went wrong")
+        return jsonify({
+            "error": "Translation not available at the moment, please use manual card creation instead"
+        }),HTTPStatus.INTERNAL_SERVER_ERROR
+
+    return jsonify({
+        "header": header,
+        "body": body,
+        "header_flipped": header_flipped
+    }), HTTPStatus.OK
 
 
 @cards.route("/get_cards/<int:deck_id>", methods=["GET"])
@@ -177,7 +202,7 @@ def move_card(id, deck_id):
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
-    card.deck_id = new_deck.id
+    card.change_deck(deck_id)
     prev_deck.update_last_modified(now)
     new_deck.update_last_modified(now)
     db.session.commit()
@@ -193,6 +218,7 @@ def move_card(id, deck_id):
 def next_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
+    # for testing purposes
     ignore_review_time = request.get_json().get('ignore_review_time', '')
 
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
@@ -244,11 +270,8 @@ def review_card(id: int, response: int):
             "message": "Invalid Response",
         }), HTTPStatus.NOT_FOUND
 
-    # # placeholder in seconds
-    # intervals = [60, 120, 180, 240]
-    # interval = intervals[response-1]
     card.update_time_interval(response-1)
-    card.time_for_review = now + card.time_interval
+    card.update_time_for_review(now)
     card.update_last_reviewed(now)
     
     db.session.commit()
