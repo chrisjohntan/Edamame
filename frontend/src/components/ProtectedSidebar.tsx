@@ -1,4 +1,4 @@
-import { AppShell, Code, Group, NavLink } from "@mantine/core";
+import { AppShell, Code, Group, NavLink, Stack } from "@mantine/core";
 import classes from './styles/Sidebar.module.css';
 import { IconCards, IconChartArea, IconChartBar, IconLogout, IconSettings, IconSwitchHorizontal, IconUser } from '@tabler/icons-react';
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ function ProtectedSidebar() {
   const data = [
     { link: '/decks', label: 'Decks', icon: IconCards },
     { link: '/stats', label: 'Stats', icon: IconChartBar },
-    // { link: '/settings', label: 'Settings', icon: IconSettings}
+    { link: '/settings', label: 'Settings', icon: IconSettings}
   ];
 
   const [active, setActive] = useState('Decks');
@@ -52,35 +52,24 @@ function ProtectedSidebar() {
   return (
     <AppShell.Navbar px="md">
       <nav className={classes.navbar}>
-        <div className={classes.navbarMain}>
-          <Group className={classes.header}>
-            <img src={edamameLogo} style={{ width: "1rem", height: "1rem" }} />
-            <h2>Edamame</h2>
-          </Group>
-          {links}
-        </div>
-
-        <div className={classes.footer}>
-          <a href="/settings" className={classes.link}
-            onClick={(event) => {
-              event.preventDefault();
-              navigate("/settings");
-            }}
-          >
-            <IconSettings className={classes.linkIcon} stroke={1.5} />
-            <span>Settings</span>
-          </a>
-
-          <a href="/logout" className={classes.link}
-            onClick={(event) => {
-              event.preventDefault();
-              signOut()
-            }}
-          >
-            <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Logout</span>
-          </a>
-        </div>
+          <div className={classes.navbarMain}>
+            <Group className={classes.header}>
+              <img src={edamameLogo} style={{ width: "1rem", height: "1rem" }} />
+              <h2>Edamame</h2>
+            </Group>
+            {links}
+          </div>
+          <div className={classes.footer}>
+            <a href="/logout" className={classes.link}
+              onClick={(event) => {
+                event.preventDefault();
+                signOut()
+              }}
+            >
+              <IconLogout className={classes.linkIcon} stroke={1.5} />
+              <span>Logout</span>
+            </a>
+          </div>
       </nav>
     </AppShell.Navbar>
   )
