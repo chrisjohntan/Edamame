@@ -84,7 +84,7 @@ class Card(db.Model, Base):
         #     col.name: getattr(self, col.name) for col in self.__table__.columns\
         #         if col.name not in exclude
         # }
-        card["next_time_intervals"] = list(map(lambda val: val.seconds, self.calculate_time_interval()))
+        card["next_time_intervals"] = list(map(lambda val: val.total_seconds(), self.calculate_time_interval()))
         return card
         
     def get_deck(self):
