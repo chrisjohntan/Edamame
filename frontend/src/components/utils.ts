@@ -9,6 +9,7 @@ export function dataToCard(card: any): Card {
     time_interval: new Date(card.time_interval),
     last_modified: new Date(card.last_modified),
     last_reviewed: new Date(card.last_reviewed),
+    next_time_intervals: card.next_time_intervals as number[],
   }
 }
 
@@ -29,4 +30,22 @@ export function dateToIso(date: Date): string {
   day = day.length === 1 ? "0" + day : day;
 
   return `${yr}-${month}-${day}`;
+}
+
+export function formatInterval(seconds: number): string {
+  const MONTH = 60 * 60 * 24 * 30;
+  const DAY = 60 * 60 * 24;
+  const HOUR = 60 * 60;
+  const MIN = 60;
+  if (seconds >= MONTH) {
+    return `${Math.round((seconds / MONTH + Number.EPSILON) * 10) / 10}mth`;
+  } else if (seconds >= DAY) {
+    return `${Math.round((seconds / DAY + Number.EPSILON) * 10) / 10}d`;
+  } else if (seconds >= HOUR) {
+    return `${Math.round((seconds / HOUR + Number.EPSILON) * 10) / 10}h`;
+  } else if (seconds >= MIN) {
+    return `${Math.round((seconds / MIN + Number.EPSILON) * 10) / 10}min`;
+  } else {
+    return "< 1min";
+  }
 }
