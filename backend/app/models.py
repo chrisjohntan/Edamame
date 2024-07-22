@@ -74,7 +74,10 @@ class Card(db.Model, Base):
             if isinstance(val, datetime):
                 card[col.name] = val.isoformat()
             elif isinstance(val, timedelta):
-                card[col.name] = val.seconds
+                if val < timedelta(days=1):
+                    card[col.name] = val.seconds
+                else:
+                    card[col.name] = val.days * 86400
             else:
                 card[col.name] = val
         # return {
