@@ -59,9 +59,7 @@ def create_new_user():
     
     return jsonify({
         "message": "User created",
-        "user": {
-            "username": username, "email": email
-        }
+        "user": user.to_dict()
     }), HTTPStatus.CREATED
 
 # log in user
@@ -83,10 +81,8 @@ def login():
         
     response = jsonify({
         "message": "login successful",
-        "user": {
-            "username": user.username,
-            "email": user.email
-        }})
+        "user": user.to_dict()
+    })
     access_token = create_access_token(identity=user.username)
     set_access_cookies(response, access_token)
     
@@ -107,10 +103,7 @@ def protected():
     if current_user == None:
         return jsonify({"error": "Unable to retrieve user"}), HTTPStatus.UNAUTHORIZED
     return jsonify({
-        "user": {
-            "username": current_user.username,
-            "email": current_user.email,
-        }
+        "user": current_user.to_dict()
     }), HTTPStatus.OK
 
 @auth.route("/send_forgot_password_email/<string:user_email>", methods=["GET"])
