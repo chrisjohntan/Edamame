@@ -26,6 +26,7 @@ export type Card = {
   last_reviewed: Date;
   last_modified: Date;
   reviews_done: number;
+  next_time_intervals: number[]
 }
 
 export type Deck = {
