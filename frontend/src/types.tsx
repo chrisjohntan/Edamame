@@ -1,16 +1,18 @@
 export type User = {
   username: string,
   email: string,
+  daily_target: number
 }
 
 export type Auth = {
   user: User
 }
 
-export const EMPTY_AUTH = {
+export const EMPTY_AUTH: Auth = {
   user: {
     username: "",
     email: "",
+    daily_target: 0
   }
 } as const
 
