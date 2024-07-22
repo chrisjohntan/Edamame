@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../axiosConfig"
 import HeatMap from "@uiw/react-heat-map"
 import { dateToIso } from "./utils";
-import { Box, LoadingOverlay, NumberInput, Paper, Stack, Tooltip, rem } from "@mantine/core";
+import { Box, LoadingOverlay, NumberInput, Paper, Stack, Title, Tooltip, rem } from "@mantine/core";
 import { format } from "date-fns"
 
 const mapper = () => {
@@ -57,9 +57,7 @@ function Heatmap() {
 
   return (
     <>
-      <header style={{marginBottom: 'var(--mantine-spacing-md)'}}>Review history</header> 
-      
-      {/* <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} style={{borderWidth:"10px"}}/> */}
+      <Title order={3}>Review history</Title>
       <HeatMap
         style={{backgroundColor:""}}
         value={data}
