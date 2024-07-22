@@ -63,7 +63,7 @@ function LoginForm() {
       const response = await axios.post("/login", data);
       console.log(response)
       const user = response.data.user as User
-      setAuth({ user: { username: user.username, email: user.email } });
+      setAuth({ user: user });
       navigate(from, { replace: true });
     } catch (err) {
       console.error(err);
