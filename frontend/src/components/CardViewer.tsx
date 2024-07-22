@@ -1,9 +1,13 @@
-import { Box, Button, Center, Divider, Flex, Group, LoadingOverlay, Modal, Text } from "@mantine/core";
+/**
+ * Popout component for viewing cards
+ */
+
+import { Box, Button, Center, Divider, Flex, Group, LoadingOverlay, Modal, Stack, Text } from "@mantine/core";
 import { Card } from "../types";
 import { useEffect, useState } from "react";
 import axios from "../axiosConfig";
 import { isAxiosError } from "axios";
-import { dataToCard } from "./utils";
+import { dataToCard, formatInterval } from "./utils";
 import { notifications } from "@mantine/notifications";
 
 // if Card is passed as prop, render the card
@@ -76,6 +80,8 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
 
   if (currentCard) {
     console.log("card" + currentCard.header)
+    const intervals: string[] = currentCard.next_time_intervals.map(x => formatInterval(x));
+    console.log(currentCard.next_time_intervals);
     return (
       <>
         <Modal
@@ -99,15 +105,34 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
                   <Divider size="sm" mb="sm" />
                   <Text ta="center" mb="md">{currentCard.body_flipped}</Text>
                   <Center><Button onClick={toggleSide} mb="xl">Show front</Button></Center>
-                  {/* <Button onClick={()=>{toggleSide();getNextCard();}}>Next card</Button> */}
-                  <Flex justify="center">
-                    <Button.Group variant="default">
-                      <Button variant="outline" color="black" onClick={handleNext(1)}>Forgot</Button>
-                      <Button variant="outline" color="red" onClick={handleNext(2)}>Hard</Button>
-                      <Button variant="outline" color="green" onClick={handleNext(3)}>Okay</Button>
-                      <Button variant="outline" color="blue" onClick={handleNext(4)}>Easy</Button>
-                    </Button.Group>
-                  </Flex>
+                  {/* <Flex justify="center"> */}
+                    <Group variant="default" ta="center" justify="center">
+                      <Stack ta="center" gap={"0"}>
+                        <Text style={{marginBottom: 0}}>                        
+                          {intervals[0]}
+                        </Text>
+                        <Button variant="outline" color="black" onClick={handleNext(1)}>Forgot</Button>
+                      </Stack>
+                      <Stack gap={"0"}>
+                        <Text style={{marginBottom: 0}}>                        
+                          {intervals[1]}
+                        </Text>
+                        <Button mt="0" variant="outline" color="red" onClick={handleNext(2)}>Hard</Button>
+                      </Stack>
+                      <Stack gap={"0"}>
+                        <Text style={{marginBottom: 0}}>                        
+                          {intervals[2]}
+                        </Text>
+                        <Button variant="outline" color="green" onClick={handleNext(3)}>Okay</Button>
+                      </Stack>
+                      <Stack gap={"0"}>
+                        <Text style={{marginBottom: 0}}>                        
+                          {intervals[3]}
+                        </Text>
+                        <Button variant="outline" color="blue" onClick={handleNext(4)}>Easy</Button>
+                      </Stack>
+                    </Group>
+                  {/* </Flex> */}
                 </Box>
               )
           }
