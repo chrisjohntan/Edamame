@@ -288,11 +288,11 @@ def get_daily_counts():
     # iso format: YYYY-MM-DD
     try:
         start_date = datetime.strptime(
-            request.args.get("start_date", date.today()),
+            request.args.get("start_date", date.today().isoformat()),
             "%Y-%M-%d"
         ).date()
         end_date = datetime.strptime(
-            request.args.get("end_date", date.today()),
+            request.args.get("end_date", date.today().isoformat()),
             "%Y-%m-%d"
         ).date()
     except ValueError:
@@ -311,3 +311,4 @@ def get_daily_counts():
     return jsonify({
         "review_counts": [c.to_dict() for c in counts]
     }), HTTPStatus.OK
+    
