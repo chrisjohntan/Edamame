@@ -18,6 +18,7 @@ class User(db.Model, Base) :
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(Text, nullable=False)
     email: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    daily_target: Mapped[int] = mapped_column(Integer, nullable=False, default=50)
 
     # TODO: in legacy, try to change later
     # user_cards: Mapped[List["Card"]] = relationship('Card', backref="users")
@@ -33,7 +34,8 @@ class User(db.Model, Base) :
         return {
             "id": self.id,
             "username": self.username,
-            "email": self.email
+            "email": self.email,
+            "daily_target": self.daily_target
         }
     
 class Card(db.Model, Base):
