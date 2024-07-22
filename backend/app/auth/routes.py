@@ -137,7 +137,7 @@ def send_forgot_password_email(user_email: str):
 
 @auth.route("/verify_reset_token/<string:user_email>/<string:token>", methods=["GET"])
 def verify_reset_token(user_email, token):
-    user: User = User.query.filter_by(email=user_email).first()
+    user: User | None = User.query.filter_by(email=user_email).first()
 
     if not user:
         return jsonify({"error": "Unable to retrieve user, there is no such email"}), HTTPStatus.UNAUTHORIZED
