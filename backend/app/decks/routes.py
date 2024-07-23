@@ -75,14 +75,14 @@ def edit_deck(deck_id):
     okay_multiplier = request.get_json().get('okay', deck.okay_multiplier)
     easy_multiplier = request.get_json().get('easy', deck.easy_multiplier)
 
-    # Check if user already have a deck with the same name
-    name_exists = db.session.execute(
-        db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
-        ).scalar()
-    if name_exists:
-        return jsonify({
-            "message": "A deck with that name already exists"
-        }), HTTPStatus.CONFLICT
+    # # Check if user already have a deck with the same name
+    # name_exists = db.session.execute(
+    #     db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
+    #     ).scalar()
+    # if name_exists:
+    #     return jsonify({
+    #         "message": "A deck with that name already exists"
+    #     }), HTTPStatus.CONFLICT
     
     # Check if any multipliers are not float
     for multiplier in (forgot_multiplier, hard_multiplier, okay_multiplier, easy_multiplier):
@@ -97,7 +97,7 @@ def edit_deck(deck_id):
     deck.hard_multiplier = hard_multiplier
     deck.okay_multiplier = okay_multiplier
     deck.easy_multiplier = easy_multiplier
-    deck.update_last_modified()
+    deck.update_last_modified(now)
     
     db.session.commit()
 
