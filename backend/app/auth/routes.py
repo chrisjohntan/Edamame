@@ -223,3 +223,22 @@ def change_user_password(id):
     return jsonify({
         "message": f"Password changed"
     }), HTTPStatus.OK
+
+@auth.route('/change_daily_target', methods=["PUT", "PATCH"])
+@jwt_required()
+def change_daily_target():
+    user: User = get_current_user()
+    new_target = request.json["new_target"]
+
+    # Check if daily target is integer
+    if type(new_target) != int:
+        return jsonify({
+            "message": "Please change the value to an integer",
+        }), HTTPStatus.NOT_ACCEPTABLE
+        
+    user.daily_target = new_target
+    db.session.commit()
+    
+    return jsonify({
+        "message": f"Daily target has been changed to {user.daily_target}"
+    }), HTTPStatus.OK
