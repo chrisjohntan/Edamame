@@ -289,7 +289,7 @@ def get_daily_counts():
     try:
         start_date = datetime.strptime(
             request.args.get("start_date", date.today().isoformat()),
-            "%Y-%M-%d"
+            "%Y-%m-%d"
         ).date()
         end_date = datetime.strptime(
             request.args.get("end_date", date.today().isoformat()),
@@ -307,7 +307,6 @@ def get_daily_counts():
     
     user: User = get_current_user()
     counts = getReviewCounts(user_id=user.id, start_date=start_date, end_date=end_date)
-    print(counts)
     return jsonify({
         "review_counts": [c.to_dict() for c in counts]
     }), HTTPStatus.OK
