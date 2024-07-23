@@ -242,7 +242,7 @@ def next_card(deck_id):
     if card.time_for_review >= now and not ignore_review_time:
         return jsonify({
         "message": "No cards due for review now",
-        }), HTTPStatus.OK
+        }), HTTPStatus.TOO_EARLY
     return jsonify({
         "message": "Next Card",
         "card": card.to_dict()
