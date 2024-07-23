@@ -74,6 +74,8 @@ def edit_deck(deck_id):
     hard_multiplier = request.get_json().get('hard', deck.hard_multiplier)
     okay_multiplier = request.get_json().get('okay', deck.okay_multiplier)
     easy_multiplier = request.get_json().get('easy', deck.easy_multiplier)
+
+    # Check if user already have a deck with the same name
     name_exists = db.session.execute(
         db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
         ).scalar()
@@ -81,6 +83,14 @@ def edit_deck(deck_id):
         return jsonify({
             "message": "A deck with that name already exists"
         }), HTTPStatus.CONFLICT
+    
+    # Check if any multipliers are not float
+    for multiplier in (forgot_multiplier, hard_multiplier, okay_multiplier, easy_multiplier):
+        if not isinstance(multiplier, (int, float)):
+            return jsonify({
+            "message": "Please ensure all time interval multiplier values to a float or an integer",
+            }), HTTPStatus.NOT_ACCEPTABLE
+
 
     deck.deck_name = deck_name
     deck.forgot_multiplier = forgot_multiplier
