@@ -219,7 +219,7 @@ def next_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
     # for testing purposes
-    ignore_review_time = request.get_json().get('ignore_review_time', '')
+    ignore_review_time = request.get_json().get('ignore_review_time', False)
 
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     if not deck:
