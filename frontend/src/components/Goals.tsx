@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import axios from '../axiosConfig';
 import useAuth from "../hooks/useAuth";
 import { isAxiosError } from "axios";
+import { notifications } from "@mantine/notifications";
+
 
 function Goals() {
   const [reviewsToday, setReviewsToday] = useState(0);
   const [target, setTarget] = useState(0);
-
   const { auth } = useAuth();
   
   useEffect(() => {
@@ -17,21 +18,23 @@ function Goals() {
       try {
         const response = await axios.get("/get_review_counts");
         const data = response.data.review_counts;
+        console.log(data)
         if (!data[0]) {
           setReviewsToday(0);
         } else {
           setReviewsToday(data[0].review_count)
         }
-        // console.log(review.);
       } catch (err) {
         if (isAxiosError(err)) {
-
+          notifications.show({
+            message: `An error occurred while fetching data: ${err.code}`, 
+            color: "red"
+          })
         }
       }
     }
     getGoals();
-    // setReviewsToday(50);
-  })
+  },[])
 
   return (
     <>
