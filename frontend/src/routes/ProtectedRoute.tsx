@@ -45,7 +45,7 @@ function ProtectedRoute() {
         // if OK, then set auth
         // TODO: Probably need to standardise the format
         const resData = response.data
-        setAuth({user: {username: resData.user.username, email: resData.user.email}})
+        setAuth({user: resData.user})
         console.log(auth)
       } catch (err) {
         console.log("error verifying token:")
