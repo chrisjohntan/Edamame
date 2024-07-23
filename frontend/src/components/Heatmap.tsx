@@ -79,6 +79,7 @@ function Heatmap() {
               arrowOffset={50}
               arrowSize={8}
               withArrow
+              openDelay={500}
               label={`${msg} on ${format(date, "MMMM do yyyy")}`}>
               <rect {...props} />
             </Tooltip>
