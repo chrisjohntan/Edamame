@@ -1,5 +1,6 @@
 import useAuth from "./useAuth";
 import axios from "../axiosConfig";
+import { EMPTY_AUTH } from "../types";
 
 /**
  * Log out current user
@@ -10,7 +11,7 @@ const useLogout = () => {
   const { setAuth } = useAuth();
 
   const logout =  () => {
-    setAuth({user: {username: ""}});
+    setAuth(EMPTY_AUTH);
     try {
       const response = axios.post('/logout', {
         withCredentials: true
