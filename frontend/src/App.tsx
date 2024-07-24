@@ -62,7 +62,7 @@ const router = createBrowserRouter(
 function App() {
   return (
     <MantineProvider theme={theme} defaultColorScheme='light'>
-      <Notifications position="bottom-right" zIndex={1001} />
+      <Notifications position="bottom-right" zIndex={1001} autoClose={10000}/>
       <AuthProvider>
         <RouterProvider router={router} />
       </AuthProvider>
