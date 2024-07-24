@@ -234,7 +234,7 @@ def change_daily_target():
     if type(new_target) != int:
         return jsonify({
             "message": "Please change the value to an integer",
-        }), HTTPStatus.NOT_ACCEPTABLE
+        }), HTTPStatus.BAD_REQUEST
         
     user.daily_target = new_target
     db.session.commit()
