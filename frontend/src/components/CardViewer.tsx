@@ -36,14 +36,22 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     try {
       console.log("getting next card..")
       setLoading(true);
-      const response = await axios.put(`/next_card/${props.deckId}`, {ignore_review_time: true});
+      const response = await axios.put(`/next_card/${props.deckId}`, {ignore_review_time: false});
       console.log(response)
       setCurrentCard(dataToCard(response.data.card));
     } catch (err) {
       if (isAxiosError(err)) {
         if (err.response?.status === 404) {
-          console.log("no cards found")
           notifications.show({color: "red", message: err.response.data.message, withBorder: true})
+        } else if (err.response?.status === 425) {
+          notifications.show({
+            color: "red", 
+            message: 
+              <>
+                There are no cards ready for review at this time.<br/>
+                Change deck settings to ignore wait time
+              </>,
+            withBorder: true})
         }
       }
       props.onClose();
