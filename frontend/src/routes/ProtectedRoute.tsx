@@ -26,14 +26,18 @@
 // export default ProtectedRoute;
 
 import axios from "../axiosConfig";
-import { useLocation, Navigate, Outlet } from "react-router-dom";
+import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { useEffect, useState } from "react";
+import useLogout from "../hooks/useLogout";
+import { notifications } from "@mantine/notifications";
 
 function ProtectedRoute() {
   const { auth, setAuth } = useAuth();
   const location = useLocation();
   const [isLoading, setLoading] = useState(true);
+  const logout = useLogout();
+  const navigate = useNavigate();
 
   // if auth is not yet set, check if the token is valid
   
@@ -43,13 +47,19 @@ function ProtectedRoute() {
         const response = await axios.get("/protected", {withCredentials: true});
         console.log(response.data)
         // if OK, then set auth
-        // TODO: Probably need to standardise the format
         const resData = response.data
         setAuth({user: resData.user})
         console.log(auth)
       } catch (err) {
         console.log("error verifying token:")
         console.error(err);
+        logout();
+        navigate('/login');
+        notifications.show({
+          title: "Your session has expired",
+          message: "Please log in again",
+          color: "red",
+        })
       } finally {
         setLoading(false);
       }
