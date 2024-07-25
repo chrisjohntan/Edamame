@@ -70,10 +70,10 @@ def edit_deck(deck_id):
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     deck_name = request.get_json().get('deck_name', deck.deck_name)
-    forgot_multiplier = request.get_json().get('forgot', deck.forgot_multiplier)
-    hard_multiplier = request.get_json().get('hard', deck.hard_multiplier)
-    okay_multiplier = request.get_json().get('okay', deck.okay_multiplier)
-    easy_multiplier = request.get_json().get('easy', deck.easy_multiplier)
+    forgot_multiplier = request.get_json().get('forgot_multiplier', deck.forgot_multiplier)
+    hard_multiplier = request.get_json().get('hard_multiplier', deck.hard_multiplier)
+    okay_multiplier = request.get_json().get('okay_multiplier', deck.okay_multiplier)
+    easy_multiplier = request.get_json().get('easy_multiplier', deck.easy_multiplier)
 
     # # Check if user already have a deck with the same name
     # name_exists = db.session.execute(
