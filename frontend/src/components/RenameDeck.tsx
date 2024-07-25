@@ -34,17 +34,25 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
     }
   });
   
-  const handleEdit = async (input: {deckName: string}) => {
+  const handleEdit = async (input: {deckName: string, forgotMultiplier: number, hardMultiplier: number, okayMultiplier: number, easyMultiplier:number}) => {
     try {
       setLoading(true)
       const payload = {
-        "deck_name": input.deckName
+        "deck_name": input.deckName,
+        "forgot_multiplier":  input.forgotMultiplier,
+        "hard_multiplier": input.hardMultiplier,
+        "okay_multiplier": input.okayMultiplier,
+        "easy_multiplier": input.easyMultiplier,
       }
       const reponse = await axios.put(`/edit_deck/${props.deck.id}`, payload);
       // props.deck.deck_name = input.deckName
       const mapper = (d: Deck) => {
         if (d.id === props.deck.id) {
           d.deck_name = input.deckName;
+          d.forgot_multiplier = input.forgotMultiplier
+          d.hard_multiplier = input.hardMultiplier
+          d.okay_multiplier = input.okayMultiplier
+          d.easy_multiplier = input.easyMultiplier
         }
         return d;
       }
