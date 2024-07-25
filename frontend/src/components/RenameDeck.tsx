@@ -30,7 +30,11 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       easyMultiplier:props.deck.easy_multiplier,
     },
     validate: {
-      deckName: (value) => value.length <= 0 ? "Cannot be empty" : null
+      deckName: (value) => value.length <= 0 ? "Cannot be empty" : null,
+      forgotMultiplier: (value) => value < 0 ? "Cannot be negative" : null,
+      hardMultiplier: (value) => value < 0 ? "Cannot be negative" : null,
+      okayMultiplier: (value) => value < 0 ? "Cannot be negative" : null,
+      easyMultiplier: (value) => value < 0 ? "Cannot be negative" : null,
     }
   });
   
