@@ -71,6 +71,23 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
           <TextInput label="Deck name" mb="md" autoComplete="off" key={form.key("deckName")}
             {...form.getInputProps('deckName')} required withAsterisk
             rightSection={<UnstyledButton onClick={()=>form.setFieldValue('deckName', "")} component={IconCircleXFilled}/>}/>
+
+          <TextInput label="Forgot Multiplier" mb="md" autoComplete="off" key={form.key("forgotMultiplier")}
+            {...form.getInputProps('forgotMultiplier')} required withAsterisk
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('forgotMultiplier', 1)} component={IconCircleXFilled}/>}/>
+
+          <TextInput label="Hard Multiplier" mb="md" autoComplete="off" key={form.key("hardMultiplier")}
+            {...form.getInputProps('hardMultiplier')} required withAsterisk
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('hardMultiplier', 1)} component={IconCircleXFilled}/>}/>
+
+          <TextInput label="Okay Multiplier" mb="md" autoComplete="off" key={form.key("okayMultiplier")}
+            {...form.getInputProps('okayMultiplier')} required withAsterisk
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('okayMultiplier', 1)} component={IconCircleXFilled}/>}/>
+
+          <TextInput label="Easy Multiplier" mb="md" autoComplete="off" key={form.key("easyMultiplier")}
+            {...form.getInputProps('easyMultiplier')} required withAsterisk
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('easyMultiplier', 1)} component={IconCircleXFilled}/>}/>
+
           <Button type="submit" loading={loading}>Update</Button>
         </form>
       </Modal>
