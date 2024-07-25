@@ -78,19 +78,19 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
 
           <TextInput label="Forgot Multiplier" mb="md" autoComplete="off" key={form.key("forgotMultiplier")}
             {...form.getInputProps('forgotMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('forgotMultiplier', 1)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('forgotMultiplier', props.deck.forgot_multiplier)} component={IconCircleXFilled}/>}/>
 
           <TextInput label="Hard Multiplier" mb="md" autoComplete="off" key={form.key("hardMultiplier")}
             {...form.getInputProps('hardMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('hardMultiplier', 1)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('hardMultiplier', props.deck.hard_multiplier)} component={IconCircleXFilled}/>}/>
 
           <TextInput label="Okay Multiplier" mb="md" autoComplete="off" key={form.key("okayMultiplier")}
             {...form.getInputProps('okayMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('okayMultiplier', 1)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('okayMultiplier', props.deck.okay_multiplier)} component={IconCircleXFilled}/>}/>
 
           <TextInput label="Easy Multiplier" mb="md" autoComplete="off" key={form.key("easyMultiplier")}
             {...form.getInputProps('easyMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('easyMultiplier', 1)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('easyMultiplier', props.deck.easy_multiplier)} component={IconCircleXFilled}/>}/>
 
           <Button type="submit" loading={loading}>Update</Button>
         </form>
