@@ -8,7 +8,14 @@ import { useState } from "react";
 import DeckTable from "./DeckTable";
 import { AxiosError, isAxiosError } from "axios";
 
-
+// forgotMultiplier
+// hardMultiplier
+// okayMultiplier
+// easyMultiplier
+// forgot_multiplier
+// hard_multiplier
+// okay_multiplier
+// easy_multiplier
 
 function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}) {
   const [opened, {open, close}] = useDisclosure();
