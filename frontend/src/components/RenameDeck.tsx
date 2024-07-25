@@ -23,7 +23,11 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
   const form = useForm({
     mode: "controlled",
     initialValues: {
-      deckName: props.deck.deck_name
+      deckName: props.deck.deck_name,
+      forgotMultiplier:props.deck.forgot_multiplier,
+      hardMultiplier:props.deck.hard_multiplier,
+      okayMultiplier:props.deck.okay_multiplier,
+      easyMultiplier:props.deck.easy_multiplier,
     },
     validate: {
       deckName: (value) => value.length <= 0 ? "Cannot be empty" : null
