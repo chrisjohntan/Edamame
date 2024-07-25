@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Modal, Text, TextInput, UnstyledButton, rem } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, NumberInput, Text, TextInput, UnstyledButton, rem } from "@mantine/core";
 import { IconCircleX, IconCircleXFilled, IconPencil, IconX } from "@tabler/icons-react";
 import axios from "../axiosConfig"
 import { useDisclosure } from "@mantine/hooks"
