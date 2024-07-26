@@ -37,7 +37,7 @@ def create_new_user():
     if (username_exists):
         print("username already exist")
         return jsonify({
-            "error": "Username already exists",
+            "message": "Username already exists",
         }), HTTPStatus.CONFLICT
         
     email_exists = db.session.execute(db.select(User).where(User.email==email)).first()
@@ -45,7 +45,7 @@ def create_new_user():
     if (email_exists):
         print("email already exist")
         return jsonify({
-            "error": "Email already exists",
+            "message": "Email already exists",
         }), HTTPStatus.CONFLICT
     
     user = User(
