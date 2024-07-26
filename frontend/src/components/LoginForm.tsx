@@ -17,6 +17,8 @@ import {
 } from '@mantine/core';
 import classes from './styles/LoginForm.module.css';
 import { User } from "../types";
+import { AxiosError, isAxiosError } from "axios";
+
 
 function LoginForm() {
   // TODO: change to accept either a username or email
@@ -66,7 +68,11 @@ function LoginForm() {
       setAuth({ user: user });
       navigate(from, { replace: true });
     } catch (err) {
-      console.error(err);
+      if (isAxiosError(err)){
+        form.setErrors({username: err.response?.data.message})
+      } else {
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
