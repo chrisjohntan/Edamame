@@ -74,9 +74,14 @@ def login():
         db.select(User).filter_by(username=username)
         ).scalar()
     
-    if user == None or not bcrypt.check_password_hash(user.password, password):
+    if user == None:
         return jsonify({
-            "error": "Username or password incorrect"
+            "message": "Username does not exist"
+            }), HTTPStatus.BAD_REQUEST
+    
+    if not bcrypt.check_password_hash(user.password, password):
+        return jsonify({
+            "message": "Incorrect password"
             }), HTTPStatus.BAD_REQUEST
         
     response = jsonify({
