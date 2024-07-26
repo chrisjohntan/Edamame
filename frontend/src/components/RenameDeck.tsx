@@ -17,17 +17,17 @@ import { AxiosError, isAxiosError } from "axios";
 // okay_multiplier
 // easy_multiplier
 
-function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}) {
-  const [opened, {open, close}] = useDisclosure();
+function RenameDeck(props: { data: Deck[], deck: Deck, setData: (d: Deck[]) => void }) {
+  const [opened, { open, close }] = useDisclosure();
   const [loading, setLoading] = useState(false);
   const form = useForm({
     mode: "controlled",
     initialValues: {
       deckName: props.deck.deck_name,
-      forgotMultiplier:props.deck.forgot_multiplier,
-      hardMultiplier:props.deck.hard_multiplier,
-      okayMultiplier:props.deck.okay_multiplier,
-      easyMultiplier:props.deck.easy_multiplier,
+      forgotMultiplier: props.deck.forgot_multiplier,
+      hardMultiplier: props.deck.hard_multiplier,
+      okayMultiplier: props.deck.okay_multiplier,
+      easyMultiplier: props.deck.easy_multiplier,
     },
     validate: {
       deckName: (value) => value.length <= 0 ? "Cannot be empty" : null,
@@ -37,13 +37,13 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       easyMultiplier: (value) => value < 0 ? "Cannot be negative" : null,
     }
   });
-  
-  const handleEdit = async (input: {deckName: string, forgotMultiplier: number, hardMultiplier: number, okayMultiplier: number, easyMultiplier:number}) => {
+
+  const handleEdit = async (input: { deckName: string, forgotMultiplier: number, hardMultiplier: number, okayMultiplier: number, easyMultiplier: number }) => {
     try {
       setLoading(true)
       const payload = {
         "deck_name": input.deckName,
-        "forgot_multiplier":  input.forgotMultiplier,
+        "forgot_multiplier": input.forgotMultiplier,
         "hard_multiplier": input.hardMultiplier,
         "okay_multiplier": input.okayMultiplier,
         "easy_multiplier": input.easyMultiplier,
@@ -63,8 +63,8 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       props.setData(props.data.map(mapper))
       close()
     } catch (err) {
-      if (isAxiosError(err)){
-        form.setErrors({deckName: err.response?.data.message})
+      if (isAxiosError(err)) {
+        form.setErrors({ deckName: err.response?.data.message })
       } else {
         console.error(err)
       }
@@ -72,7 +72,7 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
       setLoading(false)
     }
   }
-  
+
   return (
     <>
       <ActionIcon variant="subtle" color="gray" onClick={open}>
@@ -86,23 +86,23 @@ function RenameDeck(props: {data: Deck[], deck: Deck, setData: (d:Deck[])=>void}
         <form onSubmit={form.onSubmit(handleEdit)}>
           <TextInput label="Deck name" mb="md" autoComplete="off" key={form.key("deckName")}
             {...form.getInputProps('deckName')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('deckName', "")} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={() => form.setFieldValue('deckName', "")} component={IconCircleXFilled} />} />
 
           <NumberInput label="Forgot Multiplier" mb="md" autoComplete="off" key={form.key("forgotMultiplier")}
             {...form.getInputProps('forgotMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('forgotMultiplier', props.deck.forgot_multiplier)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={() => form.setFieldValue('forgotMultiplier', props.deck.forgot_multiplier)} component={IconCircleXFilled} />} />
 
           <NumberInput label="Hard Multiplier" mb="md" autoComplete="off" key={form.key("hardMultiplier")}
             {...form.getInputProps('hardMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('hardMultiplier', props.deck.hard_multiplier)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={() => form.setFieldValue('hardMultiplier', props.deck.hard_multiplier)} component={IconCircleXFilled} />} />
 
           <NumberInput label="Okay Multiplier" mb="md" autoComplete="off" key={form.key("okayMultiplier")}
             {...form.getInputProps('okayMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('okayMultiplier', props.deck.okay_multiplier)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={() => form.setFieldValue('okayMultiplier', props.deck.okay_multiplier)} component={IconCircleXFilled} />} />
 
           <NumberInput label="Easy Multiplier" mb="md" autoComplete="off" key={form.key("easyMultiplier")}
             {...form.getInputProps('easyMultiplier')} required withAsterisk
-            rightSection={<UnstyledButton onClick={()=>form.setFieldValue('easyMultiplier', props.deck.easy_multiplier)} component={IconCircleXFilled}/>}/>
+            rightSection={<UnstyledButton onClick={() => form.setFieldValue('easyMultiplier', props.deck.easy_multiplier)} component={IconCircleXFilled} />} />
 
           <Button type="submit" loading={loading}>Update</Button>
         </form>
