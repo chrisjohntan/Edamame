@@ -88,16 +88,16 @@ def create_card(deck_id):
         "card": card.to_dict()
     }), HTTPStatus.CREATED
 
-@cards.route("/get_translation_for_card/<int:deck_id>", methods=["POST"])
+@cards.route("/get_translation_for_card", methods=["POST"])
 @jwt_required()
-def get_translation_for_card(deck_id):
+def get_translation_for_card():
     current_user = get_current_user()
-    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    # deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
 
-    if not deck:
-        return jsonify({
-            "message": "Deck not found"
-        }), HTTPStatus.NOT_FOUND
+    # if not deck:
+    #     return jsonify({
+    #         "message": "Deck not found"
+    #     }), HTTPStatus.NOT_FOUND
     
     header = request.json["header"]
     body = request.get_json().get("body", "")
@@ -107,7 +107,7 @@ def get_translation_for_card(deck_id):
     except ValueError:
         print("Something went wrong")
         return jsonify({
-            "error": "Translation not available at the moment, please use manual card creation instead"
+            "message": "Translation not available at the moment, please use manual card creation instead"
         }),HTTPStatus.INTERNAL_SERVER_ERROR
 
     return jsonify({
