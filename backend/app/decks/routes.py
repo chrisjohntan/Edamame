@@ -91,6 +91,10 @@ def edit_deck(deck_id):
             "message": "Please ensure all time interval multiplier values to a float or an integer",
             }), HTTPStatus.NOT_ACCEPTABLE
 
+    if not forgot_multiplier < hard_multiplier < okay_multiplier < easy_multiplier:
+        return jsonify({
+            "message": "Please ensure the time interval multiplier values are in ascending order",
+            }), HTTPStatus.NOT_ACCEPTABLE
 
     deck.deck_name = deck_name
     deck.forgot_multiplier = forgot_multiplier
