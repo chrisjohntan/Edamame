@@ -12,7 +12,8 @@ import {
   Container,
   Button,
 } from '@mantine/core';
-import classes from './styles/LoginForm.module.css'
+import classes from './styles/LoginForm.module.css';
+import { AxiosError, isAxiosError } from "axios";
 
 type RegFormInput = {
   username: string;
@@ -57,7 +58,11 @@ function RegisterForm() {
 
       navigate("/login", {replace: true});
     } catch (err) {
-      console.error(err);
+      if (isAxiosError(err)){
+        form.setErrors({username: err.response?.data.message})
+      } else {
+        console.error(err);
+      }
     } finally {
       toggle()
     }
