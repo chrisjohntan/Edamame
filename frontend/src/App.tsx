@@ -1,25 +1,34 @@
+import { lazy, Suspense } from 'react';
 import Root from './routes/Root.tsx'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
-import ErrorPage from './components/ErrorPage.tsx'
-import Register from './routes/Register.tsx'
-import Login from './routes/Login.tsx'
-import Dashboard from './routes/Dashboard.tsx';
-import ProtectedRoute from './routes/ProtectedRoute.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
-import { Button, MantineProvider, createTheme } from '@mantine/core';
+// import Register from './routes/Register.tsx'
+const Register = lazy(() => import("./routes/Register.tsx"))
+// import Login from './routes/Login.tsx'
+const Login = lazy(() => import('./routes/Login.tsx'))
+// import Dashboard from './routes/Dashboard.tsx';
+const Dashboard = lazy(() => import('./routes/Dashboard.tsx'))
+// import ProtectedRoute from './routes/ProtectedRoute.tsx';
+const ProtectedRoute = lazy(() => import('./routes/ProtectedRoute.tsx'))
+// import CustomAppShell from './routes/CustomAppShell.tsx';
+const CustomAppShell = lazy(() => import('./routes/CustomAppShell.tsx'))
+// import Stats from './routes/Stats.tsx';
+const Stats = lazy(() => import('./routes/Stats.tsx'))
+// import Settings from './routes/Settings.tsx';
+const Settings = lazy(() => import('./routes/Settings.tsx'))
+// import MultiCardView from './components/MultiCardView.tsx';
+const MultiCardView = lazy(() => import('./components/MultiCardView.tsx'))
+// import ForgetPassword from './components/ForgetPasswordForm.tsx';
+const ForgetPassword = lazy(() => import('./components/ForgetPasswordForm.tsx'))
+// import ResetPassword from './components/ResetPassword.tsx';
+const ResetPassword = lazy(() => import('./components/ResetPassword.tsx'))
 
+import { Button, MantineProvider, createTheme } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import { IconError404 } from '@tabler/icons-react';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import ProtectedHeader from './components/ProtectedHeader.tsx';
-import CustomAppShell from './routes/CustomAppShell.tsx';
-import { IconError404 } from '@tabler/icons-react';
 import classes from "./App.module.css"
-import MultiCardView from './components/MultiCardView.tsx';
-import { ForgotPassword } from './components/ForgetPasswordForm.tsx';
-import { Notifications } from '@mantine/notifications';
-import Stats from './routes/Stats.tsx';
-import ResetPassword from './components/ResetPassword.tsx';
-import Settings from './routes/Settings.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -36,18 +45,18 @@ const router = createBrowserRouter(
       <>
         {/* Public routes */}
         <Route path="/" element={<Root />} />
-        <Route path="/signup" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot_password" element={<ForgotPassword />} />
-        <Route path="/reset/:email/:token" element={<ResetPassword />} />
+        <Route path="/signup" element={<Suspense><Register /></Suspense>} />
+        <Route path="/login" element={<Suspense><Login /></Suspense>} />
+        <Route path="/forgot_password" element={<Suspense><ForgetPassword /></Suspense>} />
+        <Route path="/reset/:email/:token" element={<Suspense><ResetPassword /></Suspense>} />
 
         {/* All protected routes should be nested here */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<CustomAppShell />} errorElement={<IconError404 />}>
-            <Route path="/decks" element={<Dashboard />} />
-            <Route path="/cards/:deckId" element={<MultiCardView />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/settings" element={<Settings />}/>
+        <Route element={<Suspense><ProtectedRoute /></Suspense>}>
+          <Route element={<Suspense><CustomAppShell /></Suspense>} errorElement={<IconError404 />}>
+            <Route path="/decks" element={<Suspense><Dashboard /></Suspense>} />
+            <Route path="/cards/:deckId" element={<Suspense><MultiCardView /></Suspense>} />
+            <Route path="/stats" element={<Suspense><Stats /></Suspense>} />
+            <Route path="/settings" element={<Suspense><Settings /></Suspense>}/>
           </Route>
         </Route>
 
