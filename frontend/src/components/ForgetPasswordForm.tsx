@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { notifications } from "@mantine/notifications";
 
-export function ForgotPassword() {
+function ForgotPassword() {
   const navigate = useNavigate();
   const form = useForm({
     name: "resetPassword",
@@ -106,3 +106,5 @@ export function ForgotPassword() {
     </Container>
   );
 }
+
+export default ForgotPassword;
