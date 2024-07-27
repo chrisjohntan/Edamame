@@ -1,5 +1,6 @@
 import { default as axios } from "../axiosConfig"
 import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,7 +13,8 @@ import {
   Container,
   Button,
 } from '@mantine/core';
-import classes from './styles/LoginForm.module.css'
+import classes from './styles/LoginForm.module.css';
+import { AxiosError, isAxiosError } from "axios";
 
 type RegFormInput = {
   username: string;
@@ -24,7 +26,7 @@ type RegFormInput = {
 
 function RegisterForm() {
   const navigate = useNavigate();
-  const [loading, { toggle }] = useDisclosure();
+  const [loading, setLoading] = useState(false);
   const form = useForm({
     mode: "controlled",
     initialValues: {
@@ -50,16 +52,20 @@ function RegisterForm() {
   // TODO: validation
   const handleSubmit: (data: RegFormInput) => void = async (data) => {
     console.log(data);
-    toggle();
+    setLoading(true);
     const payload = { username: data.username, email: data.email, password: data.password };
     try {
       const response = await axios.post("/register", payload);
 
       navigate("/login", {replace: true});
     } catch (err) {
-      console.error(err);
+      if (isAxiosError(err)){
+        form.setErrors({email: err.response?.data.message})
+      } else {
+        console.error(err);
+      }
     } finally {
-      toggle()
+      setLoading(false);
     }
   }
 

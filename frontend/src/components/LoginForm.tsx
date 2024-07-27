@@ -17,6 +17,8 @@ import {
 } from '@mantine/core';
 import classes from './styles/LoginForm.module.css';
 import { User } from "../types";
+import { AxiosError, isAxiosError } from "axios";
+
 
 function LoginForm() {
   // TODO: change to accept either a username or email
@@ -66,7 +68,11 @@ function LoginForm() {
       setAuth({ user: user });
       navigate(from, { replace: true });
     } catch (err) {
-      console.error(err);
+      if (isAxiosError(err)){
+        form.setErrors({username: err.response?.data.message})
+      } else {
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -84,7 +90,7 @@ function LoginForm() {
       </Text>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <TextInput label="Username" placeholder="you@edamame.com" autoComplete="off" key={form.key('username')}
+          <TextInput label="Username" placeholder="Edamame" autoComplete="off" key={form.key('username')}
             {...form.getInputProps('username')} required withAsterisk />
           <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
             {...form.getInputProps("password")} required withAsterisk />
