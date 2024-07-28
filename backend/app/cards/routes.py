@@ -136,7 +136,11 @@ def get_cards(deck_id):
     for card in deck_exists.cards:
         data.append(card.to_dict())
 
-    return jsonify({'data': data}),HTTPStatus.OK
+    return jsonify({
+        "deck_name": deck_exists.deck_name,
+        "deck_id": deck_exists.id,
+        'data': data
+    }),HTTPStatus.OK
 
 @cards.route('/edit_card/<int:id>', methods=["PUT", "PATCH"])
 @jwt_required()
