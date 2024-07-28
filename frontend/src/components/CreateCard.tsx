@@ -80,7 +80,7 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
     setTranslated(false);
   }
 
-  const typeTooltipText = "Auto (WIP): Translates fields automatically"
+  const typeTooltipText = "Auto: Translate fields using DeepL AI"
 
   return (
     <>
