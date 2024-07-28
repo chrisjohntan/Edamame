@@ -125,3 +125,21 @@ def delete_deck(deck_id):
     db.session.commit()
 
     return jsonify({}), HTTPStatus.NO_CONTENT
+
+
+@decks.route("/ignore_wait/<int:deck_id>", methods=["POST"])
+@jwt_required()
+def ignore_wait(deck_id):
+    current_user = get_current_user()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    if not deck:
+        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
+    
+    deck.ignore_review_time = request.json["ignore_review_time"]
+    deck.update_last_modified(datetime.now())
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Wait time updated",
+        "deck": deck.to_dict()
+    }), HTTPStatus.OK
