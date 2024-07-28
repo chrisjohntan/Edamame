@@ -12,7 +12,7 @@ import { notifications } from "@mantine/notifications";
 
 // if Card is passed as prop, render the card
 // else call backend for next card in the deck
-function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClose: () => void }) {
+function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClose: () => void, ignoreWait: boolean }) {
   // const cardData
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +36,7 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     try {
       console.log("getting next card..")
       setLoading(true);
-      const response = await axios.put(`/next_card/${props.deckId}`, {ignore_review_time: false});
+      const response = await axios.put(`/next_card/${props.deckId}`, {ignore_review_time: props.ignoreWait});
       console.log(response)
       setCurrentCard(dataToCard(response.data.card));
     } catch (err) {
@@ -74,7 +74,7 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
     return async () => {
       if (currentCard) {
         try {
-          const response = await axios.put(`/review_card/${currentCard.id}/${ease}`, {});
+          const response = await axios.put(`/review_card/${currentCard.id}/${ease}`, {ignore_review_time: props.ignoreWait});
           notifications.show({message: response.data.message , withBorder:true})
           getNextCard();
         } catch (err) {
