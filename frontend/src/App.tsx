@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import Root from './routes/Root.tsx'
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider.tsx';
 // import Register from './routes/Register.tsx'
 const Register = lazy(() => import("./routes/Register.tsx"))
@@ -8,12 +8,12 @@ const Register = lazy(() => import("./routes/Register.tsx"))
 const Login = lazy(() => import('./routes/Login.tsx'))
 // import Dashboard from './routes/Dashboard.tsx';
 const Dashboard = lazy(() => import('./routes/Dashboard.tsx'))
-// import ProtectedRoute from './routes/ProtectedRoute.tsx';
-const ProtectedRoute = lazy(() => import('./routes/ProtectedRoute.tsx'))
-// import CustomAppShell from './routes/CustomAppShell.tsx';
-const CustomAppShell = lazy(() => import('./routes/CustomAppShell.tsx'))
-// import Stats from './routes/Stats.tsx';
-const Stats = lazy(() => import('./routes/Stats.tsx'))
+import ProtectedRoute from './routes/ProtectedRoute.tsx';
+// const ProtectedRoute = lazy(() => import('./routes/ProtectedRoute.tsx'))
+import CustomAppShell from './routes/CustomAppShell.tsx';
+// const CustomAppShell = lazy(() => import('./routes/CustomAppShell.tsx'))
+import Stats from './routes/Stats.tsx';
+// const Stats = lazy(() => import('./routes/Stats.tsx'))
 // import Settings from './routes/Settings.tsx';
 const Settings = lazy(() => import('./routes/Settings.tsx'))
 // import MultiCardView from './components/MultiCardView.tsx';
@@ -29,6 +29,9 @@ import { IconError404 } from '@tabler/icons-react';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import classes from "./App.module.css"
+import ErrorPage from './components/ErrorPage.tsx';
+import ErrorUnexpected from './components/errorpages/ErrorUnexpected.tsx';
+import Error404 from './components/errorpages/Error404.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -42,7 +45,7 @@ const theme = createTheme({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <>
+      <Route element={<Outlet/>} errorElement={<ErrorUnexpected />}>
         {/* Public routes */}
         <Route path="/" element={<Root />} />
         <Route path="/signup" element={<Suspense><Register /></Suspense>} />
@@ -51,18 +54,18 @@ const router = createBrowserRouter(
         <Route path="/reset/:email/:token" element={<Suspense><ResetPassword /></Suspense>} />
 
         {/* All protected routes should be nested here */}
-        <Route element={<Suspense><ProtectedRoute /></Suspense>}>
-          <Route element={<Suspense><CustomAppShell /></Suspense>} errorElement={<IconError404 />}>
+        <Route element={<Suspense><ProtectedRoute /></Suspense>} >
+          <Route element={<CustomAppShell />} errorElement={<IconError404 />}>
             <Route path="/decks" element={<Suspense><Dashboard /></Suspense>} />
             <Route path="/cards/:deckId" element={<Suspense><MultiCardView /></Suspense>} />
             <Route path="/stats" element={<Suspense><Stats /></Suspense>} />
             <Route path="/settings" element={<Suspense><Settings /></Suspense>}/>
           </Route>
         </Route>
+      </Route>
 
-        {/* Error page route */}
-        <Route path="*" element={<IconError404 />} />
-      </>
+      {/* Error page route */}
+      <Route path="*" element={<Error404 />} />
     </>
   )
 )
