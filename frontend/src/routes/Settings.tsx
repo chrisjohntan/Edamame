@@ -59,8 +59,8 @@ function Settings() {
       <Tabs value={activeTab} onChange={setActiveTab} color="teal">
       <Tabs.List>
         <Tabs.Tab value="account">Account</Tabs.Tab>
-        <Tabs.Tab value="security">Security</Tabs.Tab>
-        <Tabs.Tab value="preferences">Preferences</Tabs.Tab>
+        {/* <Tabs.Tab value="security">Security</Tabs.Tab>
+        <Tabs.Tab value="preferences">Preferences</Tabs.Tab> */}
       </Tabs.List>
       <Tabs.Panel value="account">
         <AccountTab/>
