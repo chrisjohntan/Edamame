@@ -101,8 +101,8 @@ function Goals() {
 
   return (
     <>
-      <Group>
-        <Title order={3} mb="sm">
+      <Group align="center" mb="sm">
+        <Title order={3}>
           Daily goal
         </Title>
         <EditForm/>
