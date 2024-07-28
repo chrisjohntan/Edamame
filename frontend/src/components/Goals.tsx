@@ -109,7 +109,7 @@ function Goals() {
       </Group>
       <Card withBorder radius="md" padding="xl" bg="var(--mantine-color-body)" w={"40vw"}>
         <Text fz="md" tt="uppercase" fw={700} c="dimmed">
-          Day
+          Today
         </Text>
         <Text fz="md" fw={500}>
           {reviewsToday} / {target} cards reviewed
