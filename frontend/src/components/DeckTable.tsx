@@ -138,7 +138,7 @@ function DeckTable(props: {
     ));
 
     return (
-      <div>
+      <div style={{maxWidth: "100%", overflowX: "auto",padding: "0 1rem"}}>
         <ScrollArea>
           <LoadingOverlay visible={props.loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
           <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
