@@ -12,8 +12,6 @@ const AccountTab = () => {
       email: auth.user.email
     }
   });
-
-
   return (
     <Container py="lg" px="md">
       <header style={{marginBottom: "var(--mantine-spacing-md)"}}>
@@ -33,9 +31,17 @@ const AccountTab = () => {
   )
 }
 
-// const PreferencesTab = () => {
+// const SecurityTab = () => {
+//   const 
 //   return (
-
+//     <Container py="lg" px="md">
+//       <header style={{marginBottom: "var(--mantine-spacing-md)"}}>
+//         Password
+//       </header>
+//       <Button>
+//         Change password
+//       </Button>
+//     </Container>
 //   )
 // }
 
@@ -59,12 +65,12 @@ function Settings() {
       <Tabs.Panel value="account">
         <AccountTab/>
       </Tabs.Panel>
-      <Tabs.Panel value="security">
+      {/* <Tabs.Panel value="security">
         Security
       </Tabs.Panel>
       <Tabs.Panel value="preferences">
         Preferences
-      </Tabs.Panel>
+      </Tabs.Panel> */}
     </Tabs>
     </main>
   )
