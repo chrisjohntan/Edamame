@@ -18,6 +18,7 @@ import {
 import classes from './styles/LoginForm.module.css';
 import { User } from "../types";
 import { AxiosError, isAxiosError } from "axios";
+import { notifications } from "@mantine/notifications";
 
 
 function LoginForm() {
@@ -69,7 +70,17 @@ function LoginForm() {
       navigate(from, { replace: true });
     } catch (err) {
       if (isAxiosError(err)){
-        form.setErrors({username: err.response?.data.message})
+        if (err.response?.status === 400) {
+          form.setErrors({
+            username: "Username or password is incorrect",
+            password: "Username or password is incorrect"
+          })
+        } else {
+          notifications.show({
+            message: err.message,
+            color: "red"
+          })
+        }
       } else {
         console.error(err);
       }
