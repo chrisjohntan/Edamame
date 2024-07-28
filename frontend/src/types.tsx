@@ -47,4 +47,5 @@ export type Deck = {
   hard_multiplier: number,
   okay_multiplier: number,
   easy_multiplier: number,
+  ignore_review_time: boolean,
 }
