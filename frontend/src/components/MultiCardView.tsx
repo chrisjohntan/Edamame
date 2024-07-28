@@ -23,6 +23,7 @@ function MultiCardView() {
   const [view, setView] = useState<"grid"|"table">("grid")
   const [viewerOpened, setViewerOpened] = useState(false)
   const [currentViewing, setCurrentViewing] = useState<Card>()
+  const [deckName, setDeckName] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -31,6 +32,7 @@ function MultiCardView() {
         // Parse response
         const parsedResponse: Card[] = response.data.data.map((obj: any) => dataToCard(obj))
         setData(parsedResponse)
+        setDeckName(response.data.deck_name)
         console.log("parsed response " + data)
       } catch (err) {
         if (isAxiosError(err)) {
@@ -78,6 +80,7 @@ function MultiCardView() {
           </Anchor>
           <Group mb="md">
             <SearchBar
+              placeholder="Search cards"
               searchFilter={searchFilter}
               onSearchFilterChange={setSearchFilter}/>
             <Button
@@ -96,7 +99,8 @@ function MultiCardView() {
               setData={setData}
               searchFilter={searchFilter}
               view={view}
-              loading={pageLoading} />
+              loading={pageLoading}
+              deckName={deckName} />
           </ScrollArea>
         </div>
 
