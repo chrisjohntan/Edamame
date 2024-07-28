@@ -1,7 +1,10 @@
 import { Title, Text, Button, Container, Group } from '@mantine/core';
 import classes from './Error404.module.css';
+import { useNavigate } from 'react-router-dom';
 
 function Error404() {
+  const navigate = useNavigate()
+
   return (
     <Container className={classes.root}>
       <div className={classes.label}>404</div>
@@ -11,7 +14,7 @@ function Error404() {
         been moved to another URL.
       </Text>
       <Group justify="center">
-        <Button variant="subtle" size="md" onClick={()=>window.location.reload()}>
+        <Button variant="subtle" size="md" onClick={()=>navigate("/decks")}>
           Take me back to main page
         </Button>
       </Group>
