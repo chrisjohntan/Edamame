@@ -90,7 +90,7 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
         size="sm" >
         New Card
       </Button>
-      <Modal size="md"
+      <Modal size="xl"
         opened={opened}
         onClose={onClose}
         title={<Text size="xl">New card</Text>}
@@ -98,53 +98,53 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
         closeOnEscape
         withCloseButton={!loading}
         padding="lg">
-        <form onSubmit={form.onSubmit(handleCreate)}>
-          <Tooltip label={typeTooltipText}>
-            <SegmentedControl
-              data={[{ label: "Manual", value: "manual" }, { label: "Auto", value: "auto" }]}
-              value={type}
-              onChange={setType}
-              disabled={loading}
-              mb="md"
-            />
-          </Tooltip>
-          <Group
-            wrap="nowrap"
-            align="start"
-          >
-            <Stack >
-              <Text>Front</Text>
-              <TextInput label="Header" autoComplete="off" key={form.key("header")}
-                {...form.getInputProps('header')} required withAsterisk />
-              <TextInput label="Body" autoComplete="off" key={form.key("body")}
-                {...form.getInputProps('body')} />  
-            </Stack>
-
+          <form onSubmit={form.onSubmit(handleCreate)}>
+            <Tooltip label={typeTooltipText}>
+              <SegmentedControl
+                data={[{ label: "Manual", value: "manual" }, { label: "Auto", value: "auto" }]}
+                value={type}
+                onChange={setType}
+                disabled={loading}
+                mb="md"
+              />
+            </Tooltip>
+            <Group
+              wrap="nowrap"
+              align="center"
+              grow
+            >
+              <Stack >
+                <Text>Front</Text>
+                <TextInput label="Header" autoComplete="off" key={form.key("header")}
+                  {...form.getInputProps('header')} required withAsterisk />
+                <TextInput label="Body" autoComplete="off" key={form.key("body")}
+                  {...form.getInputProps('body')} />
+              </Stack>
+              {
+                type === "manual" || translated
+                  ?
+                  <>
+                    <Divider orientation="vertical" size="md" style={{flexGrow: 0}}/>
+                    <Stack >
+                      <Text>Back</Text>
+                      <TextInput label="Header" autoComplete="off" key={form.key("header_flipped")}
+                        {...form.getInputProps('header_flipped')} required withAsterisk />
+                      <TextInput label="Body" autoComplete="off" key={form.key("body_flipped")}
+                        {...form.getInputProps('body_flipped')} />
+                    </Stack>
+                  </>
+                  :
+                  null
+              }
+            </Group>
             {
-              type === "manual" || translated
+              type === "auto" && !translated
                 ?
-                <>
-                  <Divider orientation="vertical" size="md" />
-                  <Stack >
-                    <Text>Back</Text>
-                    <TextInput label="Header" autoComplete="off" key={form.key("header_flipped")}
-                      {...form.getInputProps('header_flipped')} required withAsterisk />
-                    <TextInput label="Body" autoComplete="off" key={form.key("body_flipped")}
-                      {...form.getInputProps('body_flipped')} />
-                  </Stack>
-                </>
+                <Button type="submit" mt="lg" fullWidth>Translate</Button>
                 :
-                null
+                <Button type="submit" mt="lg" fullWidth>Add</Button>
             }
-          </Group>
-          {
-            type === "auto" && !translated
-              ?
-              <Button type="submit" mt="lg" fullWidth>Translate</Button>
-              :
-              <Button type="submit" mt="lg" fullWidth>Add</Button>
-          }
-        </form>
+          </form>
       </Modal>
     </>
   )
