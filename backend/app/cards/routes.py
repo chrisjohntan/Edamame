@@ -8,7 +8,7 @@ from ..models import Card, Deck, User
 from datetime import datetime, date, timedelta
 from sqlalchemy import and_
 from .translation import deepl_translate
-from .counter import getReviewCounts
+from .counter import getReviewCounts, addDailyCount
 
 cards = Blueprint("cards", __name__)
 
@@ -48,18 +48,16 @@ def create_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
     deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+
+    if not deck:
+        return jsonify({
+            "message": "Deck not found"
+        }), HTTPStatus.NOT_FOUND
     
     header = request.json["header"]
     body = request.get_json().get("body", "")
     header_flipped = request.get_json().get("header_flipped", header)
     body_flipped = request.get_json().get("body", body)
-    card_type = request.get_json().get("card_type", "manual")
-    
-    if card_type == "auto":
-        try:
-            header_flipped = deepl_translate(header)
-        except ValueError:
-            print("Something went wrong")
 
     card = Card(
         header=header,
@@ -69,11 +67,15 @@ def create_card(deck_id):
         user_id=current_user.id,
         deck_id=deck_id,
         time_created=now,
-        time_for_review=now+timedelta(0, 60),  # placeholder
-        time_interval=timedelta(0, 60),  # placeholder
-        last_reviewed=now,  # placeholder
+        time_for_review=now,
+        time_interval=timedelta(minutes=1),
+        last_reviewed=now,
         last_modified=now,
         reviews_done=0,
+        times_remembered_consecutive=0,
+        times_forgot=0,
+        new=True,
+        steps=0
     )
 
     deck.update_last_modified(now)
@@ -85,6 +87,34 @@ def create_card(deck_id):
         "message": "Card created",
         "card": card.to_dict()
     }), HTTPStatus.CREATED
+
+@cards.route("/get_translation_for_card", methods=["POST"])
+@jwt_required()
+def get_translation_for_card():
+    current_user = get_current_user()
+    # deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+
+    # if not deck:
+    #     return jsonify({
+    #         "message": "Deck not found"
+    #     }), HTTPStatus.NOT_FOUND
+    
+    header = request.json["header"]
+    body = request.get_json().get("body", "")
+    
+    try:
+        header_flipped = deepl_translate(header)
+    except ValueError:
+        print("Something went wrong")
+        return jsonify({
+            "message": "Translation not available at the moment, please use manual card creation instead"
+        }),HTTPStatus.INTERNAL_SERVER_ERROR
+
+    return jsonify({
+        "header": header,
+        "body": body,
+        "header_flipped": header_flipped
+    }), HTTPStatus.OK
 
 
 @cards.route("/get_cards/<int:deck_id>", methods=["GET"])
@@ -106,7 +136,12 @@ def get_cards(deck_id):
     for card in deck_exists.cards:
         data.append(card.to_dict())
 
-    return jsonify({'data': data}),HTTPStatus.OK
+    return jsonify({
+        "deck_name": deck_exists.deck_name,
+        "deck_id": deck_exists.id,
+        "ignore_review_time": deck_exists.ignore_review_time,
+        'data': data
+    }),HTTPStatus.OK
 
 @cards.route('/edit_card/<int:id>', methods=["PUT", "PATCH"])
 @jwt_required()
@@ -172,7 +207,7 @@ def move_card(id, deck_id):
     if not new_deck:
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
-    card.deck_id = new_deck.id
+    card.change_deck(deck_id)
     prev_deck.update_last_modified(now)
     new_deck.update_last_modified(now)
     db.session.commit()
@@ -188,7 +223,8 @@ def move_card(id, deck_id):
 def next_card(deck_id):
     current_user = get_current_user()
     now = datetime.now()
-    ignore_review_time = request.get_json().get('ignore_review_time', '')
+    # for testing purposes
+    ignore_review_time = request.get_json().get('ignore_review_time', False)
 
     deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
     if not deck:
@@ -211,7 +247,7 @@ def next_card(deck_id):
     if card.time_for_review >= now and not ignore_review_time:
         return jsonify({
         "message": "No cards due for review now",
-        }), HTTPStatus.OK
+        }), HTTPStatus.TOO_EARLY
     return jsonify({
         "message": "Next Card",
         "card": card.to_dict()
@@ -220,7 +256,7 @@ def next_card(deck_id):
 @cards.route("/review_card/<int:id>/<int:response>", methods=["PUT", "PATCH"])
 @jwt_required()
 def review_card(id: int, response: int):
-    current_user = get_current_user()
+    current_user: User = get_current_user()
     now = datetime.now()
     ignore_review_time = request.get_json().get('ignore_review_time', '')
 
@@ -239,17 +275,18 @@ def review_card(id: int, response: int):
             "message": "Invalid Response",
         }), HTTPStatus.NOT_FOUND
 
-    # # placeholder in seconds
-    # intervals = [60, 120, 180, 240]
-    # interval = intervals[response-1]
     card.update_time_interval(response-1)
-    card.time_for_review = now + card.time_interval
+    card.update_time_for_review(now)
     card.update_last_reviewed(now)
-
+    
     db.session.commit()
-
+    print(card.calculate_time_interval())
+    addDailyCount(user_id=current_user.id)
+    
     return jsonify({
-        "message": f"Review done, card available next at {card.time_for_review}",
+        "debug": f"Review done, card available next at {card.time_for_review}, time interval is {card.time_interval}, next time intervals will be {card.calculate_time_interval()}",
+        "message": f"Review done, card next available at \
+            {datetime.strftime(card.time_for_review, '%d-%m-%Y %H:%M')}"
     }), HTTPStatus.OK
 
 @cards.route('/get_review_counts')
@@ -258,17 +295,17 @@ def get_daily_counts():
     # iso format: YYYY-MM-DD
     try:
         start_date = datetime.strptime(
-            request.args.get("start_date", date.today()),
-            "%y-%m-%d"
+            request.args.get("start_date", date.today().isoformat()),
+            "%Y-%m-%d"
         ).date()
         end_date = datetime.strptime(
-            request.args.get("end_date", date.today()),
-            "%y-%m-%d"
+            request.args.get("end_date", date.today().isoformat()),
+            "%Y-%m-%d"
         ).date()
     except ValueError:
         return jsonify({
             "message": "Date format incorrect. Should be YYYY-MM-DD"
-        })
+        }), HTTPStatus.BAD_REQUEST
     
     if (start_date > end_date):
         return jsonify({
@@ -277,7 +314,7 @@ def get_daily_counts():
     
     user: User = get_current_user()
     counts = getReviewCounts(user_id=user.id, start_date=start_date, end_date=end_date)
-    
     return jsonify({
         "review_counts": [c.to_dict() for c in counts]
     }), HTTPStatus.OK
+    

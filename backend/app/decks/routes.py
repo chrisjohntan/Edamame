@@ -70,22 +70,44 @@ def edit_deck(deck_id):
         return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
 
     deck_name = request.get_json().get('deck_name', deck.deck_name)
-    name_exists = db.session.execute(
-        db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
-        ).scalar()
-    if name_exists:
+    forgot_multiplier = request.get_json().get('forgot_multiplier', deck.forgot_multiplier)
+    hard_multiplier = request.get_json().get('hard_multiplier', deck.hard_multiplier)
+    okay_multiplier = request.get_json().get('okay_multiplier', deck.okay_multiplier)
+    easy_multiplier = request.get_json().get('easy_multiplier', deck.easy_multiplier)
+
+    # # Check if user already have a deck with the same name
+    # name_exists = db.session.execute(
+    #     db.select(Deck).where(and_(Deck.deck_name == deck_name, Deck.user == current_user))
+    #     ).scalar()
+    # if name_exists:
+    #     return jsonify({
+    #         "message": "A deck with that name already exists"
+    #     }), HTTPStatus.CONFLICT
+    
+    # Check if any multipliers are not float
+    for multiplier in (forgot_multiplier, hard_multiplier, okay_multiplier, easy_multiplier):
+        if not isinstance(multiplier, (int, float)):
+            return jsonify({
+            "message": "Please ensure all time interval multiplier values to a float or an integer",
+            }), HTTPStatus.NOT_ACCEPTABLE
+
+    if not forgot_multiplier < hard_multiplier < okay_multiplier < easy_multiplier:
         return jsonify({
-            "message": "A deck with that name already exists"
-        }), HTTPStatus.CONFLICT
+            "message": "Please ensure the time interval multiplier values are in ascending order",
+            }), HTTPStatus.NOT_ACCEPTABLE
 
     deck.deck_name = deck_name
-    deck.last_modified = now
+    deck.forgot_multiplier = forgot_multiplier
+    deck.hard_multiplier = hard_multiplier
+    deck.okay_multiplier = okay_multiplier
+    deck.easy_multiplier = easy_multiplier
+    deck.update_last_modified(now)
     
     db.session.commit()
 
     return jsonify({
         "message": "Deck edited",
-        "card": {
+        "deck": {
             "deck_name": deck_name, "user_id": current_user.id
         }
     }), HTTPStatus.OK
@@ -103,3 +125,21 @@ def delete_deck(deck_id):
     db.session.commit()
 
     return jsonify({}), HTTPStatus.NO_CONTENT
+
+
+@decks.route("/ignore_wait/<int:deck_id>", methods=["POST"])
+@jwt_required()
+def ignore_wait(deck_id):
+    current_user = get_current_user()
+    deck: Deck = Deck.query.filter_by(user_id=current_user.id, id=deck_id).first()
+    if not deck:
+        return jsonify({"message": "Deck not found"}),HTTPStatus.NOT_FOUND
+    
+    deck.ignore_review_time = request.json["ignore_review_time"]
+    deck.update_last_modified(datetime.now())
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Wait time updated",
+        "deck": deck.to_dict()
+    }), HTTPStatus.OK

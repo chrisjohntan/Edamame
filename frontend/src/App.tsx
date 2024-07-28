@@ -1,23 +1,37 @@
+import { lazy, Suspense } from 'react';
 import Root from './routes/Root.tsx'
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
-import ErrorPage from './components/ErrorPage.tsx'
-import Register from './routes/Register.tsx'
-import Login from './routes/Login.tsx'
-import Dashboard from './routes/Dashboard.tsx';
-import ProtectedRoute from './routes/ProtectedRoute.tsx';
+import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider.tsx';
-import { Button, MantineProvider, createTheme } from '@mantine/core';
+// import Register from './routes/Register.tsx'
+const Register = lazy(() => import("./routes/Register.tsx"))
+// import Login from './routes/Login.tsx'
+const Login = lazy(() => import('./routes/Login.tsx'))
+// import Dashboard from './routes/Dashboard.tsx';
+const Dashboard = lazy(() => import('./routes/Dashboard.tsx'))
+import ProtectedRoute from './routes/ProtectedRoute.tsx';
+// const ProtectedRoute = lazy(() => import('./routes/ProtectedRoute.tsx'))
+import CustomAppShell from './routes/CustomAppShell.tsx';
+// const CustomAppShell = lazy(() => import('./routes/CustomAppShell.tsx'))
+import Stats from './routes/Stats.tsx';
+// const Stats = lazy(() => import('./routes/Stats.tsx'))
+// import Settings from './routes/Settings.tsx';
+const Settings = lazy(() => import('./routes/Settings.tsx'))
+// import MultiCardView from './components/MultiCardView.tsx';
+const MultiCardView = lazy(() => import('./components/MultiCardView.tsx'))
+// import ForgetPassword from './components/ForgetPasswordForm.tsx';
+const ForgetPassword = lazy(() => import('./components/ForgetPasswordForm.tsx'))
+// import ResetPassword from './components/ResetPassword.tsx';
+const ResetPassword = lazy(() => import('./components/ResetPassword.tsx'))
 
+import { Button, MantineProvider, createTheme } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import { IconError404 } from '@tabler/icons-react';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import ProtectedHeader from './components/ProtectedHeader.tsx';
-import CustomAppShell from './routes/CustomAppShell.tsx';
-import { IconError404 } from '@tabler/icons-react';
 import classes from "./App.module.css"
-import MultiCardView from './components/MultiCardView.tsx';
-import { ForgotPassword } from './components/ForgetPasswordForm.tsx';
-import { Notifications } from '@mantine/notifications';
-import Stats from './routes/Stats.tsx';
+import ErrorPage from './components/ErrorPage.tsx';
+import ErrorUnexpected from './components/errorpages/ErrorUnexpected.tsx';
+import Error404 from './components/errorpages/Error404.tsx';
 
 const theme = createTheme({
   // change theme settings here
@@ -31,25 +45,27 @@ const theme = createTheme({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <>
+      <Route element={<Outlet/>} errorElement={<ErrorUnexpected />}>
         {/* Public routes */}
         <Route path="/" element={<Root />} />
-        <Route path="/signup" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/recover-account" element={<ForgotPassword />} />
+        <Route path="/signup" element={<Suspense><Register /></Suspense>} />
+        <Route path="/login" element={<Suspense><Login /></Suspense>} />
+        <Route path="/forgot_password" element={<Suspense><ForgetPassword /></Suspense>} />
+        <Route path="/reset/:email/:token" element={<Suspense><ResetPassword /></Suspense>} />
 
         {/* All protected routes should be nested here */}
-        <Route element={<ProtectedRoute />}>
+        <Route element={<Suspense><ProtectedRoute /></Suspense>} >
           <Route element={<CustomAppShell />} errorElement={<IconError404 />}>
-            <Route path="/decks" element={<Dashboard />} />
-            <Route path="/cards/:deckId" element={<MultiCardView />} />
-            <Route path="/stats" element={<Stats/>}></Route>
+            <Route path="/decks" element={<Suspense><Dashboard /></Suspense>} />
+            <Route path="/cards/:deckId" element={<Suspense><MultiCardView /></Suspense>} />
+            <Route path="/stats" element={<Suspense><Stats /></Suspense>} />
+            <Route path="/settings" element={<Suspense><Settings /></Suspense>}/>
           </Route>
         </Route>
+      </Route>
 
-        {/* Error page route */}
-        <Route path="*" element={<IconError404 />} />
-      </>
+      {/* Error page route */}
+      <Route path="*" element={<Error404 />} />
     </>
   )
 )
@@ -58,7 +74,7 @@ const router = createBrowserRouter(
 function App() {
   return (
     <MantineProvider theme={theme} defaultColorScheme='light'>
-      <Notifications position="bottom-right" zIndex={1001} />
+      <Notifications position="bottom-right" zIndex={1001} autoClose={10000}/>
       <AuthProvider>
         <RouterProvider router={router} />
       </AuthProvider>

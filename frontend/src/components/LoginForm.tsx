@@ -16,6 +16,10 @@ import {
   Button,
 } from '@mantine/core';
 import classes from './styles/LoginForm.module.css';
+import { User } from "../types";
+import { AxiosError, isAxiosError } from "axios";
+import { notifications } from "@mantine/notifications";
+
 
 function LoginForm() {
   // TODO: change to accept either a username or email
@@ -60,11 +64,26 @@ function LoginForm() {
     setLoading(true);
     try {
       const response = await axios.post("/login", data);
-      // console.log(response)
-      setAuth({ user: { username: data.username } });
+      console.log(response)
+      const user = response.data.user as User
+      setAuth({ user: user });
       navigate(from, { replace: true });
     } catch (err) {
-      console.error(err);
+      if (isAxiosError(err)){
+        if (err.response?.status === 400) {
+          form.setErrors({
+            username: "Username or password is incorrect",
+            password: "Username or password is incorrect"
+          })
+        } else {
+          notifications.show({
+            message: err.message,
+            color: "red"
+          })
+        }
+      } else {
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -82,13 +101,13 @@ function LoginForm() {
       </Text>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <TextInput label="Username" placeholder="you@edamame.com" autoComplete="off" key={form.key('username')}
+          <TextInput label="Username" placeholder="Edamame" autoComplete="off" key={form.key('username')}
             {...form.getInputProps('username')} required withAsterisk />
           <PasswordInput label="Password" placeholder="Your password" mt="md" key={form.key("password")}
             {...form.getInputProps("password")} required withAsterisk />
           <Group justify="space-between" mt="lg">
             {/* <Checkbox label="Remember me" /> */}
-            <Anchor component="button" size="sm">
+            <Anchor size="sm" onClick={()=>navigate("/forgot_password")}>
               Forgot password?
             </Anchor>
           </Group>

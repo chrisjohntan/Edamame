@@ -1,5 +1,5 @@
 import { createContext, useState, ReactNode } from "react";
-import { Auth } from "../types";
+import { Auth, EMPTY_AUTH } from "../types";
 
 // Context type to expose setter
 type AuthContextType = {
@@ -8,7 +8,7 @@ type AuthContextType = {
 }
 
 const defaultAuthContext: AuthContextType = {
-  auth: { user: { username: "" } },
+  auth: EMPTY_AUTH,
   setAuth: () => {},
 };
 
@@ -16,7 +16,7 @@ const defaultAuthContext: AuthContextType = {
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [auth, setAuth] = useState<Auth>({ user: { username: "" } });
+  const [auth, setAuth] = useState<Auth>(EMPTY_AUTH);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

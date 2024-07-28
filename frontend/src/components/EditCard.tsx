@@ -27,9 +27,16 @@ function EditCard(
       setLoading(true);
       const response = await axios.put(`/edit_card/${card.id}`, cardData)
       const returnCard = dataToCard(response.data.card)
+      const mapper = (c: Card) => {
+        if (c.id === card.id) {
+          c = returnCard;
+        }
+        return c;
+      }
+      setData(data.map(mapper));
       close();
     } catch (err) {
-
+      
     } finally {
       setLoading(false);
     }

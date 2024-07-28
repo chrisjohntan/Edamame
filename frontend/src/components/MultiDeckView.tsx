@@ -39,6 +39,7 @@ function MultiDeckView() {
     <>
       <Group mb="md">
         <SearchBar
+          placeholder="Search decks"
           searchFilter={searchFilter} 
           onSearchFilterChange={setSearchFilter}/>
         <CreateDeck addData={addData}/>
