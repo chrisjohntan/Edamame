@@ -180,7 +180,7 @@ function DeckTable(props: {
                 rows
               ) : (
                 <Table.Tr>
-                  <Table.Td colSpan={3}>
+                  <Table.Td colSpan={5}>
                     <Text fw={500} ta="center">
                       Nothing found
                     </Text>
