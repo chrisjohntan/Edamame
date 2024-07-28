@@ -1,4 +1,4 @@
-import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard, Menu, Grid, SimpleGrid, Button, Divider, Title } from "@mantine/core";
+import { Text, Table, UnstyledButton, Group, Center, rem, ScrollArea, keys, LoadingOverlay, ActionIcon, Box, Flex, Card as MantineCard, Menu, Grid, SimpleGrid, Button, Divider, Title, Select } from "@mantine/core";
 import { IconChevronUp, IconChevronDown, IconSelector, IconPencil, IconTrash, IconDotsVertical } from "@tabler/icons-react";
 import classes from './styles/Table.module.css';
 import { useEffect, useState } from "react";
@@ -103,7 +103,8 @@ function CardTable(props: {
   view: "grid" | "table",
   data: Card[],
   setData: (c: Card[]) => void,
-  loading: boolean
+  loading: boolean,
+  deckName: string
 }) {
   const [sortBy, setSortBy] = useState<keyof Omit<Card, "id"> | null>(null)
   const [descending, setDescending] = useState(false);
@@ -113,13 +114,25 @@ function CardTable(props: {
     setSortedData(sortData(props.data, { sortBy, descending: descending, search: props.searchFilter }))
     console.log("sorting")
     return
-  }, [props.searchFilter, props.data])
+  }, [props.searchFilter, props.data, descending])
 
   function handleSort(field: keyof Omit<Card, "id">) {
-    const desc = field === sortBy ? !descending : false
+    console.log("ssss")
+    // const desc = field === sortBy ? !descending : false
     setSortBy(field);
-    setDescending(desc);
+    setDescending(descending);
     setSortedData(sortData(props.data, { sortBy, descending: descending, search: props.searchFilter }))
+  }
+
+  function fieldToText(field: keyof Omit<Card, "id">) {
+    switch (field) {
+      case "last_modified":
+        return "Last modified";
+      case "last_reviewed":
+        return "Last reviewed"
+      case "time_for_review":
+        return "Next review"
+    }
   }
 
   // display the Card data in mantine card
@@ -137,7 +150,7 @@ function CardTable(props: {
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Label>Actions</Menu.Label>
-                <EditCard card={cardData} data={props.data} setData={props.setData}/>
+                <EditCard card={cardData} data={props.data} setData={props.setData} />
                 <DeleteCard card={cardData} data={sortedData} setData={setSortedData} />
               </Menu.Dropdown>
             </Menu>
@@ -150,86 +163,86 @@ function CardTable(props: {
     )
   }
 
-  if (props.view === "table") {
-    const rows = sortedData?.map((deck) => (
-      <Table.Tr key={deck.id}>
-        <TdText>{deck.header}</TdText>
-        <TdText>{deck.body}</TdText>
-        {/* <Table.Td>{deck.}</Table.Td> */}
-        <Table.Td>
-          <Group gap={0} justify="flex-end" wrap="nowrap">
-            <ActionIcon variant="subtle" color="gray">
-              <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-            </ActionIcon>
-            <ActionIcon variant="subtle" color="red">
-              <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-            </ActionIcon>
-          </Group>
-        </Table.Td>
-      </Table.Tr>
-    ));
-    return (
-      <ScrollArea>
-        <LoadingOverlay visible={props.loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
-        <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
-          <Table.Thead>
-            <Table.Tr>
-              <Th
-                sorted={sortBy === 'header'}
-                descending={descending}
-                onSort={() => handleSort('header')}
-              >
-                Header
-              </Th>
-              <Th
-                sorted={sortBy === 'body'}
-                descending={descending}
-                onSort={() => handleSort('body')}
-              >
-                Body
-              </Th>
-              <Th
-                sorted={sortBy === 'last_reviewed'}
-                descending={descending}
-                onSort={() => handleSort('last_reviewed')}
-              >
-                Last Reviewed
-              </Th>
-              <Th
-                sorted={sortBy === 'last_modified'}
-                descending={descending}
-                onSort={() => handleSort('last_modified')}
-              >
-                Last Modified
-              </Th>
-              <Th
-                sorted={sortBy === 'reviews_done'}
-                descending={descending}
-                onSort={() => handleSort('reviews_done')}
-              >
-                Reviews Done
-              </Th>
-              <Table.Th className={classes.empty} />
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {rows.length > 0 ? (
-              rows
-            ) : (
-              <Table.Tr>
-                <Table.Td colSpan={6}>
-                  {/* might have to -1 from the colspan */}
-                  <Text fw={500} ta="center">
-                    Nothing found
-                  </Text>
-                </Table.Td>
-              </Table.Tr>
-            )}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
-    )
-  }
+  // if (props.view === "table") {
+  //   const rows = sortedData?.map((deck) => (
+  //     <Table.Tr key={deck.id}>
+  //       <TdText>{deck.header}</TdText>
+  //       <TdText>{deck.body}</TdText>
+  //       {/* <Table.Td>{deck.}</Table.Td> */}
+  //       <Table.Td>
+  //         <Group gap={0} justify="flex-end" wrap="nowrap">
+  //           <ActionIcon variant="subtle" color="gray">
+  //             <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+  //           </ActionIcon>
+  //           <ActionIcon variant="subtle" color="red">
+  //             <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+  //           </ActionIcon>
+  //         </Group>
+  //       </Table.Td>
+  //     </Table.Tr>
+  //   ));
+  //   return (
+  //     <ScrollArea>
+  //       <LoadingOverlay visible={props.loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 3 }} />
+  //       <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" withTableBorder>
+  //         <Table.Thead>
+  //           <Table.Tr>
+  //             <Th
+  //               sorted={sortBy === 'header'}
+  //               descending={descending}
+  //               onSort={() => handleSort('header')}
+  //             >
+  //               Header
+  //             </Th>
+  //             <Th
+  //               sorted={sortBy === 'body'}
+  //               descending={descending}
+  //               onSort={() => handleSort('body')}
+  //             >
+  //               Body
+  //             </Th>
+  //             <Th
+  //               sorted={sortBy === 'last_reviewed'}
+  //               descending={descending}
+  //               onSort={() => handleSort('last_reviewed')}
+  //             >
+  //               Last Reviewed
+  //             </Th>
+  //             <Th
+  //               sorted={sortBy === 'last_modified'}
+  //               descending={descending}
+  //               onSort={() => handleSort('last_modified')}
+  //             >
+  //               Last Modified
+  //             </Th>
+  //             <Th
+  //               sorted={sortBy === 'reviews_done'}
+  //               descending={descending}
+  //               onSort={() => handleSort('reviews_done')}
+  //             >
+  //               Reviews Done
+  //             </Th>
+  //             <Table.Th className={classes.empty} />
+  //           </Table.Tr>
+  //         </Table.Thead>
+  //         <Table.Tbody>
+  //           {rows.length > 0 ? (
+  //             rows
+  //           ) : (
+  //             <Table.Tr>
+  //               <Table.Td colSpan={6}>
+  //                 {/* might have to -1 from the colspan */}
+  //                 <Text fw={500} ta="center">
+  //                   Nothing found
+  //                 </Text>
+  //               </Table.Td>
+  //             </Table.Tr>
+  //           )}
+  //         </Table.Tbody>
+  //       </Table>
+  //     </ScrollArea>
+  //   )
+  // }
 
   if (props.view == "grid") {
     const rows = sortedData?.map(card => (
@@ -237,19 +250,64 @@ function CardTable(props: {
     ))
 
     return (
-      rows.length <= 0 ? (
-        <Text fw={500} ta="center">
-          Nothing found
-        </Text>
-      ) :
-        <div>
-          {/* <ScrollArea scrollbars="y" type="always" p="md" mih={600}> */}
-            <SimpleGrid cols={{ base: 1, xs: 2, md: 3, lg: 4, xl: 5,  }}>
+      <div>
+        <Group wrap="nowrap" justify="space-between" mb="md">
+          <Title order={2} lineClamp={1} maw={"50vw"}>
+            <Text truncate inherit>
+              {props.deckName}
+            </Text>
+          </Title>
+          <Group px="xl" wrap="nowrap">
+            {/* <Menu>
+              <Menu.Target>
+                <Button>{fieldToText(sortBy)}</Button>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item title="hi" onClick={()=>handleSort("last_modified")}>
+                  Last modified
+                </Menu.Item>
+                <Menu.Item onClick={()=>handleSort("time_created")}>
+                  Time created
+                </Menu.Item>
+                <Menu.Item onClick={()=>handleSort("")}>
+                  
+                </Menu.Item>
+                <Menu.Item onClick={()=>handleSort("")}>
+                  
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu> */}
+            <Select
+              placeholder="Sort by"
+              data={[
+                {value: "last_modified", label: "Last modified"},
+                {value: "time_to_review", label: "Time to review"},
+                {value: "time_created", label: "Time created"}
+              ]}
+              value={sortBy}
+              onChange={(value, option)=>handleSort(value as keyof Omit<Card, "id">)}
+              allowDeselect={false}
+            />
+            <ActionIcon radius={"100%"} variant="subtle" onClick={()=>setDescending(!descending)}>
+              {descending ? <IconChevronDown/> : <IconChevronUp/>}
+            </ActionIcon>
+          </Group>
+        </Group>
+        {rows.length <= 0 ? (
+          <Text fw={500} ta="center">
+            Nothing found
+          </Text>
+        ) :
+          <div>
+            {/* <ScrollArea scrollbars="y" type="always" p="md" mih={600}> */}
+            <SimpleGrid cols={{ base: 1, xs: 2, md: 3, lg: 4, xl: 5, }}>
               {rows}
             </SimpleGrid>
             <Divider mt="lg" label="You have reached the end" />
-          {/* </ScrollArea> */}
-        </div>
+            {/* </ScrollArea> */}
+          </div>}
+      </div>
     )
   }
 
