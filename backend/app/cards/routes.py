@@ -285,7 +285,7 @@ def review_card(id: int, response: int):
     return jsonify({
         "debug": f"Review done, card available next at {card.time_for_review}, time interval is {card.time_interval}, next time intervals will be {card.calculate_time_interval()}",
         "message": f"Review done, card next available at \
-            {datetime.strftime(card.time_for_review, "%d-%m-%Y %H:%M")}"
+            {datetime.strftime(card.time_for_review, '%d-%m-%Y %H:%M')}"
     }), HTTPStatus.OK
 
 @cards.route('/get_review_counts')
