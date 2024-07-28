@@ -14,8 +14,8 @@ def create_app(test_config=None):
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI") # change to postgresql
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
     app.config["JWT_SECRET_KEY"] = "123"
     
     if test_config == None:
