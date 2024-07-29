@@ -55,9 +55,12 @@ def create_card(deck_id):
         }), HTTPStatus.NOT_FOUND
     
     header = request.json["header"]
-    body = request.get_json().get("body", "")
-    header_flipped = request.get_json().get("header_flipped", header)
-    body_flipped = request.get_json().get("body", body)
+    body = request.json["body"]
+    header_flipped = request.json["header_flipped"]
+    body_flipped = request.json["body_flipped"]
+
+    if body_flipped == "":
+        body_flipped = body
 
     card = Card(
         header=header,
