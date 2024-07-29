@@ -17,7 +17,7 @@ def create_app(test_config=None):
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
     app.config["JWT_SECRET_KEY"] = "123"
-    app.config["JWT_COOKIE_SECURE"] = True
+    app.config["JWT_COOKIE_SECURE"] = False
     app.config["JWT_COOKIE_SAMESITE"] = "None"
     
     if test_config == None:
