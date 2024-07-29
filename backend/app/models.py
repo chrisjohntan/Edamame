@@ -189,6 +189,7 @@ class Deck(db.Model, Base):
     hard_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
     okay_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
     easy_multiplier: Mapped[Float] = mapped_column(Float, nullable=False)
+    ignore_review_time: Mapped[Boolean] = mapped_column(Boolean, nullable=False, default=False)
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     # card_id: Mapped[int] = mapped_column(Integer, ForeignKey("cards.id"))

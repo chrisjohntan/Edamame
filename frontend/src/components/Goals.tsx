@@ -101,15 +101,15 @@ function Goals() {
 
   return (
     <>
-      <Group>
-        <Title order={3} mb="sm">
+      <Group align="center" mb="sm">
+        <Title order={3}>
           Daily goal
         </Title>
         <EditForm/>
       </Group>
       <Card withBorder radius="md" padding="xl" bg="var(--mantine-color-body)" w={"40vw"}>
         <Text fz="md" tt="uppercase" fw={700} c="dimmed">
-          Day
+          Today
         </Text>
         <Text fz="md" fw={500}>
           {reviewsToday} / {target} cards reviewed

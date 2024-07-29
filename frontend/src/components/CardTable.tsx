@@ -43,7 +43,6 @@ function TdText({ children }: { children: React.ReactNode }) {
   )
 }
 
-// TODO: change filter params
 function filterData(data: Card[], filter: string) {
   if (data.length == 0) {
     return [];
@@ -52,8 +51,6 @@ function filterData(data: Card[], filter: string) {
   const fieldExclude = [
 
   ]
-  // 
-  // return data.filter(item => item?.header.includes(query));
 
   return data.filter((item) =>
     keys(data[0]).filter(key => typeof data[0][key] === "string")
@@ -73,6 +70,7 @@ function sortData(
     return filterData(data, payload.search);
   }
 
+  // filter and sort data at the same time
   return filterData(
     [...data].sort((a, b) => {
       const aVal = a[sortBy];
@@ -244,6 +242,7 @@ function CardTable(props: {
   //   )
   // }
 
+  // table view no longer in use, default to grid
   if (props.view == "grid") {
     const rows = sortedData?.map(card => (
       <DisplayCard cardData={card} key={card.id} />
@@ -258,31 +257,11 @@ function CardTable(props: {
             </Text>
           </Title>
           <Group px="xl" wrap="nowrap">
-            {/* <Menu>
-              <Menu.Target>
-                <Button>{fieldToText(sortBy)}</Button>
-              </Menu.Target>
-
-              <Menu.Dropdown>
-                <Menu.Item title="hi" onClick={()=>handleSort("last_modified")}>
-                  Last modified
-                </Menu.Item>
-                <Menu.Item onClick={()=>handleSort("time_created")}>
-                  Time created
-                </Menu.Item>
-                <Menu.Item onClick={()=>handleSort("")}>
-                  
-                </Menu.Item>
-                <Menu.Item onClick={()=>handleSort("")}>
-                  
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu> */}
             <Select
               placeholder="Sort by"
               data={[
                 {value: "last_modified", label: "Last modified"},
-                {value: "time_to_review", label: "Time to review"},
+                {value: "time_for_review", label: "Time to review"},
                 {value: "time_created", label: "Time created"}
               ]}
               value={sortBy}
@@ -300,12 +279,10 @@ function CardTable(props: {
           </Text>
         ) :
           <div>
-            {/* <ScrollArea scrollbars="y" type="always" p="md" mih={600}> */}
             <SimpleGrid cols={{ base: 1, xs: 2, md: 3, lg: 4, xl: 5, }}>
               {rows}
             </SimpleGrid>
             <Divider mt="lg" label="You have reached the end" />
-            {/* </ScrollArea> */}
           </div>}
       </div>
     )

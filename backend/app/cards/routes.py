@@ -142,6 +142,7 @@ def get_cards(deck_id):
     return jsonify({
         "deck_name": deck_exists.deck_name,
         "deck_id": deck_exists.id,
+        "ignore_review_time": deck_exists.ignore_review_time,
         'data': data
     }),HTTPStatus.OK
 
