@@ -40,7 +40,6 @@ function ForgotPassword() {
 
   useEffect(() => {
     if (seconds > 0) {
-      console.log(seconds)
       const interval = setInterval(()=>setSeconds(seconds - 1), 1000)
       return ()=>clearInterval(interval);
     } else {
@@ -69,8 +68,9 @@ function ForgotPassword() {
       if (isAxiosError(err)) {
         const message = err.response?.data?.error;
         form.setErrors({email: message ? message : err.message})
+      } else {
+        console.error(err)
       }
-      console.log(err)
     }
   }
 

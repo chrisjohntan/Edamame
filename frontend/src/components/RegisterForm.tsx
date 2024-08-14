@@ -51,7 +51,6 @@ function RegisterForm() {
 
   // TODO: validation
   const handleSubmit: (data: RegFormInput) => void = async (data) => {
-    console.log(data);
     setLoading(true);
     const payload = { username: data.username, email: data.email, password: data.password };
     try {

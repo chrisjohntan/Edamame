@@ -4,7 +4,6 @@ import { notifications } from "@mantine/notifications";
 export function getCookie(name: string) {
   const value = `; ${document.cookie}`;
   const parts: string[] | undefined = value.split(`; ${name}=`);
-  console.log(parts)
   if (parts.length === 2) return parts?.pop()?.split(';').shift();
 }
 

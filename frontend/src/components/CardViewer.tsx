@@ -37,7 +37,6 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
       console.log("getting next card..")
       setLoading(true);
       const response = await axios.put(`/next_card/${props.deckId}`, {ignore_review_time: props.ignoreWait});
-      console.log(response)
       setCurrentCard(dataToCard(response.data.card));
     } catch (err) {
       if (isAxiosError(err)) {
@@ -87,9 +86,7 @@ function CardViewer(props: { card?: Card, deckId: number, opened: boolean, onClo
   }
 
   if (currentCard) {
-    console.log("card" + currentCard.header)
     const intervals: string[] = currentCard.next_time_intervals.map(x => formatInterval(x));
-    console.log(currentCard.next_time_intervals);
     return (
       <>
         <Modal

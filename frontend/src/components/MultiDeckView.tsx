@@ -21,7 +21,6 @@ function MultiDeckView() {
         // Parse response
         const parsedResponse = await response.data.map(dataToDeck)
         setData(parsedResponse)
-        console.log(data)
       } catch (err) {
         console.error(err);
       } finally{

@@ -16,13 +16,11 @@ function Goals() {
   const [opened, {open, close}] = useDisclosure();
   
   useEffect(() => {
-    console.log(auth)
     setTarget(auth.user.daily_target);
     const getGoals = async () => {
       try {
         const response = await axios.get("/get_review_counts");
         const data = response.data.review_counts;
-        console.log(data)
         if (!data[0]) {
           setReviewsToday(0);
         } else {
