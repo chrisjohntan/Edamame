@@ -110,13 +110,10 @@ function CardTable(props: {
 
   useEffect(() => {
     setSortedData(sortData(props.data, { sortBy, descending: descending, search: props.searchFilter }))
-    console.log("sorting")
     return
   }, [props.searchFilter, props.data, descending])
 
   function handleSort(field: keyof Omit<Card, "id">) {
-    console.log("ssss")
-    // const desc = field === sortBy ? !descending : false
     setSortBy(field);
     setDescending(descending);
     setSortedData(sortData(props.data, { sortBy, descending: descending, search: props.searchFilter }))
@@ -136,7 +133,7 @@ function CardTable(props: {
   // display the Card data in mantine card
   const DisplayCard = ({ cardData }: { cardData: Card }) => {
     return (
-      <MantineCard shadow="sm" padding="lg" radius="md" withBorder onClick={() => console.log("a")}>
+      <MantineCard shadow="sm" padding="lg" radius="md" withBorder>
         <Group justify="space-between" >
           <Title lineClamp={1} order={4} style={{ flexGrow: 1 }} >{cardData.header}</Title>
           <Box onClick={e => e.stopPropagation()}>

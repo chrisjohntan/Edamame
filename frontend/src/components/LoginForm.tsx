@@ -35,12 +35,10 @@ function LoginForm() {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/decks"
 
-  console.log(auth);
 
   // if user is already authenticated then send to dashboard
   // (user ownself go to /login)
   useEffect(() => {
-    console.log(auth)
     if (auth.user.username != "") {
       navigate("/decks");
     }
@@ -60,11 +58,9 @@ function LoginForm() {
 
   // TODO: form validation errors (from backend)
   const handleSubmit: (data: LoginFormInput) => void = async (data: LoginFormInput) => {
-    console.log(data);
     setLoading(true);
     try {
       const response = await axios.post("/login", data);
-      console.log(response)
       const user = response.data.user as User
       setAuth({ user: user });
       navigate(from, { replace: true });

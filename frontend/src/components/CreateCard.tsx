@@ -31,7 +31,6 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
         header: data.header,
         body: data.body
       }
-      console.log(payload)
       const response = await axios.post(`/get_translation_for_card`, payload)
       const tempData: {header:string, body:string, header_flipped:string} = response.data
       form.setFieldValue("header", tempData.header)
@@ -57,7 +56,6 @@ function CreateCard(props: { addData: (c: Card) => void, deckId: number }) {
     } else {
       try {
         setLoading(true);
-        console.log(cardData)
         const response = await axios.post(`/create_card/${props.deckId}`, { ...cardData, card_type: type })
         const card = dataToCard(response.data.card)
         props.addData(card)

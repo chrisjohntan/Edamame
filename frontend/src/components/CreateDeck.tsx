@@ -34,8 +34,6 @@ function CreateDeck(props: {addData: (d: Deck)=>void}) {
       navigate(`/cards/${deck.id}`)
     } catch (err) {
       if (isAxiosError(err)) {
-        console.log("axios")
-        console.log(err.response?.data.message)
         form.setErrors({deckName: err.response?.data.message})
       } else {
         console.error(err)

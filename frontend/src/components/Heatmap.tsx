@@ -36,16 +36,12 @@ function Heatmap() {
         const now = new Date()
         // const today = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
         const today = dateToIso(now);
-        console.log(today)
         const start = `${now.getFullYear()}-01-01`;
-        console.log(today);
         const response = await axios.get(`/get_review_counts?start_date=${start}&end_date=${today}`);
 
-        console.log(response);
         const raw: {date: string, review_count: number, user_id: number}[] = response.data.review_counts;
         const parsed: HeatMapData[] = raw.map(obj => ({date: obj.date, count: obj.review_count}));
         setData(parsed);
-        console.log(data)
       } catch (err) {
         console.error(err);
       } finally {

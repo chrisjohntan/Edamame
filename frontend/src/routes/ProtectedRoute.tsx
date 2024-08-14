@@ -45,11 +45,9 @@ function ProtectedRoute() {
     const verifyToken = async () => {
       try {
         const response = await axios.get("/protected", {withCredentials: true});
-        console.log(response.data)
         // if OK, then set auth
         const resData = response.data
         setAuth({user: resData.user})
-        console.log(auth)
       } catch (err) {
         console.log("error verifying token:")
         console.error(err);
@@ -75,9 +73,9 @@ function ProtectedRoute() {
   }, [auth, setAuth])
 
   useEffect(() => {
-    console.log(`isLoading: ${isLoading}`)
-    console.log(`auth info: ${JSON.stringify(auth)}`)
-    console.log(`username: ${auth.user.username}` )
+    // console.log(`isLoading: ${isLoading}`)
+    // console.log(`auth info: ${JSON.stringify(auth)}`)
+    // console.log(`username: ${auth.user.username}` )
   }, [isLoading])
 
   // do not delete this, if not it will always redirect to login
