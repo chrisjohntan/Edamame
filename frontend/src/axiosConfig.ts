@@ -33,7 +33,6 @@ instance.interceptors.response.use(
   },
   (error) => {
     // Check for 500 errors
-    console.log("intercepted 500")
     if (error.response && error.response.status === 500) {
       // Display error notification
       notifications.show({
