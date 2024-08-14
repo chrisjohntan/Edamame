@@ -116,7 +116,7 @@ function Goals() {
         {
           reviewsToday < target
             ? `Keep it up! ${target - reviewsToday} cards left!`
-            : ""
+            : "You have reached your goal!"
         }
       </Card>
     </>
