@@ -60,7 +60,10 @@ function RegisterForm() {
       navigate("/login", {replace: true});
     } catch (err) {
       if (isAxiosError(err)){
-        form.setErrors({email: err.response?.data.message})
+        form.setErrors({
+          email: err.response?.data.message.email,
+          username: err.response?.data.message.username
+        });
       } else {
         console.error(err);
       }
