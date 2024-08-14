@@ -32,20 +32,30 @@ def create_new_user():
     
     
     # Check if username or email already exists
+    message = {}
+    error = False
     username_exists = db.session.execute(db.select(User).where(User.username==username)).first()
     print(username_exists)
     if (username_exists):
         print("username already exist")
-        return jsonify({
-            "message": "Username already exists",
-        }), HTTPStatus.CONFLICT
-        
+        # return jsonify({
+        #     "message": "Username already exists",
+        # }), HTTPStatus.CONFLICT
+        message["username"] = "Username already exists"
+        error = True
     email_exists = db.session.execute(db.select(User).where(User.email==email)).first()
     print(email_exists)
     if (email_exists):
         print("email already exist")
+        message["email"] = "Email already exists"
+        error = True
+        
+        # return jsonify({
+        #     "message": "Email already exists",
+        # }), HTTPStatus.CONFLICT
+    if error:
         return jsonify({
-            "message": "Email already exists",
+            "message": message,
         }), HTTPStatus.CONFLICT
     
     user = User(
@@ -91,7 +101,7 @@ def login():
     access_token = create_access_token(identity=user.username)
     set_access_cookies(response, access_token)
     
-    return response
+    return response, HTTPStatus.OK
 
 # log out user
 @auth.route("/logout", methods=["POST"])
