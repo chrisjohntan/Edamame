@@ -16,7 +16,7 @@ def create_app(test_config=None):
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
-    app.config["JWT_SECRET_KEY"] = "123"
+    app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
     
     if test_config == None:
         # config from default .env and .flaskenv files
@@ -34,7 +34,6 @@ def create_app(test_config=None):
     with app.app_context():
         db.create_all()
     
-    # TODO: Move to extensions.py, do not initialise any instance here. Move bcrypt also.
     bcrypt.init_app(app)
     migrate.init_app(app, db)
     jwt_manager.init_app(app)
